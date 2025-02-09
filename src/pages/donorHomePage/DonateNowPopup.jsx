@@ -13,7 +13,7 @@ const DonateNowPopup = ({ amount, purpose, closePopup }) => {
 
     const onSubmit = (data) => {
         // Handle payment logic here
-        console.log(`Paying ${amount} for ${data.purpose} using ${data.paymentMethod}`);
+        console.log(`Paying ₹ {amount} for ${data.purpose} using ${data.paymentMethod}`);
         closePopup();
     };
 
@@ -24,7 +24,7 @@ const DonateNowPopup = ({ amount, purpose, closePopup }) => {
                     &times;
                 </button>
                 <h3 className="text-2xl font-semibold mb-4 text-center">Donate Now</h3>
-                <p className="mb-4 text-center text-lg">Amount: <span className="font-bold">${amount}</span></p>
+                <p className="mb-4 text-center text-lg">Amount: <span className="font-bold">₹ {amount}</span></p>
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <div className="mb-4">
                         <label className="block mb-1 font-medium">Purpose:</label>

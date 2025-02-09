@@ -1,50 +1,35 @@
 import React, { useState } from 'react';
+import DonateNow from './DonateNow';
+import DonationHistory from './DonationHistory';
 import DonorResponsiveNavbar from './DonorResponsiveNavbar';
-import DonateCard from './DonateCard';
-import { donationPurposes } from '../../constants/constants';
-import DonateNowPopup from './DonateNowPopup';
 
 const DonorHomePage = () => {
-    const [isPopupOpen, setIsPopupOpen] = useState(false);
-    const [selectedPurpose, setSelectedPurpose] = useState(null);
-    const [selectedAmount, setSelectedAmount] = useState(null);
+  const [selectedPage, setSelectedPage] = useState('Donate Now');
 
-    const openPopup = (purpose, amount) => {
-        setSelectedPurpose(purpose);
-        setSelectedAmount(amount);
-        setIsPopupOpen(true);
-    };
+  const renderPage = () => {
+    switch (selectedPage) {
+      case 'Donate Now':
+        return <DonateNow />;
+      case 'Donation History':
+        return <DonationHistory />;
+      default:
+        return <DonateNow />;
+    }
+  };
 
-    const closePopup = () => {
-        setIsPopupOpen(false);
-        setSelectedPurpose(null);
-        setSelectedAmount(null);
-    };
-
-    return (
-        <div>
-            <h1 className='text-xl'> Hare Krishna Donor_Name</h1>
-            <div>
-                <DonorResponsiveNavbar />
-                <div>
-                    {donationPurposes.map((donationPurpose, index) => (
-                        <DonateCard
-                            key={index}
-                            donationPurpose={donationPurpose}
-                            openPopup={openPopup}
-                        />
-                    ))}
-                </div>
-            </div>
-            {isPopupOpen && (
-                <DonateNowPopup
-                    amount={selectedAmount}
-                    purpose={selectedPurpose}
-                    closePopup={closePopup}
-                />
-            )}
-        </div>
-    );
+  return (
+    <div className="flex flex-col min-h-screen">
+      <header className="bg-yellow-500 text-white py-4">
+        <h1 className="text-center text-2xl font-bold">Hare Krishna Donor</h1>
+      </header>
+      <div className="flex flex-1 flex-col md:flex-row">
+        <DonorResponsiveNavbar selectedPage={selectedPage} setSelectedPage={setSelectedPage} />
+        <main className="flex-1 p-4">
+          {renderPage()}
+        </main>
+      </div>
+    </div>
+  );
 };
 
 export default DonorHomePage;
