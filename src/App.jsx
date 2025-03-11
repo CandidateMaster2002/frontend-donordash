@@ -1,21 +1,28 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-import DonorHomePage from './pages/donorHomePage/DonorHomePage'
-// import DonorSignupFrom from './pages/donorSignupFrom/DonorSignupFrom'
-// import DonateNowPopup from './pages/donorHomePage/DonateNowPopup'
-import DonorSignupForm from './pages/donorSignupForm/DonorSignupForm'
-import DonationHistory from './pages/donorHomePage/DonationHistory'
+import React from 'react';
+import { Outlet, Navigate, useLocation,useNavigate } from 'react-router-dom';
+import HeaderLoggedIn from './components/HeaderLoggedIn';
+import { getRedirectPath } from './utils/services';
 
-function App() {
-  const [count, setCount] = useState(0)
+const App = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const user = JSON.parse(localStorage.getItem('user'));``
+
+
+  if (!user && location.pathname !== '/login-page'&& location.pathname !== '/donor-signup') {
+    return <Navigate to="/login-page" />;
+  }
+
+  if (user && location.pathname === '/') {
+    return <Navigate to={getRedirectPath(user.userType)} />;
+  }
 
   return (
-    <>
-    <DonorHomePage/>
-    </>
-  )
-}
+    <div className='w-screen min-h-screen'>
+      <HeaderLoggedIn/>
+      <Outlet />
+    </div>
+  );
+};
 
-export default App
+export default App;

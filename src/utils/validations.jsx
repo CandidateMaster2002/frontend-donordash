@@ -1,7 +1,5 @@
-import { paymentMethods } from "../constants/constants";
-
 export const validations = {
-    legalName: {
+    name: {
         validation: {
             required: true,
             errorMessages: {
@@ -29,7 +27,7 @@ export const validations = {
             },
         },
     },
-    fullPostalAddress: {
+    address: {
         validation: {
             required: true,
             errorMessages: {
@@ -118,7 +116,7 @@ export const validations = {
             errorMessages: {},
         },
     },
-    paymentMethod:{
+    paymentMode:{
         validation:{
             required:true,
             errorMessages:{

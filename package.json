@@ -26,6 +26,7 @@
     "dayjs": "^1.11.11",
     "flowbite": "^2.2.1",
     "hamburger-react": "^2.5.2",
+    "html2canvas": "^1.4.1",
     "html2pdf.js": "^0.10.2",
     "jspdf": "^2.5.2",
     "mdb-ui-kit": "^7.1.0",
