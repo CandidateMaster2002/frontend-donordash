@@ -30,7 +30,7 @@ const HeaderLoggedIn = () => {
         <img
           src={donationMeterLogo}
           alt="DonationMete₹ Logo"
-          className="h-40 sm:h-12" // Adjust height to fit the header
+          className="h-40 sm:h-36" // Adjust height to fit the header
         />
       </div>
 
