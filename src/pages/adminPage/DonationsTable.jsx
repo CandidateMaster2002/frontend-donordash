@@ -2,7 +2,6 @@ import { useState } from "react";
 import { FaDownload, FaEdit } from "react-icons/fa";
 import { formatDate } from "../../utils/services";
 import { getReceiptByDonationId } from "../../utils/services";
-import Receipt from "../receipt/receipt";
 import { useNavigate } from "react-router-dom";
 import { handleClickdownloadAsPdf } from "../receipt/services";
 import StatusChangeConfirmationBox from "../../components/StatusChangeConfirmationBox";
