@@ -14,6 +14,7 @@ import DonorProfilePage from "./pages/DonorData.jsx/DonorProfilePage.jsx";
 import AdminPage from "./pages/adminPage/AdminPage.jsx";
 import PrivateRoute from "./utils/PrivateRoute.jsx";
 import Receipt from "./pages/receipt/Receipt.jsx";
+// import Receipt from "./pages/receipt/Receipt.jsx";
 // Define routes properly using Outlet in App.jsx
 const router = createBrowserRouter([
   {
