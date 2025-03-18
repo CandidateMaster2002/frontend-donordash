@@ -39,7 +39,6 @@ const DonorSignupForm = ({ onSubmit }) => {
       city: '',
       state: '',
       pincode: '',
-      zone: '',
       wantPrasadam: false,
       specialDays: [],
       password: '',
