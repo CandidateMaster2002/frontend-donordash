@@ -11,6 +11,7 @@ import {
 import useFetchCityAndState from "../../hooks/useFetchCityAndState";
 import { validations } from "../../utils/validations";
 import { zones } from "../../constants/constants";
+import SuccessPopup from "../../components/SuccessPopup";
 
 const DonorProfilePage = () => {
   const [isEditing, setIsEditing] = useState(false);
@@ -18,6 +19,7 @@ const DonorProfilePage = () => {
   const [specialDays, setSpecialDays] = useState([]);
   const { id } = useParams();
   const navigate = useNavigate();
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
   useEffect(() => {
     const fetchDonor = async () => {
@@ -66,14 +68,14 @@ const DonorProfilePage = () => {
       setValue("zone", donor.zone);
       setValue("remark", donor.remark);
       setValue("supervisor", donor.donorCultivator.donationSupervisor.name);
-      if(specialDays)
-      setValue(
-        "specialDays",
-        specialDays?.map((day) => ({
-          ...day,
-          date: new Date(day.date).toISOString().split("T")[0],
-        }))
-      );
+      if (specialDays)
+        setValue(
+          "specialDays",
+          specialDays?.map((day) => ({
+            ...day,
+            date: new Date(day.date).toISOString().split("T")[0],
+          }))
+        );
     }
   }, [donor, specialDays, setValue]);
 
@@ -100,6 +102,7 @@ const DonorProfilePage = () => {
 
       await editDonorById(id, donorData);
       setIsEditing(false);
+      setShowSuccessPopup(true);
     } catch (error) {
       console.error("Error updating donor data:", error);
     }
@@ -131,29 +134,28 @@ const DonorProfilePage = () => {
               )}
             </div>
 
-
-          {getUserTypeFromLocalStorage() !== "donor" ? (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Category
-              </label>
-              <input
-                type="text"
-                {...register("category", validations.category?.validation)}
-                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                  isEditing ? "focus:ring-blue-500" : "focus:ring-gray-300"
-                } ${errors.category ? "border-red-500" : "border-gray-300"}`}
-                readOnly={!isEditing}
-              />
-              {errors.category && (
-                <span className="text-sm text-red-500">
-                  {validations.category?.validation.errorMessages.required}
-                </span>
-              )}
-            </div>
-          ) : (
-            <></>
-          )}
+            {getUserTypeFromLocalStorage() !== "donor" ? (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Category
+                </label>
+                <input
+                  type="text"
+                  {...register("category", validations.category?.validation)}
+                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                    isEditing ? "focus:ring-blue-500" : "focus:ring-gray-300"
+                  } ${errors.category ? "border-red-500" : "border-gray-300"}`}
+                  readOnly={!isEditing}
+                />
+                {errors.category && (
+                  <span className="text-sm text-red-500">
+                    {validations.category?.validation.errorMessages.required}
+                  </span>
+                )}
+              </div>
+            ) : (
+              <></>
+            )}
             {/* Mobile Number */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -361,20 +363,6 @@ const DonorProfilePage = () => {
                 ))}
               </select>
             </div>
-            {/* Supervisor */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Supervisor
-              </label>
-              <input
-                type="text"
-                {...register("supervisor")}
-                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                  isEditing ? "focus:ring-blue-500" : "focus:ring-gray-300"
-                } border-gray-300`}
-                readOnly
-              />
-            </div>
 
             {/* Remark */}
             <div className="md:col-span-2">
@@ -531,6 +519,12 @@ const DonorProfilePage = () => {
           </div>
         </form>
       </div>
+      {showSuccessPopup && (
+        <SuccessPopup
+          message="Successfully updated donor data!"
+          onClose={() => setShowSuccessPopup(false)}
+        />
+      )}
     </div>
   );
 };

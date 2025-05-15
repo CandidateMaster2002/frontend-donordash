@@ -33,7 +33,7 @@ const StatusChangeConfirmationBox = ({ donation, newStatus, onCancel, onConfirm 
 
     try {
       await changeDonationStatus(donation.id, newStatus);
-      console.log('Donation status changed successfully!');
+      
       onConfirm(newStatus, transactionId);
     } catch (error) {
       alert('Failed to change donation status');

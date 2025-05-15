@@ -14,6 +14,7 @@ import DonorProfilePage from "./pages/DonorData.jsx/DonorProfilePage.jsx";
 import AdminPage from "./pages/adminPage/AdminPage.jsx";
 import PrivateRoute from "./utils/PrivateRoute.jsx";
 import Receipt from "./pages/receipt/Receipt.jsx";
+import SupervisorHomePage from "./pages/supervisorPage/SupervisorHomePage.jsx";
 // import Receipt from "./pages/receipt/Receipt.jsx";
 // Define routes properly using Outlet in App.jsx
 const router = createBrowserRouter([
@@ -29,6 +30,7 @@ const router = createBrowserRouter([
         path:"receipt",
         element:<Receipt/>
       },
+
       {
         path: "donor-home",
         element: (
@@ -59,12 +61,12 @@ const router = createBrowserRouter([
           <PrivateRoute allowedRoles={["admin"]} component={AdminPage} />
         ),
       },
-      // {
-      //   path: "supervisor-home",
-      //   element: (
-      //     <PrivateRoute allowedRoles={["donationSupervisor"]} component={SupervisorHomePage} />
-      //   ),
-      // },
+      {
+        path: "supervisor-home",
+        element: (
+          <PrivateRoute allowedRoles={["donationSupervisor"]} component={SupervisorHomePage} />
+        ),
+      },
     ],
   },
   {

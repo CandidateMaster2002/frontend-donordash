@@ -104,16 +104,6 @@ const AdminPage = () => {
         >
           Master Donations
         </button>
-        {/* <button
-          onClick={() => handleActiveTabChange("pending")}
-          className={`p-4 w-full text-left ${
-            activeTab === "pending"
-              ? "bg-blue-500 text-white"
-              : "bg-white text-black"
-          }`}
-        >
-          Pending Donations
-        </button> */}
       </div>
       <div className="flex-1 p-4">
         <div>

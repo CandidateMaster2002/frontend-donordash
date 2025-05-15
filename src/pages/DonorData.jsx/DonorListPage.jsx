@@ -33,7 +33,7 @@ const DonorListPage = () => {
       <div className="grid grid-cols-3 gap-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-t-lg p-4 *:text-center">
         <div className="font-semibold">Name</div>
         <div className="font-semibold">Profile</div>
-        <div className="font-semibold">Donations</div>
+        {/* <div className="font-semibold">Donations</div> */}
       </div>
   
       {/* Donor Rows */}
@@ -72,7 +72,7 @@ const DonorListPage = () => {
               onClick={() => handleShowDonorDonations(donor.id)}
               className="flex justify-center text-blue-600 hover:text-blue-800 transition-all"
             >
-            <FaIndianRupeeSign className="h-6 w-6 text-current" />
+            {/* <FaIndianRupeeSign className="h-6 w-6 text-current" /> */}
 
             </button>
           </li>

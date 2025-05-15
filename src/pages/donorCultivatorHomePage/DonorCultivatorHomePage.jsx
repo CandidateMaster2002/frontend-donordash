@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import DateFilter from "../../components/DateFilter";
-import DonationSummaryTable from "./DonationSummaryTable";
+import DonationSummaryTable from "../../components/DonationSummaryTable";
 import DonationsTable from "../../components/DonationsTable";
+import { fetchDonationSummaryData } from "../../utils/services";
 import {
   fetchDonations,
-  fetchDonationSummary,
   getDonorCultivatorFromLocalStorage,
 } from "../../utils/services";
 import DonateNowPopup from "../donorHomePage/DonateNowPopup";
@@ -12,6 +12,7 @@ import { RiAddCircleFill } from "react-icons/ri";
 import EditDonationPopup from "../adminPage/EditDonationPopup";
 import { editDonation } from "../../utils/services";
 import SuccessPopup from "../../components/SuccessPopup";
+import { getDonorCultivatorIdFromLocalStorage } from "../../utils/services";
 
 const DonorCultivatorHomePage = () => {
   const [filter, setFilter] = useState({
@@ -42,7 +43,6 @@ const DonorCultivatorHomePage = () => {
       console.log("Donation updated successfully");
       setSuccessMessage("The donation has been updated successfully!");
       setShowSuccessPopup(true);
-
     } catch (err) {
       console.error("Error saving donation:", err.message);
       alert("Failed to update donation");
@@ -72,10 +72,10 @@ const DonorCultivatorHomePage = () => {
       fetchDonationSummaryData(newFilter);
     }
   };
-
+  console.log(getDonorCultivatorIdFromLocalStorage());
   const fetchDonationsData = async (filter) => {
     const filterDto = {
-      donorCultivatorId: null,
+      donorCultivatorId: getDonorCultivatorIdFromLocalStorage(),
       fromDate: filter.startDate,
       toDate: filter.endDate,
     };
@@ -89,44 +89,15 @@ const DonorCultivatorHomePage = () => {
     }
   };
 
-  const fetchDonationSummaryData = async (filter) => {
-    const params = {
-      cultivatorId: 1,
-      dateFrom: filter.startDate,
-      dateTo: filter.endDate,
-    };
+  console.log(summaryData);
 
-    try {
-      const purposeSummary = await fetchDonationSummary({
-        ...params,
-        parameter: "purpose",
-      });
-      const zoneSummary = await fetchDonationSummary({
-        ...params,
-        parameter: "zone",
-      });
-
-      const formattedPurposeSummary = Object.entries(purposeSummary).map(
-        ([description, amount]) => ({
-          description,
-          amount,
-        })
-      );
-      const formattedZoneSummary = Object.entries(zoneSummary).map(
-        ([description, amount]) => ({
-          description,
-          amount,
-        })
-      );
-
-      setSummaryData({
-        purpose: formattedPurposeSummary,
-        zone: formattedZoneSummary,
-      });
-    } catch (error) {
-      console.error("Error fetching donation summary:", error);
-    }
-  };
+  useEffect(() => {
+    fetchDonationSummaryData(
+      filter,
+      getDonorCultivatorIdFromLocalStorage(),
+      setSummaryData
+    );
+  }, [filter]);
 
   const handleAddDonation = () => {
     setShowAddDonationPopup(true);
@@ -159,18 +130,23 @@ const DonorCultivatorHomePage = () => {
       {/* Summary Tables */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
         <DonationSummaryTable
-          data={summaryData.purpose}
-          columnName1="Purpose"
-          columnName2="Amount"
-        />
-        <DonationSummaryTable
           data={summaryData.zone}
           columnName1="Zone"
           columnName2="Amount"
         />
+        <DonationSummaryTable
+          data={summaryData.paymentMode}
+          columnName1="Payment Mode"
+          columnName2="Amount"
+        />
+        <DonationSummaryTable
+          data={summaryData.purpose}
+          columnName1="Purpose"
+          columnName2="Amount"
+        />
       </div>
 
-      {/* Donations Table */}
+
       <DonationsTable data={donationsData} onEdit={handleEdit} />
 
       {editingDonation && (
@@ -197,12 +173,12 @@ const DonorCultivatorHomePage = () => {
           setSuccessMessage={setSuccessMessage}
         />
       )}
-         {showSuccessPopup && (
-      <SuccessPopup
-        message={successMessage}
-        onClose={() => setShowSuccessPopup(false)}
-      />
-    )}
+      {showSuccessPopup && (
+        <SuccessPopup
+          message={successMessage}
+          onClose={() => setShowSuccessPopup(false)}
+        />
+      )}
     </div>
   );
 };

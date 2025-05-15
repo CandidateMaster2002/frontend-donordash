@@ -5,12 +5,15 @@ import { getReceiptByDonationId } from "../../utils/services";
 import { useNavigate } from "react-router-dom";
 import StatusChangeConfirmationBox from "../../components/StatusChangeConfirmationBox";
 import React from "react";
+import SuccessPopup from "../../components/SuccessPopup";
 
 const DonationsTable = ({ data, onEdit }) => {
   const navigate = useNavigate();
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [newStatus, setNewStatus] = useState("");
   const [selectedDonation, setSelectedDonation] = useState(null);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
   const handleStatusChange = (donation, e) => {
     setNewStatus(e.target.value);
@@ -27,6 +30,14 @@ const DonationsTable = ({ data, onEdit }) => {
   const handleConfirm = (status, transactionId) => {
     setShowConfirmation(false);
     setSelectedDonation(null);
+
+    // Simulating successful status change
+    setSuccessMessage(
+      `The donation status has been changed from ${
+        selectedDonation.status
+      } to ${status}.`
+    );
+    setShowSuccessPopup(true);
   };
 
   const handleReceiptClick = async (donationId) => {
@@ -40,7 +51,6 @@ const DonationsTable = ({ data, onEdit }) => {
 
   return (
     <div className="overflow-x-auto overflow-y-auto max-w-full">
-    
       <table className="min-w-full bg-white">
         <thead>
           <tr>
@@ -122,12 +132,22 @@ const DonationsTable = ({ data, onEdit }) => {
           ))}
         </tbody>
       </table>
+
+      {/* Status Change Confirmation Box */}
       {showConfirmation && selectedDonation && (
         <StatusChangeConfirmationBox
           donation={selectedDonation}
           newStatus={newStatus}
           onCancel={handleCancel}
           onConfirm={handleConfirm}
+        />
+      )}
+
+      {/* Success Popup */}
+      {showSuccessPopup && (
+        <SuccessPopup
+          message={successMessage}
+          onClose={() => setShowSuccessPopup(false)}
         />
       )}
     </div>

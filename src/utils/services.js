@@ -1,5 +1,7 @@
 import axiosInstance from "./myAxios";
-import { DONATIONS_BY_DONOR_ID,DONORS_FILTER,DONATE,DONATIONS_FILTER,DONATIONS_FILTER_SUM,ALL_DONOR_CULTIVATORS,GET_DONOR_BY_ID,EDIT_DONOR,ALL_SPECIAL_DAYS_BY_DONOR_ID,EDIT_DONATION, GET_RECEIPT,CHANGE_STATUS} from "../constants/apiEndpoints";
+
+
+import { DONATIONS_BY_DONOR_ID,DONORS_FILTER,DONATE,DONATIONS_FILTER,DONATIONS_FILTER_SUM,ALL_DONOR_CULTIVATORS,GET_DONOR_BY_ID,EDIT_DONOR,ALL_SPECIAL_DAYS_BY_DONOR_ID,EDIT_DONATION, GET_RECEIPT,CHANGE_STATUS,USER_LOGIN} from "../constants/apiEndpoints";
 
 export const getRedirectPath = (userType) => {
     switch (userType) {
@@ -32,6 +34,22 @@ export const getDonorIdFromLocalStorage = () => {
         return user.userDetails?.id;
     }
     return null;
+};
+
+export const getDonationSupervisorFromLocalStorage = () => {
+  const user = JSON.parse(localStorage.getItem('user'));
+  if (user && user.userType === 'donationSupervisor') {
+      return user.userDetails;
+  }
+  return null;
+};
+
+export const getDonationSupervisorIdFromLocalStorage = () => {
+  const user = JSON.parse(localStorage.getItem('user'));
+  if (user && user.userType === 'donationSupervisor') {
+      return user.userDetails?.id;
+  }
+  return null;
 };
 
 export const getDonorFromLocalStorage = () => {
@@ -139,8 +157,17 @@ export const getDonors = async (params) => {
   }
 };
 
-
-
+export const handleUserLogin = async (credentials, navigate) => {
+    try {
+      const response = await axiosInstance.post(USER_LOGIN, credentials);
+      const { userType } = response.data;
+      localStorage.setItem("user", JSON.stringify(response.data));
+      navigate(getRedirectPath(userType));
+    } catch (error) {
+      alert("Login failed: " + (error.response?.data?.message || error.message));
+      console.error("Login failed", error);
+    }
+  };
 export const getAllDonorCultivators = async () => {
   try {
     const response = await axiosInstance.get(ALL_DONOR_CULTIVATORS);
@@ -180,6 +207,8 @@ export const fetchSpecialDaysByDonorId = async (donorId) => {
     throw error;
   }
 };
+
+
 
 export const fetchDonationSummary = async (params) => {
   try {
@@ -247,3 +276,69 @@ export const getStatusStyles = (status) => {
   }
 };
 
+
+ export const fetchDonationSummaryData = async (filter,cultivatorId,setSummaryData) => {
+    const params = {
+      cultivatorId: cultivatorId,
+      dateFrom: filter.startDate,
+      dateTo: filter.endDate,
+      status: "Verified",
+    };
+
+    try {
+      const purposeSummary = await fetchDonationSummary({
+        ...params,
+        parameter: "purpose",
+      });
+      const zoneSummary = await fetchDonationSummary({
+        ...params,
+        parameter: "zone",
+      });
+
+      const paymentModeSummary = await fetchDonationSummary({
+        ...params,
+        parameter: "payment_mode",
+      });
+
+      const cultivatorSummary = await fetchDonationSummary({
+        ...params,
+        parameter: "cultivator",
+      });
+
+      const formattedPurposeSummary = Object.entries(purposeSummary).map(
+        ([description, amount]) => ({
+          description,
+          amount,
+        })
+      );
+      const formattedZoneSummary = Object.entries(zoneSummary).map(
+        ([description, amount]) => ({
+          description,
+          amount,
+        })
+      );
+
+      const formattedPaymentModeSummary = Object.entries(
+        paymentModeSummary
+      ).map(([description, amount]) => ({
+        description,
+        amount,
+      }));
+
+      const formattedCultivatorSummary = Object.entries(
+        cultivatorSummary
+      ).map(([description, amount]) => ({
+        description,
+        amount,
+      }));
+
+      setSummaryData({
+        purpose: formattedPurposeSummary,
+        zone: formattedZoneSummary,
+        paymentMode: formattedPaymentModeSummary,
+        cultivator: formattedCultivatorSummary,
+      });
+    } catch (error) {
+      console.error("Error fetching donation summary:", error);
+    }
+  }

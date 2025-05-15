@@ -52,7 +52,7 @@ const DonorSignupForm = ({ onSubmit }) => {
     delete data.confirmPassword;
     if(data.panNumber === '') delete data.panNumber;
     if(data.wantPrasadam===false) delete data.specialDays;
-    await handleDonorSignup(data);
+    await handleDonorSignup(data,navigate);
     // onSubmit(data, photo);
   };
 
@@ -152,7 +152,7 @@ const DonorSignupForm = ({ onSubmit }) => {
           <label className="block text-gray-700 font-bold mb-2">Photo</label>
           <input type="file" accept="image/*" onChange={handleFileChange} className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
         </div> */}
-        <SpecialDaysSection />
+        {/* <SpecialDaysSection /> */}
         <div className="mt-6">
           <button type="submit" className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">Submit</button>
         </div>

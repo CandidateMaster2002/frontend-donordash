@@ -30,7 +30,7 @@ const LoginPage = () => {
     }
   };
 
-  const handleSubmit = (event) => {
+const handleSubmit = (event) => {
     event.preventDefault();
     const email = event.target.email.value;
     const password = event.target.password.value;
