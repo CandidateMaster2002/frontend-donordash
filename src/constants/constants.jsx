@@ -11,16 +11,16 @@ import fruitSeller from "../assets/images/fruitseller.jpg";
 
 
 export const donationAmounts = [
-  { id: 1, value: 101 },
   { id: 2, value: 501 },
   { id: 3, value: 1001 },
+  {id:4,value:5001},
 ];
 
 export const paymentModes = [
   { id: 1, value: "Cash" },
   { id: 2, value: "Bank Transfer" },
   { id: 3, value: "Cheque" },
-  { id: 4, value: "Razorpay" },
+  { id: 4, value: "Online(Razorpay)" },
 ];
 
 export const zones = [

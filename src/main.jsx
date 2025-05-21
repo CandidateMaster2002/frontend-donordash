@@ -15,6 +15,8 @@ import AdminPage from "./pages/adminPage/AdminPage.jsx";
 import PrivateRoute from "./utils/PrivateRoute.jsx";
 import Receipt from "./pages/receipt/Receipt.jsx";
 import SupervisorHomePage from "./pages/supervisorPage/SupervisorHomePage.jsx";
+import GlobarLoader from "./utils/GlobalLoader.jsx";
+import { LoadingProvider } from "./utils/LoadingContext.jsx";
 // import Receipt from "./pages/receipt/Receipt.jsx";
 // Define routes properly using Outlet in App.jsx
 const router = createBrowserRouter([
@@ -27,8 +29,8 @@ const router = createBrowserRouter([
         element: <DonorSignupForm />,
       },
       {
-        path:"receipt",
-        element:<Receipt/>
+        path: "receipt",
+        element: <Receipt />,
       },
 
       {
@@ -40,19 +42,28 @@ const router = createBrowserRouter([
       {
         path: "donor-cultivator-home",
         element: (
-          <PrivateRoute allowedRoles={["donorCultivator"]} component={DonorCultivatorHomePage} />
+          <PrivateRoute
+            allowedRoles={["donorCultivator"]}
+            component={DonorCultivatorHomePage}
+          />
         ),
       },
       {
         path: "donor-list",
         element: (
-          <PrivateRoute allowedRoles={["donationSupervisor","donorCultivator","admin"]} component={DonorListPage} />
+          <PrivateRoute
+            allowedRoles={["donationSupervisor", "donorCultivator", "admin"]}
+            component={DonorListPage}
+          />
         ),
       },
       {
         path: "donor-profile/:id",
         element: (
-          <PrivateRoute allowedRoles={["donor", "donorCultivator"]} component={DonorProfilePage} />
+          <PrivateRoute
+            allowedRoles={["donor", "donorCultivator"]}
+            component={DonorProfilePage}
+          />
         ),
       },
       {
@@ -64,7 +75,10 @@ const router = createBrowserRouter([
       {
         path: "supervisor-home",
         element: (
-          <PrivateRoute allowedRoles={["donationSupervisor"]} component={SupervisorHomePage} />
+          <PrivateRoute
+            allowedRoles={["donationSupervisor"]}
+            component={SupervisorHomePage}
+          />
         ),
       },
     ],
@@ -77,6 +91,9 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <LoadingProvider>
+      <GlobarLoader/>
+        <RouterProvider router={router} />
+    </LoadingProvider>
   </React.StrictMode>
 );

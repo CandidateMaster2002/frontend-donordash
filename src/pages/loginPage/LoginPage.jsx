@@ -25,17 +25,19 @@ const LoginPage = () => {
       localStorage.setItem("user", JSON.stringify(response.data));
       navigate(getRedirectPath(userType));
     } catch (error) {
-      alert("Login failed: " + (error.response?.data?.message || error.message));
+      alert(
+        "Login failed: " + (error.response?.data?.message || error.message)
+      );
       console.error("Login failed", error);
     }
   };
-
-const handleSubmit = (event) => {
+  const handleSubmit = (event) => {
     event.preventDefault();
-    const email = event.target.email.value;
+    const mobileNumber = event.target.mobileNumber.value;
     const password = event.target.password.value;
-    handleUserLogin({ email, password });
+    handleUserLogin({ mobileNumber, password });
   };
+
 
   return (
     <>
@@ -73,26 +75,31 @@ const handleSubmit = (event) => {
           </div>
 
           {/* Login Form */}
-          <form className="mt-8 space-y-6" onSubmit={handleSubmit} method="POST">
+          <form
+            className="mt-8 space-y-6"
+            onSubmit={handleSubmit}
+            method="POST"
+          >
             <input type="hidden" name="remember" value="true" />
             <div className="rounded-md shadow-sm -space-y-px *:max-w-lg *:mx-auto">
-              {/* Email Input */}
+              {/* Mobile Number Input */}
               <div className="my-4 ">
-                <label htmlFor="email-address" className="sr-only">
-                  Email address
+                <label htmlFor="mobile-number" className="sr-only">
+                  Mobile Number
                 </label>
                 <input
-                  id="email-address"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
+                  id="mobile-number"
+                  name="mobileNumber"
+                  type="tel"
+                  autoComplete="tel"
+                  pattern="[0-9]{10}"
+                  maxLength="10"
                   required
                   className="appearance-none rounded-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 focus:z-10 sm:text-sm"
-                  placeholder="Email address"
+                  placeholder="Mobile Number"
                 />
               </div>
 
-              {/* Password Input */}
               <div className="my-2">
                 <label htmlFor="password" className="sr-only">
                   Password

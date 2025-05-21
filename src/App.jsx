@@ -19,8 +19,12 @@ const App = () => {
 
   return (
     <div className='w-screen min-h-screen'>
-      <HeaderLoggedIn/>
-      <Outlet />
+      <div style={{ position: 'sticky', top: 0, zIndex: 1000 }}>
+        <HeaderLoggedIn />
+      </div>
+      <div style={{ marginTop: '64px' }}>
+        <Outlet />
+      </div>
     </div>
   );
 };

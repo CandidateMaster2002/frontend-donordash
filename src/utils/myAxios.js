@@ -6,11 +6,10 @@ const axiosInstance = axios.create({
   baseURL:"https://backend-donordash.onrender.com/"
 });
 
-// Function to set up the interceptors after the context is provided
 export const setupInterceptors = (showLoader, hideLoader) => {
-  API.interceptors.request.use(
+  axiosInstance.interceptors.request.use(
     (config) => {
-      showLoader();  // Trigger the loader here
+      showLoader();  
       return config;
     },
     (error) => {
@@ -18,7 +17,7 @@ export const setupInterceptors = (showLoader, hideLoader) => {
     }
   );
 
-  API.interceptors.response.use(
+  axiosInstance.interceptors.response.use(
     (response) => {
       hideLoader();  // Hide loader on success
       return response;

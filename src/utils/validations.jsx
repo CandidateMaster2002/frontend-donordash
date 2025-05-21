@@ -19,10 +19,10 @@ export const validations = {
     },
     email: {
         validation: {
-            required: true,
+            required: false,
             pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
             errorMessages: {
-                required: "Please enter your email address",
+                // required: "Please enter your email address",
                 pattern: "Please enter a valid email address",
             },
         },

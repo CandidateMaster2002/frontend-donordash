@@ -75,7 +75,7 @@ const DonateNowPopup = ({ amount, purpose, closePopup,setShowSuccessPopup,setSuc
     };
 
     try {
-      if (donationData.paymentMode === "Razorpay") {
+      if (donationData.paymentMode === "Online(Razorpay)") {
         await handleRazorpayPayment(donationData);
       } else {
         const response = await axiosInstance.post(DONATE, donationData);
@@ -94,10 +94,8 @@ const DonateNowPopup = ({ amount, purpose, closePopup,setShowSuccessPopup,setSuc
     setShowTransactionId(
       selectedMethod === "Cheque" || selectedMethod === "Bank Transfer"
     );
-    setShowPaymentDate(selectedMethod !== "Razorpay");
+    setShowPaymentDate(selectedMethod !== "Online(Razorpay)");
   };
-
-  console.log(donors)
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
