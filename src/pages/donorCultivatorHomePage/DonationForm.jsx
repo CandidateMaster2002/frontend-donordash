@@ -128,7 +128,7 @@ const DonationForm = ({ isOpen, onClose }) => {
           {/* Transaction ID Field (Conditional) */}
           {(paymentMode === 'Bank Transfer' || paymentMode === 'Cheque') && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Transaction ID</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">UTR No.</label>
               <input
                 type="text"
                 {...register('transactionId')}
