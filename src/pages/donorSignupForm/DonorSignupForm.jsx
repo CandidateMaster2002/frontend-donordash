@@ -102,9 +102,10 @@ const DonorSignupForm = ({ onSubmit }) => {
           {renderError('mobileNumber')}
         </div>
         <div className="mb-4">
-          <label className="block text-gray-700 font-bold mb-2">Email/ईमेल</label>
+          <label className="block text-gray-700 font-bold mb-2">Email/ईमेल (optional)</label>
           <input type="email" {...methods.register('email', validations.email.validation)} className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
           {renderError('email')}
+        
         </div>
         <div className="mb-4">
           <label className="block text-gray-700 font-bold mb-2">Full  Address/पूरा  पता</label>
@@ -128,6 +129,7 @@ const DonorSignupForm = ({ onSubmit }) => {
           <label className="block text-gray-700 font-bold mb-2">PAN Number/पैन नंबर (optional)</label>
           <input type="text" {...methods.register('panNumber', validations.panNumber.validation)} className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
           {renderError('panNumber')}
+          <p className="text-sm">For 80G tax benefit PAN is compulsory</p>
         </div>
         <div className="mb-4">
           <label className="block text-gray-700 font-bold mb-2">Connected To/किससे जुड़े हैं ?</label>
