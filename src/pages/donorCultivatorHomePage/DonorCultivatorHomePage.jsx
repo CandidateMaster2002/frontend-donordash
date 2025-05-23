@@ -116,14 +116,23 @@ const DonorCultivatorHomePage = () => {
         </h1>
       </div>
 
-      {/* View All Donors Button */}
-      <button
-        onClick={() => (window.location.href = "/donor-list")}
-        className="mt-4 mb-8 px-8 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg shadow-md hover:shadow-lg transition-all text-xl"
-      >
-        View All Donors
-      </button>
+      <div className="flex gap-4 mb-8">
+        <button
+          onClick={() => (window.location.href = "/donor-list")}
+          className="px-8 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg shadow-md hover:shadow-lg transition-all text-xl"
+        >
+          View All Donors
+        </button>
+        <button
+          onClick={() => (window.location.href = "/donor-signup")}
+          className="px-8 py-3 bg-gradient-to-r from-green-500 to-blue-500 text-white rounded-lg shadow-md hover:shadow-lg transition-all text-xl"
+        >
+          Add a Donor
+        </button>
+      </div>
 
+      {/* View All Donors Button */}
+    
       {/* Date Filter */}
       <DateFilter onFilterChange={handleFilterChange} />
 

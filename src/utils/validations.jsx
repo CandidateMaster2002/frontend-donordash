@@ -87,10 +87,10 @@ export const validations = {
     password: {
         validation: {
             required: true,
-            minLength: 8,
+            // minLength: 8,
             errorMessages: {
                 required: "Please enter your password",
-                minLength: "Password must be at least 8 characters long",
+                // minLength: "Password must be at least 8 characters long",
             },
         },
     },

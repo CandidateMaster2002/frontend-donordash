@@ -13,10 +13,6 @@ const DonationForm = ({ isOpen, onClose }) => {
   const fetchDonors = async (obj) => {
     try {
       const params=obj;
-      // const params = {
-      //   donorCultivator: 1, // Replace with actual cultivator ID
-      //   donationSupervisor: 1, // Replace with actual supervisor ID
-      // };
       const response = await axiosInstance.get(DONORS_FILTER, { params });
       setDonors(response.data);
     } catch (err) {

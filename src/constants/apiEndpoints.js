@@ -30,3 +30,5 @@ export const CHANGE_STATUS='/donation/change-status'
 export const CREATE_ORDER='/donation/create-order'
 
 export const VERIFY_PAYMENT='/donation/verify-payment'
+
+export const NITYA_SEVA_STATUS='/nitya-seva/status'

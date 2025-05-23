@@ -24,10 +24,10 @@ const DonorSignupForm = ({ onSubmit }) => {
 
     fetchDonorCultivators();
 
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (user) {
-      navigate(getRedirectPath(user.userType));
-    }
+    // const user = JSON.parse(localStorage.getItem('user'));
+    // if (user) {
+    //   navigate(getRedirectPath(user.userType));
+    // }
   }, [navigate]);
 
   const methods = useForm({
@@ -45,13 +45,23 @@ const DonorSignupForm = ({ onSubmit }) => {
     },
   });
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const onFormSubmit = async (data) => {
-    data.donorCultivatorId = parseInt(data.donorCultivatorId, 10);
-    delete data.confirmPassword;
-    if(data.panNumber === '') delete data.panNumber;
-    await handleDonorSignup(data,navigate);
-    // onSubmit(data, photo);
+    setIsSubmitting(true);
+    try {
+      data.donorCultivatorId = parseInt(data.donorCultivatorId, 10);
+      console.log('Form data before submission:', data);
+      delete data.confirmPassword;
+      if (data.panNumber === '') delete data.panNumber;
+      await handleDonorSignup(data, navigate);
+      methods.reset();
+      // onSubmit(data, photo);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
+ 
 
   const pincode = useWatch({ control: methods.control, name: 'pincode' });
 
@@ -151,8 +161,20 @@ const DonorSignupForm = ({ onSubmit }) => {
         </div> */}
 
         <div className="mt-6">
-          <button type="submit" className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">Submit</button>
+          <button
+            type="submit"
+            className={`w-full py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 ${
+              isSubmitting
+                ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
+                : 'bg-blue-500 text-white hover:bg-blue-600'
+            }`}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? 'Submitting...' : 'Submit'}
+          </button>
         </div>
+
+       
       </form>
     </FormProvider>
   );

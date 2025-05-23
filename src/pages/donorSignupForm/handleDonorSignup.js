@@ -4,11 +4,14 @@ import { DONOR_SIGNUP } from "../../constants/apiEndpoints";
 import { handleUserLogin } from "../../utils/services";
 
 export const handleDonorSignup = async (data,navigate) => {
-  console.log("Data in handleDonorSignup:", data);
+  // console.log("Data in handleDonorSignup:", data);
   try {
     const response = await axiosInstance.post(DONOR_SIGNUP, data);
+alert(
+      "Signup successful. Please login to continue."
+    );
 
-    handleUserLogin({ email: data.email, password: data.password },navigate);
+    // handleUserLogin({ email: data.email, password: data.password },navigate);
   } catch (error) {
     alert(
       "Error during signup. Ensure email id, mobile number & pan no are not registered already."
