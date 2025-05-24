@@ -105,9 +105,11 @@ const DonateNowPopup = ({
     setShowPaymentDate(selectedMethod !== "Razorpay");
   };
 
+  
+
   return (
     <div className="mt-12 fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 py-4">
-      <div className="bg-white rounded-lg shadow-lg w-full max-w-md relative max-h-[80vh] flex flex-col">
+      <div className="rounded-lg shadow-lg w-full max-w-md relative max-h-[80vh] flex flex-col">
         <div className="p-6 overflow-y-auto">
           <button
             className="absolute top-4 right-4 text-gray-600 hover:text-gray-900 text-2xl"
