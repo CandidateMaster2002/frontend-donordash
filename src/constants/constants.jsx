@@ -8,6 +8,7 @@ import nitya_seva from "../assets/images/nitya_seva.jpg";
 import janmashtami from "../assets/images/janmashtami.png";
 import rathYtra from "../assets/images/rath_yatra.jpg";
 import fruitSeller from "../assets/images/fruitseller.jpg";
+import qrImage from "../assets/images/iskcon_dhanbad_payment_qr.jpeg"
 
 
 export const donationAmounts = [
@@ -17,10 +18,10 @@ export const donationAmounts = [
 ];
 
 export const paymentModes = [
-  { id: 1, value: "Cash" },
-  { id: 2, value: "Bank Transfer" },
-  { id: 3, value: "Cheque" },
-  { id: 4, value: "Online(Razorpay)" },
+  { id: 1, label: "🔥 Online (Razorpay) - Preferred", value: "Razorpay" },
+  { id: 2, label: "Cash", value: "Cash" },
+  { id: 3, label: "Bank Transfer", value: "Bank Transfer" },
+  { id: 4, label: "Cheque", value: "Cheque" },
 ];
 
 export const zones = [
@@ -57,3 +58,14 @@ export const donationPurposes = [
   { id:12, value: "Other", imgAddress:fruitSeller },
 
 ];
+
+
+
+export const bankDetails = {
+  ifsc: "ICIC0000196",
+  accountNo: "019601009491",
+  accountName: "ISKCON",
+  upiId: "iskcon.eazypay@icici",
+  mobileNumber: "7644070770",
+  qrImage:{qrImage}
+};

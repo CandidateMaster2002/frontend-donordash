@@ -54,7 +54,7 @@ const DonationsTable = ({ data, onEdit }) => {
       <table className="min-w-full bg-white">
         <thead>
           <tr>
-            <th className="py-2 px-4 border-b">Date</th>
+            <th className="py-2 px-4 border-b">Payment Date</th>
             <th className="py-2 px-4 border-b">Donor</th>
             <th className="py-2 px-4 border-b">Amount</th>
             <th className="py-2 px-4 border-b">Mode</th>

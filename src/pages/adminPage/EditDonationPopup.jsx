@@ -50,7 +50,7 @@ const EditDonationPopup = ({ donation, onSave, onClose }) => {
                 </select>
               </div>
               <div className="mb-4">
-                <label className="block mb-2">Date</label>
+                <label className="block mb-2">Payment Date</label>
                 <input
                   type="date"
                   name="paymentDate"

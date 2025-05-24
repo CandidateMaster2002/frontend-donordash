@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useForm, FormProvider, useWatch } from 'react-hook-form';
-import SpecialDaysSection from './SpecialDaysSection';
+import { FiUser, FiPhone, FiMail, FiHome, FiMapPin, FiLock } from 'react-icons/fi';
+import { FaIdCard, FaHandshake } from 'react-icons/fa';
 import { validations } from '../../utils/validations';
 import useFetchCityAndState from '../../hooks/useFetchCityAndState';
 import { handleDonorSignup } from './handleDonorSignup';
@@ -11,7 +12,8 @@ import { getRedirectPath, getAllDonorCultivators } from '../../utils/services';
 const DonorSignupForm = ({ onSubmit }) => {
   const navigate = useNavigate();
   const [donorCultivators, setDonorCultivators] = useState([]);
- 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   useEffect(() => {
     const fetchDonorCultivators = async () => {
       try {
@@ -21,13 +23,7 @@ const DonorSignupForm = ({ onSubmit }) => {
         console.error('Error fetching donor cultivators:', error);
       }
     };
-
     fetchDonorCultivators();
-
-    // const user = JSON.parse(localStorage.getItem('user'));
-    // if (user) {
-    //   navigate(getRedirectPath(user.userType));
-    // }
   }, [navigate]);
 
   const methods = useForm({
@@ -40,28 +36,10 @@ const DonorSignupForm = ({ onSubmit }) => {
       state: '',
       pincode: '',
       password: '',
-      remark:'Not Mentioned',
-      zone:'Other'
+      remark: 'Not Mentioned',
+      zone: 'Other'
     },
   });
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const onFormSubmit = async (data) => {
-    setIsSubmitting(true);
-    try {
-      data.donorCultivatorId = parseInt(data.donorCultivatorId, 10);
-      console.log('Form data before submission:', data);
-      delete data.confirmPassword;
-      if (data.panNumber === '') delete data.panNumber;
-      await handleDonorSignup(data, navigate);
-      methods.reset();
-      // onSubmit(data, photo);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
- 
 
   const pincode = useWatch({ control: methods.control, name: 'pincode' });
 
@@ -73,111 +51,203 @@ const DonorSignupForm = ({ onSubmit }) => {
 
   useFetchCityAndState(pincode, methods.setValue);
 
-  const handleFileChange = (event) => {
-    setPhoto(event.target.files[0]);
+  const onFormSubmit = async (data) => {
+    setIsSubmitting(true);
+    try {
+      data.donorCultivatorId = parseInt(data.donorCultivatorId, 10);
+      delete data.confirmPassword;
+      if (data.panNumber === '') delete data.panNumber;
+      await handleDonorSignup(data, navigate);
+      methods.reset();
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const renderError = (field) => {
     const error = methods.formState.errors[field];
-    if (error) {
-      return <span className="text-red-500 text-sm">{validations[field].validation.errorMessages[error.type]}</span>;
-    }
-    return null;
+    return error ? (
+      <span className="text-red-500 text-xs mt-1">
+        {validations[field].validation.errorMessages[error.type]}
+      </span>
+    ) : null;
   };
-
-
 
   return (
     <FormProvider {...methods}>
-      <form onSubmit={methods.handleSubmit(onFormSubmit)} className="max-w-lg mx-auto bg-white p-6 rounded-lg shadow-md">
-        <h2 className="text-5xl font-bold mb-8 text-center">Donor Registration</h2>
-        <div className="mb-4">
-          <label className="block text-gray-700 font-bold mb-2">Legal Name/वैध नाम</label>
-          <input type="text" {...methods.register('name', validations.name.validation)} className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-          {renderError('name')}
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700 font-bold mb-2">Mobile Number/मोबाइल नंबर</label>
-          <input type="text" {...methods.register('mobileNumber', validations.mobileNumber.validation)} className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-          {renderError('mobileNumber')}
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700 font-bold mb-2">Email/ईमेल (optional)</label>
-          <input type="email" {...methods.register('email', validations.email.validation)} className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-          {renderError('email')}
-        
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700 font-bold mb-2">Full  Address/पूरा  पता</label>
-          <textarea {...methods.register('address', validations.address.validation)} className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
-          {renderError('address')}
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700 font-bold mb-2">Pincode/पिनकोड</label>
-          <input type="text" {...methods.register('pincode', validations.pincode.validation)} className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-          {renderError('pincode')}
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700 font-bold mb-2">City/शहर</label>
-          <input type="text" {...methods.register('city', validations.city.validation)} className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" disabled />
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700 font-bold mb-2">State/राज्य</label>
-          <input type="text" {...methods.register('state', validations.state.validation)} className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" disabled />
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700 font-bold mb-2">PAN Number/पैन नंबर (optional)</label>
-          <input type="text" {...methods.register('panNumber', validations.panNumber.validation)} className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-          {renderError('panNumber')}
-          <p className="text-sm">For 80G tax benefit PAN is compulsory</p>
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700 font-bold mb-2">Connected To/किससे जुड़े हैं ?</label>
-          <select {...methods.register('donorCultivatorId', validations.connectedTo.validation)} className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-            {donorCultivators.map((cultivator) => (
-              <option key={cultivator.id} value={cultivator.id}>{cultivator.name}</option>
-            ))}
-          </select>
-          {renderError('connectedTo')}
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700 font-bold mb-2">Zone/क्षेत्र</label>
-          <select {...methods.register('zone', validations.zone.validation)} className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-            {zones.map((zone) => (
-              <option key={zone.id} value={zone.value}>{zone.value}</option>
-            ))}
-          </select>
-        <div className="mb-4">
-          <label className="block text-gray-700 font-bold mb-2">Password/पासवर्ड</label>
-          <input type="password" {...methods.register('password', validations.password.validation)} className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-          {renderError('paasword')}
-        </div>
-  
-          <label className="block text-gray-700 font-bold mb-2">Confirm Password/पासवर्ड की पुष्टि</label>
-          <input type="password" {...methods.register('confirmPassword', validations.confirmPassword.validation)} className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-          {renderError('confirmPassword')}
-        </div>
-        {/* <div className="mb-4">
-          <label className="block text-gray-700 font-bold mb-2">Photo</label>
-          <input type="file" accept="image/*" onChange={handleFileChange} className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-        </div> */}
+      <div className="min-h-screen bg-gray-50 py-8 px-4">
+        <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-md overflow-hidden">
+          <div className="p-8">
+            <h1 className="text-3xl font-bold text-center text-gray-800 mb-8">Donor Registration</h1>
+            
+            <form onSubmit={methods.handleSubmit(onFormSubmit)} className="space-y-5">
+              {/* Personal Information */}
+              <div className="space-y-4">
+                <h2 className="text-xl font-semibold text-gray-700 border-b pb-2">Personal Information</h2>
+                
+                <div className="relative">
+                  <FiUser className="absolute left-3 top-3 text-gray-400" />
+                  <input
+                    type="text"
+                    {...methods.register('name', validations.name.validation)}
+                    placeholder="Legal Name / वैध नाम"
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                  {renderError('name')}
+                </div>
 
-        <div className="mt-6">
-          <button
-            type="submit"
-            className={`w-full py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 ${
-              isSubmitting
-                ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
-                : 'bg-blue-500 text-white hover:bg-blue-600'
-            }`}
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? 'Submitting...' : 'Submit'}
-          </button>
-        </div>
+                <div className="relative">
+                  <FiPhone className="absolute left-3 top-3 text-gray-400" />
+                  <input
+                    type="text"
+                    {...methods.register('mobileNumber', validations.mobileNumber.validation)}
+                    placeholder="Mobile Number / मोबाइल नंबर"
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                  {renderError('mobileNumber')}
+                </div>
 
-       
-      </form>
+                <div className="relative">
+                  <FiMail className="absolute left-3 top-3 text-gray-400" />
+                  <input
+                    type="email"
+                    {...methods.register('email', validations.email.validation)}
+                    placeholder="Email / ईमेल (optional)"
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                  {renderError('email')}
+                </div>
+              </div>
+
+              {/* Address Information */}
+              <div className="space-y-4">
+                <h2 className="text-xl font-semibold text-gray-700 border-b pb-2">Address Information</h2>
+                
+                <div className="relative">
+                  <FiHome className="absolute left-3 top-3 text-gray-400" />
+                  <textarea
+                    {...methods.register('address', validations.address.validation)}
+                    placeholder="Full Address / पूरा पता"
+                    rows="3"
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                  {renderError('address')}
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="relative">
+                    <FiMapPin className="absolute left-3 top-3 text-gray-400" />
+                    <input
+                      type="text"
+                      {...methods.register('pincode', validations.pincode.validation)}
+                      placeholder="Pincode / पिनकोड"
+                      className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                    {renderError('pincode')}
+                  </div>
+
+                  <div>
+                    <input
+                      type="text"
+                      {...methods.register('city', validations.city.validation)}
+                      placeholder="City / शहर"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
+                      disabled
+                    />
+                  </div>
+
+                  <div>
+                    <input
+                      type="text"
+                      {...methods.register('state', validations.state.validation)}
+                      placeholder="State / राज्य"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
+                      disabled
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="relative">
+                    <FaIdCard className="absolute left-3 top-3 text-gray-400" />
+                    <input
+                      type="text"
+                      {...methods.register('panNumber', validations.panNumber.validation)}
+                      placeholder="PAN Number / पैन नंबर (optional)"
+                      className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                    {renderError('panNumber')}
+                    <p className="text-xs text-gray-500 mt-1">For 80G tax benefit PAN is compulsory</p>
+                  </div>
+
+                  <div className="relative">
+                    <FaHandshake className="absolute left-3 top-3 text-gray-400" />
+                    <select
+                      {...methods.register('donorCultivatorId', validations.connectedTo.validation)}
+                      className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      <option value="">Connected To / किससे जुड़े हैं?</option>
+                      {donorCultivators.map((cultivator) => (
+                        <option key={cultivator.id} value={cultivator.id}>{cultivator.name}</option>
+                      ))}
+                    </select>
+                    {renderError('connectedTo')}
+                  </div>
+                </div>
+
+                <div>
+                  <select
+                    {...methods.register('zone', validations.zone.validation)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="">Select Zone / क्षेत्र चुनें</option>
+                    {zones.map((zone) => (
+                      <option key={zone.id} value={zone.value}>{zone.value}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Account Security */}
+              <div className="space-y-4">
+                <h2 className="text-xl font-semibold text-gray-700 border-b pb-2">Account Security</h2>
+                
+                <div className="relative">
+                  <FiLock className="absolute left-3 top-3 text-gray-400" />
+                  <input
+                    type="password"
+                    {...methods.register('password', validations.password.validation)}
+                    placeholder="Password / पासवर्ड"
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                  {renderError('password')}
+                </div>
+
+                <div className="relative">
+                  <FiLock className="absolute left-3 top-3 text-gray-400" />
+                  <input
+                    type="password"
+                    {...methods.register('confirmPassword')}
+                    placeholder="Confirm Password / पासवर्ड की पुष्टि"
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                  {renderError('confirmPassword')}
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className={`w-full py-3 rounded-md text-white font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                  isSubmitting ? 'bg-blue-400' : 'bg-blue-600 hover:bg-blue-700'
+                }`}
+              >
+                {isSubmitting ? 'Submitting...' : 'Register'}
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
     </FormProvider>
   );
 };

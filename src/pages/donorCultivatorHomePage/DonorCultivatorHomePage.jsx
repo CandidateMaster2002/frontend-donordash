@@ -131,12 +131,9 @@ const DonorCultivatorHomePage = () => {
         </button>
       </div>
 
-      {/* View All Donors Button */}
     
-      {/* Date Filter */}
       <DateFilter onFilterChange={handleFilterChange} />
 
-      {/* Summary Tables */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
         <DonationSummaryTable
           data={summaryData.zone}
