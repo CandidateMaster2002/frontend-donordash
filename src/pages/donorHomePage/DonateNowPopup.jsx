@@ -108,7 +108,8 @@ const DonateNowPopup = ({
   
 
   return (
-    <div className="mt-12 fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 py-4">
+   <div className="fixed inset-0 z-100 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-lg">
+
       <div className="rounded-lg shadow-lg w-full max-w-md relative max-h-[80vh] flex flex-col">
         <div className="p-6 overflow-y-auto">
           <button
