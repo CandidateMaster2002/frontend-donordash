@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import {
-  getDonorSupervisorIdForAdminFromLocalStorage,
   fetchDonations,
 } from "../../utils/services";
 import DonationsTable from "./DonationsTable";
@@ -46,8 +45,7 @@ const AdminPage = () => {
 
   const fetchAndSetDonations = async () => {
     try {
-      const donorCultivatorId = getDonorSupervisorIdForAdminFromLocalStorage();
-      const fetchedDonations = await fetchDonations({ donorCultivatorId });
+      const fetchedDonations = await fetchDonations({ });
       setDonations(fetchedDonations);
     } catch (err) {
       console.error("Error fetching donations:", err.message);

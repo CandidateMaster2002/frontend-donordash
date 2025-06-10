@@ -20,7 +20,7 @@ export const donationAmounts = [
 export const paymentModes = [
   { id: 1, label: "🔥 Online (Razorpay) - Preferred", value: "Razorpay" },
   { id: 2, label: "Cash", value: "Cash" },
-  { id: 3, label: "Bank Transfer", value: "Bank Transfer" },
+  { id: 3, label: "UPI/NEFT/IMPS - Bank Transfer", value: "Bank Transfer" },
   { id: 4, label: "Cheque", value: "Cheque" },
 ];
 
