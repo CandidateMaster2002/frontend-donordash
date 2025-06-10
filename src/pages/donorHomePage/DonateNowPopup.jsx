@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useForm} from "react-hook-form";
 import { donationPurposes, paymentModes } from "../../constants/constants";
 import { validations } from "../../utils/validations";
 import axiosInstance from "../../utils/myAxios";
@@ -12,6 +12,8 @@ import {
 } from "../../utils/services";
 import { handleRazorpayPayment } from "../../utils/razorpayPayment";
 import BankDetails from "../../components/BankDetails";
+import { func } from "prop-types";
+import { set } from "date-fns";
 
 const DonateNowPopup = ({
   amount,
@@ -24,6 +26,7 @@ const DonateNowPopup = ({
   const [showPaymentDate, setShowPaymentDate] = useState(false);
   const [donors, setDonors] = useState([]);
   const [showBankDetails, setShowBankDetails] = useState(false);
+  const [FieldNameUTR, setFieldNameUTR] = useState("UTR No.");
   const userType = getUserTypeFromLocalStorage();
 
   const handleSuccess = () => {
@@ -82,6 +85,7 @@ const DonateNowPopup = ({
       createdAt: new Date().toISOString(),
     };
 
+
     try {
       if (donationData.paymentMode === "Razorpay") {
         await handleRazorpayPayment(donationData);
@@ -99,17 +103,19 @@ const DonateNowPopup = ({
   const handlePaymentModeChange = (e) => {
     const selectedMethod = e.target.value;
     setShowTransactionId(
-      selectedMethod === "Cheque" || selectedMethod === "Bank Transfer" || selectedMethod === "Razorpay Link"
+      selectedMethod === "Cheque" ||
+        selectedMethod === "Bank Transfer" ||
+        selectedMethod === "Razorpay Link"
     );
+    if(selectedMethod === "Razorpay Link") setFieldNameUTR("Razorpay Transaction ID starting with 'pay_'");
+    else setFieldNameUTR("UTR No.");
     setShowBankDetails(selectedMethod === "Bank Transfer");
     setShowPaymentDate(selectedMethod !== "Razorpay");
+  
   };
 
-  
-
   return (
-   <div className="fixed inset-0 z-100 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-lg">
-
+    <div className="fixed inset-0 z-100 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-lg">
       <div className="rounded-lg shadow-lg w-full max-w-md relative max-h-[80vh] flex flex-col">
         <div className="p-6 overflow-y-auto">
           <button
@@ -118,7 +124,9 @@ const DonateNowPopup = ({
           >
             &times;
           </button>
-          <h3 className="text-2xl font-semibold mb-6 text-center">Donate Now</h3>
+          <h3 className="text-2xl font-semibold mb-6 text-center">
+            Donate Now
+          </h3>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             {(userType === "admin" || userType === "donorCultivator") && (
               <div>
@@ -143,7 +151,7 @@ const DonateNowPopup = ({
                 )}
               </div>
             )}
-            
+
             <div>
               <label className="block mb-2 font-medium">Amount:</label>
               <input
@@ -160,7 +168,7 @@ const DonateNowPopup = ({
                 </span>
               )}
             </div>
-            
+
             <div>
               <label className="block mb-2 font-medium">Purpose:</label>
               <select
@@ -182,7 +190,7 @@ const DonateNowPopup = ({
                 </span>
               )}
             </div>
-            
+
             <div>
               <label className="block mb-2 font-medium">Payment Method:</label>
               <select
@@ -205,14 +213,14 @@ const DonateNowPopup = ({
                 </span>
               )}
             </div>
-            
-            {showBankDetails && (  <BankDetails />)}
-          
-            
+
+            {showBankDetails && <BankDetails />}
+
             {showTransactionId &&
               (userType === "admin" || userType === "donorCultivator") && (
                 <div>
-                  <label className="block mb-2 font-medium">UTR No.</label>
+
+                  <label className="block mb-2 font-medium">{FieldNameUTR}</label>
                   <input
                     type="text"
                     {...register("transactionId", {
@@ -220,7 +228,7 @@ const DonateNowPopup = ({
                         (userType !== "admin" &&
                           userType !== "donorCultivator") ||
                         value.trim() !== "" ||
-                        "Please enter UTR No.",
+      "Please enter a UTR no.",
                     })}
                     className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
@@ -242,7 +250,7 @@ const DonateNowPopup = ({
                 />
               </div>
             )}
-            
+
             <div>
               <label className="block mb-2 font-medium">Remark:</label>
               <textarea
@@ -253,7 +261,7 @@ const DonateNowPopup = ({
             </div>
           </form>
         </div>
-        
+
         <div className="p-6 border-t border-gray-200">
           <button
             type="submit"
