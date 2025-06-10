@@ -99,7 +99,7 @@ const DonateNowPopup = ({
   const handlePaymentModeChange = (e) => {
     const selectedMethod = e.target.value;
     setShowTransactionId(
-      selectedMethod === "Cheque" || selectedMethod === "Bank Transfer"
+      selectedMethod === "Cheque" || selectedMethod === "Bank Transfer" || selectedMethod === "Razorpay Link"
     );
     setShowBankDetails(selectedMethod === "Bank Transfer");
     setShowPaymentDate(selectedMethod !== "Razorpay");
