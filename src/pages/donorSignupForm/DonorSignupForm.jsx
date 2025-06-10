@@ -56,8 +56,8 @@ const DonorSignupForm = ({ onSubmit }) => {
       data.donorCultivatorId = parseInt(data.donorCultivatorId, 10);
       delete data.confirmPassword;
       if (data.panNumber === '') delete data.panNumber;
-      await handleDonorSignup(data, navigate);
-      methods.reset();
+     const success = await handleDonorSignup(data, navigate);
+      if(success) methods.reset();
     } finally {
       setIsSubmitting(false);
     }
@@ -106,7 +106,7 @@ const DonorSignupForm = ({ onSubmit }) => {
                   {renderError('mobileNumber')}
                 </div>
 
-                <div className="relative">
+                {/* <div className="relative">
                   <FiMail className="absolute left-3 top-3 text-gray-400" />
                   <input
                     type="email"
@@ -115,7 +115,7 @@ const DonorSignupForm = ({ onSubmit }) => {
                     className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                   {renderError('email')}
-                </div>
+                </div> */}
               </div>
 
               {/* Address Information */}
@@ -214,7 +214,7 @@ const DonorSignupForm = ({ onSubmit }) => {
                 <div className="relative">
                   <FiLock className="absolute left-3 top-3 text-gray-400" />
                   <input
-                    type="password"
+                    type="text"
                     {...methods.register('password', validations.password.validation)}
                     placeholder="Password / पासवर्ड"
                     className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -225,7 +225,7 @@ const DonorSignupForm = ({ onSubmit }) => {
                 <div className="relative">
                   <FiLock className="absolute left-3 top-3 text-gray-400" />
                   <input
-                    type="password"
+                    type="text"
                     {...methods.register('confirmPassword')}
                     placeholder="Confirm Password / पासवर्ड की पुष्टि"
                     className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
