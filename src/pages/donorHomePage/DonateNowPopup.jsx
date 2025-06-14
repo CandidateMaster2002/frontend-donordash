@@ -26,8 +26,10 @@ const DonateNowPopup = ({
   const [showPaymentDate, setShowPaymentDate] = useState(false);
   const [donors, setDonors] = useState([]);
   const [showBankDetails, setShowBankDetails] = useState(false);
-  const [FieldNameUTR, setFieldNameUTR] = useState("UTR No.");
+  const [FieldNameUTR, setFieldNameUTR] = useState("UTR No (12 digit numeric transaction ID)");
   const userType = getUserTypeFromLocalStorage();
+  const [searchTerm, setSearchTerm] = useState("");
+
 
   const handleSuccess = () => {
     setSuccessMessage("Your donation has been successful!");
@@ -108,7 +110,7 @@ const DonateNowPopup = ({
         selectedMethod === "Razorpay Link"
     );
     if(selectedMethod === "Razorpay Link") setFieldNameUTR("Razorpay Transaction ID starting with 'pay_'");
-    else setFieldNameUTR("UTR No.");
+    else setFieldNameUTR("UTR No.(12 digit numeric transaction ID)");
     setShowBankDetails(selectedMethod === "Bank Transfer");
     setShowPaymentDate(selectedMethod !== "Razorpay");
   
@@ -128,29 +130,43 @@ const DonateNowPopup = ({
             Donate Now
           </h3>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            {(userType === "admin" || userType === "donorCultivator") && (
-              <div>
-                <label className="block mb-2 font-medium">Donor:</label>
-                <select
-                  {...register("donorId", {
-                    required: "Please select a donor",
-                  })}
-                  className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">Select Donor</option>
-                  {donors.map((donor) => (
-                    <option key={donor.id} value={donor.id}>
-                      {donor.username}
-                    </option>
-                  ))}
-                </select>
-                {errors.donorId && (
-                  <span className="text-red-500 text-sm">
-                    {errors.donorId.message}
-                  </span>
-                )}
-              </div>
-            )}
+      {(userType === "admin" || userType === "donorCultivator") && (
+  <div>
+    <label className="block mb-2 font-medium">Search Donor:</label>
+    <input
+      type="text"
+      placeholder="Search donor by name or username"
+      value={searchTerm}
+      onChange={(e) => setSearchTerm(e.target.value)}
+      className="w-full border border-gray-300 rounded px-3 py-2 mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+    />
+
+    <label className="block mb-2 font-medium">Donor:</label>
+    <select
+      {...register("donorId", {
+        required: "Please select a donor",
+      })}
+      className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+    >
+      <option value="">Select Donor</option>
+      {donors
+        .filter((donor) =>
+          donor.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          donor.name?.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+        .map((donor) => (
+          <option key={donor.id} value={donor.id}>
+            {donor.username} ({donor.name})
+          </option>
+        ))}
+    </select>
+    {errors.donorId && (
+      <span className="text-red-500 text-sm">
+        {errors.donorId.message}
+      </span>
+    )}
+  </div>
+)}
 
             <div>
               <label className="block mb-2 font-medium">Amount:</label>
