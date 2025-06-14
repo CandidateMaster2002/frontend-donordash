@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import {
   fetchDonations,
+  editDonation,
 } from "../../utils/services";
 import DonationsTable from "./DonationsTable";
 import DonationStatusFilters from "./DonationStatusFilters";
 import EditDonationPopup from "./EditDonationPopup";
-import { editDonation } from "../../utils/services";
-import { RiAddCircleFill } from "react-icons/ri";
 import DonateNowPopup from "../donorHomePage/DonateNowPopup";
 import SuccessPopup from "../../components/SuccessPopup";
+import { RiAddCircleFill } from "react-icons/ri";
 
 const AdminPage = () => {
   const [activeTab, setActiveTab] = useState("master");
@@ -17,56 +17,17 @@ const AdminPage = () => {
   const [selectedFilter, setSelectedFilter] = useState("All");
   const [editingDonation, setEditingDonation] = useState(null);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
-  const [successMessage, setSuccessMessage] = useState(false);
-
-  const closePopup = () => {
-    setShowAddDonationPopup(false);
-  };
-
-  const handleAddDonation = () => {
-    setShowAddDonationPopup(true);
-  };
-
-  const handleClosePopup = () => {
-    setShowAddDonationPopup(false);
-  };
-
+  const [successMessage, setSuccessMessage] = useState("");
   const [showAddDonationPopup, setShowAddDonationPopup] = useState(false);
 
-  useEffect(() => {
-    if (selectedFilter === "All") {
-      setData(donations);
-    } else {
-      setData(
-        donations.filter((donation) => donation.status === selectedFilter)
-      );
-    }
-  }, [donations, selectedFilter]);
+  const [cultivators, setCultivators] = useState([]);
+  const [selectedCultivators, setSelectedCultivators] = useState([]);
 
-  const fetchAndSetDonations = async () => {
-    try {
-      const fetchedDonations = await fetchDonations({ });
-      setDonations(fetchedDonations);
-    } catch (err) {
-      console.error("Error fetching donations:", err.message);
-    }
-  };
-
-  useEffect(() => {
-    fetchAndSetDonations();
-  }, []);
+  const closePopup = () => setShowAddDonationPopup(false);
+  const handleAddDonation = () => setShowAddDonationPopup(true);
 
   const handleEdit = (row) => {
     setEditingDonation(row);
-  };
-
-  const handleActiveTabChange = (tab) => {
-    setActiveTab(tab);
-    if (tab === "pending") {
-      setSelectedFilter("Pending");
-    } else {
-      setSelectedFilter("All");
-    }
   };
 
   const handleEditDonation = async (updatedDonation) => {
@@ -77,20 +38,59 @@ const AdminPage = () => {
           donation.id === updatedDonation.id ? updatedDonation : donation
         )
       );
-
-      console.log("Donation updated successfully");
       setSuccessMessage("The donation has been updated successfully!");
       setShowSuccessPopup(true);
     } catch (err) {
       console.error("Error saving donation:", err.message);
       alert("Failed to update donation");
     }
-
     setEditingDonation(null);
   };
 
+  const handleActiveTabChange = (tab) => {
+    setActiveTab(tab);
+    setSelectedFilter(tab === "pending" ? "Pending" : "All");
+  };
+
+  const fetchAndSetDonations = async () => {
+    try {
+      const fetchedDonations = await fetchDonations({});
+      setDonations(fetchedDonations);
+    } catch (err) {
+      console.error("Error fetching donations:", err.message);
+    }
+  };
+
+  // Extract unique cultivator names
+  useEffect(() => {
+    const uniqueNames = [...new Set(donations.map(d => d.donorCultivatorName).filter(Boolean))];
+    setCultivators(uniqueNames);
+  }, [donations]);
+
+  // Apply filters
+  useEffect(() => {
+    let filtered = [...donations];
+
+    if (selectedFilter !== "All") {
+      filtered = filtered.filter((d) => d.status === selectedFilter);
+    }
+
+    if (selectedCultivators.length > 0) {
+      filtered = filtered.filter((d) =>
+        selectedCultivators.includes(d.donorCultivatorName)
+      );
+    }
+
+    setData(filtered);
+  }, [donations, selectedFilter, selectedCultivators]);
+
+  useEffect(() => {
+    fetchAndSetDonations();
+  }, []);
+
   return (
     <div className="flex flex-col lg:flex-row">
+      {/* Side Navigation */}
       <div className="flex lg:flex-col bg-gray-100 p-4 lg:w-1/4">
         <button
           onClick={() => handleActiveTabChange("master")}
@@ -103,29 +103,69 @@ const AdminPage = () => {
           Master Donations
         </button>
       </div>
-      <div className="flex-1 p-4">
-        <div>
-          <h2 className="text-2xl font-bold mb-4">
-            {activeTab === "pending" ? "Pending Donations" : "Master Donations"}
-          </h2>
 
-          {activeTab === "master" && (
+      {/* Main Content */}
+      <div className="flex-1 p-4">
+        <h2 className="text-2xl font-bold mb-4">
+          {activeTab === "pending" ? "Pending Donations" : "Master Donations"}
+        </h2>
+
+        {activeTab === "master" && (
+          <>
             <DonationStatusFilters
               selectedFilter={selectedFilter}
               setSelectedFilter={setSelectedFilter}
             />
-          )}
 
-          <DonationsTable data={data} onEdit={handleEdit} />
+            {/* Cultivator Checkbox Filter */}
+            <div className="mb-4">
+              <label className="font-semibold block mb-2">
+                Filter by Cultivator(s):
+              </label>
+              <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto border border-gray-300 rounded p-2">
+                {cultivators.map((name) => (
+                  <label key={name} className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      value={name}
+                      checked={selectedCultivators.includes(name)}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setSelectedCultivators((prev) => [...prev, name]);
+                        } else {
+                          setSelectedCultivators((prev) =>
+                            prev.filter((c) => c !== name)
+                          );
+                        }
+                      }}
+                    />
+                    <span>{name}</span>
+                  </label>
+                ))}
+              </div>
+              {selectedCultivators.length > 0 && (
+                <button
+                  className="mt-2 text-sm text-blue-600 hover:underline"
+                  onClick={() => setSelectedCultivators([])}
+                >
+                  Clear selection
+                </button>
+              )}
+            </div>
+          </>
+        )}
 
-          {editingDonation && (
-            <EditDonationPopup
-              donation={editingDonation}
-              onSave={handleEditDonation}
-              onClose={() => setEditingDonation(null)}
-            />
-          )}
-        </div>
+        {/* Table */}
+        <DonationsTable data={data} onEdit={handleEdit} />
+
+        {/* Edit Popup */}
+        {editingDonation && (
+          <EditDonationPopup
+            donation={editingDonation}
+            onSave={handleEditDonation}
+            onClose={() => setEditingDonation(null)}
+          />
+        )}
       </div>
 
       {/* Floating "+" Button */}
@@ -145,6 +185,7 @@ const AdminPage = () => {
         />
       )}
 
+      {/* Success Popup */}
       {showSuccessPopup && (
         <SuccessPopup
           message={successMessage}
