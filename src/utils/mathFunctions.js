@@ -3,6 +3,15 @@ export const calculateTotalDonationAmount = (donationsData) => {
   return donationsData.reduce((total, donation) => total + (donation.amount || 0), 0);
 };
 
+export const formatDate = (dateString) => {
+  if (!dateString) return "";
+
+  const options = { day: "2-digit", month: "short", year: "numeric" };
+  const dateObj = new Date(dateString);
+
+  return dateObj.toLocaleDateString("en-US", options); // "04 Apr, 2011"
+};
+
 
 export const calculateAverageDonation = (donationsData) => {
   const totalAmount = calculateTotalDonationAmount(donationsData);

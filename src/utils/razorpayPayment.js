@@ -3,7 +3,6 @@ import {
   CREATE_ORDER,
   VERIFY_PAYMENT,
   DONATE,
-  CHANGE_STATUS,
 } from "../constants/apiEndpoints";
 import { changeDonationStatus } from "./services";
 
@@ -27,8 +26,9 @@ const handleStatusChange = async (id,newStatus) => {
   }
 };
 
-export const handleRazorpayPayment = async (donationData) => {
+export const handleRazorpayPayment = async (donationData,donorData) => {
   const isScriptLoaded = await loadRazorpayScript();
+  console.log(donorData)
 
   if (!isScriptLoaded) {
     throw new Error("Razorpay SDK failed to load. Are you online?");
@@ -38,6 +38,7 @@ export const handleRazorpayPayment = async (donationData) => {
     const orderResponse = await axiosInstance.post(CREATE_ORDER, {
       amount: donationData.amount * 100, // Amount in paise
       donorId: donationData.donorId,
+
     });
 
     if (!orderResponse.data) {
@@ -84,13 +85,11 @@ export const handleRazorpayPayment = async (donationData) => {
           }
         },
         prefill: {
-          name: donationData.name || "Donor Name",
-          email: donationData.email || "donor@example.com",
-          contact: donationData.contact || "9999999999",
+          name: donorData.name || "Donor Name",
+          email: donorData.email || "donor@example.com",
+          contact: donorData.mobileNumber || "9999999999",
         },
-        notes: {
-          address: donationData.address || "Donor Address",
-        },
+        notes:donorData,
         theme: {
           color: "#F37254",
         },

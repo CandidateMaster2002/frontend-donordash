@@ -4,6 +4,7 @@ import { donationPurposes, paymentModes } from "../../constants/constants";
 import { validations } from "../../utils/validations";
 import axiosInstance from "../../utils/myAxios";
 import { DONATE, DONORS_FILTER } from "../../constants/apiEndpoints";
+import { getDonorById } from "../../utils/services";
 import {
   getDonorCultivatorIdFromLocalStorage,
   getDonorIdFromLocalStorage,
@@ -89,8 +90,13 @@ const DonateNowPopup = ({
 
 
     try {
+      console.log("Donation Data:", donationData);
+      
       if (donationData.paymentMode === "Razorpay") {
-        await handleRazorpayPayment(donationData);
+         const donor = await getDonorById(donationData.donorId);
+         const {donations,donorCultivator,type,catoegory,specialDays,...donorData}=donor;
+
+      await handleRazorpayPayment(donationData,donorData);
       } else {
         const response = await axiosInstance.post(DONATE, donationData);
       }
