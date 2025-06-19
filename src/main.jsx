@@ -15,12 +15,10 @@ import AdminPage from "./pages/adminPage/AdminPage.jsx";
 import PrivateRoute from "./utils/PrivateRoute.jsx";
 import Receipt from "./pages/receipt/Receipt.jsx";
 import SupervisorHomePage from "./pages/supervisorPage/SupervisorHomePage.jsx";
-import GlobarLoader from "./utils/GlobalLoader.jsx";
-import { LoadingProvider } from "./utils/LoadingContext.jsx";
 import NityaSevaReport from "./pages/donorCultivatorHomePage/NityaSevaReport.jsx";
 import BankDetails from "./components/BankDetails.jsx";
-// import Receipt from "./pages/receipt/Receipt.jsx";
-// Define routes properly using Outlet in App.jsx
+import { LoadingProvider } from "./hooks/LoadingContext.jsx";
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -102,8 +100,9 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <LoadingProvider>
-      <GlobarLoader />
+
       <RouterProvider router={router} />
     </LoadingProvider>
+  
   </React.StrictMode>
 );
