@@ -1,4 +1,4 @@
-// src/components/PageOneComponents/ExtensionCentreInfo.jsx
+// src/PDF_Components/PageOneComponents/ExtensionCentreInfo.jsx
 import React from "react";
 import { Text, View, StyleSheet } from "@react-pdf/renderer";
 
@@ -23,11 +23,11 @@ const ExtensionCentreInfo = () => (
   <View style={styles.container}>
     <Text style={styles.line}>Extension Centre</Text>
     <Text style={styles.line}>
-      Sri Sri Jagannath Temple, First floor Ashar Sapphire, Kolshet Road, Thane (W)
+      Dhruv Singh Colony ,Rahargora , Dhaiya, Dhanbad, Jharkhand
     </Text>
-    <Text style={styles.line}>PIN: 400607*</Text>
-    <Text style={styles.line}>Mobile: 8419990081</Text>
-    <Text style={styles.line}>E-mail: revatiramanlns@gmail.com</Text>
+    <Text style={styles.line}>PIN: 826004</Text>
+    <Text style={styles.line}>Mobile No: 7644070770/9903013399</Text>
+    <Text style={styles.line}>✉️ Email: acc.iskcondhanbad@gmail.com</Text>
   </View>
 );
 

@@ -1,4 +1,4 @@
-// src/components/PageOneComponents/DonationReceiptHeader.jsx
+// src/PDF_Components/PageOneComponents/DonationReceiptHeader.jsx
 import React from "react";
 import { Text, View, StyleSheet } from "@react-pdf/renderer";
 import DateInput from "./DateInput";

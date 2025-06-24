@@ -1,4 +1,4 @@
-// src/components/PageOneComponents/PaymentDetailsBox.jsx
+// src/PDF_Components/PageOneComponents/PaymentDetailsBox.jsx
 import { View, Text, StyleSheet } from "@react-pdf/renderer";
 
 const PaymentDetailsBox = ({

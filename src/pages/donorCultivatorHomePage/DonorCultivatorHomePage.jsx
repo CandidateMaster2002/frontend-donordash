@@ -40,7 +40,6 @@ const DonorCultivatorHomePage = () => {
           donation.id === updatedDonation.id ? updatedDonation : donation
         )
       );
-      console.log("Donation updated successfully");
       setSuccessMessage("The donation has been updated successfully!");
       setShowSuccessPopup(true);
     } catch (err) {
@@ -72,7 +71,6 @@ const DonorCultivatorHomePage = () => {
       fetchDonationSummaryData(newFilter);
     }
   };
-  console.log(getDonorCultivatorIdFromLocalStorage());
   const fetchDonationsData = async (filter) => {
     const filterDto = {
       donorCultivatorId: getDonorCultivatorIdFromLocalStorage(),
@@ -83,13 +81,11 @@ const DonorCultivatorHomePage = () => {
     try {
       const donations = await fetchDonations(filterDto);
       setDonationsData(donations);
-      console.log("Donations:", donations[0]);
     } catch (error) {
       console.error("Error fetching donations:", error);
     }
   };
 
-  console.log(summaryData);
 
   useEffect(() => {
     fetchDonationSummaryData(

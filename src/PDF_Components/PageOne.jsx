@@ -1,7 +1,7 @@
-// src/components/PageOne.jsx
+// src/PDF_Components/PageOne.jsx
 import { Page, View, StyleSheet, Image } from "@react-pdf/renderer";
-import ISKCON_DHANBAD_BG_Base64 from "../../assets/ISKCON_DHANBAD_BG";
-import ISKCON_DHANBAD_LOGO_Base64 from "../../assets/ISKCON_DHANBAD_LOGO";
+import ISKCON_DHANBAD_BG_Base64 from "../assets/ISKCON_DHANBAD_BG";
+import ISKCON_DHANBAD_LOGO_Base64 from "../assets/ISKCON_DHANBAD_LOGO";
 import IskconInfo from "./PageOneComponents/IskonInfo";
 import ExtensionCentreInfo from "./PageOneComponents/ExtensionCentreInfo";
 import DonationReceiptHeader from "./PageOneComponents/DonationReceiptHeader";
@@ -10,7 +10,7 @@ import RegisteredOfficeInfo from "./PageOneComponents/RegisteredOfficeInfo";
 import DonorDetailsBox from "./PageOneComponents/DonorDetailsBox";
 import PaymentDetailsBox from "./PageOneComponents/PaymentDetailsBox";
 import SignatureFieldsBox from "./PageOneComponents/SignatureFieldsBox";
-import { formatDate } from "../../utils/mathFunctions";
+import formatDate from "../utils/formatDate";
 
 const styles = StyleSheet.create({
   page: {
@@ -54,7 +54,6 @@ const PageOne = ({ formData }) => {
   const {
     receiptNumber,
     receiptDate,
-    amountWords,
     amountNumber,
     name,
     address,
@@ -65,7 +64,10 @@ const PageOne = ({ formData }) => {
     paymentMode,
     paymentDetails,
     donationPurpose,
+    donorCultivatorId
   } = formData;
+
+  console.log(formData);
   return (
     <Page size="A4" orientation="landscape" style={styles.page}>
       <Image src={ISKCON_DHANBAD_BG_Base64} style={styles.backgroundImage} />
@@ -75,7 +77,7 @@ const PageOne = ({ formData }) => {
           <View>
             <IskconInfo />
             <View style={styles.header}>
-              {/* <ExtensionCentreInfo /> */}
+              <ExtensionCentreInfo />
               <DonationReceiptHeader
                 receiptNumber={receiptNumber}
                 receiptDate={ formatDate(receiptDate)}
@@ -84,10 +86,9 @@ const PageOne = ({ formData }) => {
           </View>
         </View>
         <View>
-          {/* <DonationAmountInput
-            amountWords={amountWords}
+          <DonationAmountInput
             amountNumber={amountNumber}
-          /> */}
+          />
         </View>
         <View
           style={{
@@ -114,7 +115,7 @@ const PageOne = ({ formData }) => {
               paymentDetails={paymentDetails}
               donationPurpose={donationPurpose}
             />
-            <SignatureFieldsBox />
+            <SignatureFieldsBox donorCultivatorId={donorCultivatorId}/>
           </View>
         </View>
         <View>

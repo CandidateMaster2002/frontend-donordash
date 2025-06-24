@@ -28,7 +28,6 @@ const handleStatusChange = async (id,newStatus) => {
 
 export const handleRazorpayPayment = async (donationData,donorData) => {
   const isScriptLoaded = await loadRazorpayScript();
-  console.log(donorData)
 
   if (!isScriptLoaded) {
     throw new Error("Razorpay SDK failed to load. Are you online?");
@@ -74,7 +73,6 @@ export const handleRazorpayPayment = async (donationData,donorData) => {
                 DONATE,
                 donationData
               );
-              console.log(donateResponse);
               handleStatusChange(donateResponse?.data?.id, "Verified");
               resolve(donateResponse);
             } else {

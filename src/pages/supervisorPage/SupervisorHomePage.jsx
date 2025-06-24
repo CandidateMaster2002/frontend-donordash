@@ -48,7 +48,6 @@ const SupervisorHomePage = () => {
     try {
       const donations = await fetchDonations(filterDto);
       setDonationsData(donations);
-      console.log("Donations:", donations[0]);
     } catch (error) {
       console.error("Error fetching donations:", error);
     }
@@ -57,7 +56,6 @@ const SupervisorHomePage = () => {
 
    const [sortOption, setSortOption] = useState("amount");
 
-  console.log(summaryData);
 
   useEffect(() => {
     fetchDonationSummaryData(
@@ -67,7 +65,6 @@ const SupervisorHomePage = () => {
     );
   }, [filter]);
 
-  console.log("summaryData", summaryData);
 
   return (
     <div className="p-6 relative bg-gradient-to-br from-purple-50 to-blue-50 min-h-screen">
@@ -107,7 +104,6 @@ const SupervisorHomePage = () => {
         />
       </div>
 
-      {console.log("summaryData", summaryData)}
 
       
       <SortByButtons

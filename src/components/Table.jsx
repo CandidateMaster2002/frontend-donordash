@@ -2,7 +2,6 @@ import React from 'react';
 
 const Table = ({ headings, rows, currentPage, totalPages, onPageChange }) => {
 
-  console.log(rows[0])
   return (
     <div>
       <table className="min-w-full bg-white">

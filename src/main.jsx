@@ -13,11 +13,12 @@ import DonorListPage from "./pages/DonorData.jsx/DonorListPage.jsx";
 import DonorProfilePage from "./pages/DonorData.jsx/DonorProfilePage.jsx";
 import AdminPage from "./pages/adminPage/AdminPage.jsx";
 import PrivateRoute from "./utils/PrivateRoute.jsx";
-import Receipt from "./pages/receipt/Receipt.jsx";
 import SupervisorHomePage from "./pages/supervisorPage/SupervisorHomePage.jsx";
+import GlobarLoader from "./utils/GlobalLoader.jsx";
+import { LoadingProvider } from "./utils/LoadingContext.jsx";
 import NityaSevaReport from "./pages/donorCultivatorHomePage/NityaSevaReport.jsx";
 import BankDetails from "./components/BankDetails.jsx";
-import { LoadingProvider } from "./hooks/LoadingContext.jsx";
+import FormAndDownload from "./PDF_Components/FormAndDownload.jsx";
 
 const router = createBrowserRouter([
   {
@@ -34,7 +35,7 @@ const router = createBrowserRouter([
       },
       {
         path: "receipt",
-        element: <Receipt />,
+        element: <FormAndDownload />,
       },
       {
         path: "nitya-seva-report",
@@ -100,9 +101,8 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <LoadingProvider>
-
+      <GlobarLoader />
       <RouterProvider router={router} />
     </LoadingProvider>
-  
   </React.StrictMode>
 );

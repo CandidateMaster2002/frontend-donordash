@@ -1,8 +1,7 @@
 import React from "react";
 import CounselorDashBoard from "./CounselorDashBoard";
 import UserDashboard from "./UserDashboard";
-import CounselorLogin from "../CounselorLogin";
-import UserLogin from "../UserLogin";
+
 import LoginPage from "../pages/loginPage/LoginPage";
 const LandingPage = () => {
   

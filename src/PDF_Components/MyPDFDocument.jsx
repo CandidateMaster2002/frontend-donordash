@@ -1,12 +1,12 @@
-// src/components/MyPDFDocument.jsx
+// src/PDF_Components/MyPDFDocument.jsx
 import React from "react";
 import { Document } from "@react-pdf/renderer";
 import PageOne from "./PageOne";
 import PageTwo from "./PageTwo";
 
-const MyPDFDocument = ({ receiptData }) => (
+const MyPDFDocument = ({ formData }) => (
   <Document>
-    <PageOne formData={receiptData} />
+    <PageOne formData={formData} />
     <PageTwo />
   </Document>
 );

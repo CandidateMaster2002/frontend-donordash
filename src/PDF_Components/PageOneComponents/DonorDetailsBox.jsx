@@ -1,4 +1,4 @@
-// src/components/PageOneComponents/DonorDetailsBox.jsx
+// src/PDF_Components/PageOneComponents/DonorDetailsBox.jsx
 import React from "react";
 import { View, Text, StyleSheet } from "@react-pdf/renderer";
 

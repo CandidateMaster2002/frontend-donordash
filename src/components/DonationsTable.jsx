@@ -8,13 +8,13 @@ import { useNavigate } from "react-router-dom";
 
 const DonationsTable = ({ data,onEdit,showStatus=true,showEditDonation=true,sortOption="date",showCutivatorName=false}) => {
 
-  console.log("data ",data);
-  console.log("sortOptionTable ",sortOption); 
   const navigate = useNavigate();
   const handleReceiptClick = async (donationId) => {
     try {
-      const receiptData = await getReceiptByDonationId(donationId);
-      navigate("/receipt", { state: { receiptData } });
+      const pdfData = await getReceiptByDonationId(donationId);
+      console.log("PDF Data:", pdfData);
+      navigate("/receipt", { state: { pdfData } });
+      console.log(pdfData);
     } catch (error) {
       console.error("Error fetching receipt data:", error);
     }
@@ -37,15 +37,6 @@ const DonationsTable = ({ data,onEdit,showStatus=true,showEditDonation=true,sort
   };
 
   const sortedData = sortData(data, sortOption);
-
-  //  const sortedData = [...data].sort((a, b) => {
-  //   if (sortOption === "amount") {
-  //     return b.amount - a.amount; // Sort by amount (highest to lowest)
-  //   } else if (sortOption === "date") {
-  //     return new Date(b.paymentDate) - new Date(a.paymentDate); // Sort by date (latest first)
-  //   }
-  //   return 0;
-  // });
 
   return (
     <div className="overflow-x-auto overflow-y-auto max-w-full">

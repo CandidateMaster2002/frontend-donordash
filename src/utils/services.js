@@ -117,7 +117,6 @@ export const getDonorById = async (donorId) => {
 };
 
 export const requiredTransactionIdForStatusChange = (donation,newStatus) => {
-  console.log(donation)
   return newStatus === 'Verified' && donation.paymentMode !== 'Cash'&& !donation.transactionId;
 }
 
@@ -149,7 +148,7 @@ export const editDonorById = async (donorId, donorData) => {
 
 export const getDonors = async (params) => {
   try {
-    const response = await axiosInstance.get(DONORS_FILTER, {params});
+    const response = await axiosInstance.get(DONORS_FILTER, params);
     return response.data;
   } catch (error) {
     console.error('Error fetching donors:', error.response?.data?.message || error.message);

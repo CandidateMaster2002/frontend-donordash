@@ -1,13 +1,17 @@
 import React from "react";
 import { View, Text, StyleSheet, Image } from "@react-pdf/renderer";
-import RUPEE_Base64 from "../../../assets/RUPEE";
+import RUPEE_Base64 from "../../assets/RUPEE";
+import { numberToWords } from "../../utils/mathFunctions";
 
 const DonationAmountInput = ({
   width = "100%",
   height = 40,
-  amountWords = "",
   amountNumber = "",
 }) => {
+  const Currencyformatter = new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+  });
   const styles = StyleSheet.create({
     container: {
       width,
@@ -17,7 +21,8 @@ const DonationAmountInput = ({
     labelContainer: {
       position: "absolute",
       top: -10,
-      left: "15%", // Simplified from transform: translateX(-85%)
+      left: "50%",
+      transform: "translateX(-85%)",
       paddingHorizontal: 6,
       paddingVertical: 2,
       backgroundColor: "#eee",
@@ -73,16 +78,10 @@ const DonationAmountInput = ({
     },
   });
 
-  // Simplified number formatting
-  const formatAmount = (num) => {
-    if (!num || num.trim() === "") return "";
-    try {
-      return new Intl.NumberFormat('en-IN').format(num);
-    } catch {
-      return num;
-    }
-  };
-
+  const amountWords=numberToWords(parseInt(amountNumber||0));
+console.log("amountWords", amountWords);
+console.log("amountNumber", amountNumber);
+  
   return (
     <View style={styles.container}>
       <View style={styles.inputBox}>
@@ -98,7 +97,11 @@ const DonationAmountInput = ({
               <Image src={RUPEE_Base64} style={{ width: 24, height: 24 }} />
             </View>
             <Text style={styles.amountNumberText}>
-              {formatAmount(amountNumber)}
+              {amountNumber !== ""
+                ? Currencyformatter.format(amountNumber)
+                    .replace(/^[^\d]+/, "")
+                    .replace(/\.\d{2}$/, "")
+                : ""}
             </Text>
           </View>
         </View>

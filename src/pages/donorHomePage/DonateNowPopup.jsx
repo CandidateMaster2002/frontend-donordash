@@ -90,7 +90,6 @@ const DonateNowPopup = ({
 
 
     try {
-      console.log("Donation Data:", donationData);
       
       if (donationData.paymentMode === "Razorpay") {
          const donor = await getDonorById(donationData.donorId);

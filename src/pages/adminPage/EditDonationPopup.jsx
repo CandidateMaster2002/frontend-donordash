@@ -13,7 +13,6 @@ const EditDonationPopup = ({ donation, onSave, onClose }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(formData);
     onSave(formData);
   };
 

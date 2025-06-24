@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { editDonation, changeDonationStatus,requiredTransactionIdForStatusChange } from '../utils/services';
 
 const StatusChangeConfirmationBox = ({ donation, newStatus, onCancel, onConfirm }) => {
-    if(donation?.id===80) console.log(donation.transactionId);
   const [transactionId, setTransactionId] = useState(donation.transactionId || '');
   const [showTransactionInput, setShowTransactionInput] = useState(requiredTransactionIdForStatusChange(donation,newStatus));
   const [isSaveDisabled, setIsSaveDisabled] = useState(true);
