@@ -23,8 +23,9 @@ const ExtensionCentreInfo = () => (
   <View style={styles.container}>
     <Text style={styles.line}>Preaching Centre</Text>
     <Text style={styles.line}>
-      Doctor's colony, Near Central Hospital (BCCL), Jagjiwan Nagar, Dhanbad, Jharkhand
+      Doctor's colony, Near Central Hospital (BCCL),
     </Text>
+    <Text style={styles.line}>Jagjiwan Nagar, Dhanbad, Jharkhand</Text>
     <Text style={styles.line}>PIN: 826003</Text>
     <Text style={styles.line}>Mobile No: 7644070770/9903013399</Text>
     <Text style={styles.line}>✉️ Email: acc.iskcondhanbad@gmail.com</Text>

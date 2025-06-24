@@ -137,7 +137,7 @@ const FormAndDownload = () => {
           <p className="text-gray-600 mb-4">Generate and download your receipt</p>
           <PDFDownloadLink
             document={<MyPDFDocument formData={documentData} />}
-            fileName={`ISKCON_Dhanbad_${formData.receiptNumber}.pdf`}
+            fileName={`${pdfData.donorName}_${pdfData.receiptNumber}_${pdfData.amount}.pdf`}
             className="inline-block"
           >
             {({ loading }) => (
