@@ -64,7 +64,8 @@ const PageOne = ({ formData }) => {
     paymentMode,
     paymentDetails,
     donationPurpose,
-    donorCultivatorId
+    donorCultivatorId,
+    donationId
   } = formData;
 
   console.log(formData);
@@ -114,6 +115,7 @@ const PageOne = ({ formData }) => {
               paymentMode={paymentMode}
               paymentDetails={paymentDetails}
               donationPurpose={donationPurpose}
+              donationId={donationId}
             />
             <SignatureFieldsBox donorCultivatorId={donorCultivatorId}/>
           </View>

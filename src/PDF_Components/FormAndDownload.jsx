@@ -20,6 +20,7 @@ const FormAndDownload = () => {
     paymentDetails: pdfData.transactionID,
     donationPurpose: pdfData.purpose,
     donorCultivatorId: pdfData.donorCultivatorId,
+    donationId:pdfData.donationId||"NA",
   });
 
   const [showDownloadLink, setShowDownloadLink] = useState(true);
@@ -38,6 +39,7 @@ const FormAndDownload = () => {
     paymentDetails: pdfData.transactionID,
     donationPurpose: pdfData.purpose,
     donorCultivatorId: pdfData.donorCultivatorId,
+    donationId: pdfData.donationId||"NA",
   });
 
   // Format date to display nicely

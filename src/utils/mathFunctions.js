@@ -66,7 +66,7 @@ export const numberToWords = (number) => {
       words += convertChunk(number);
     }
       
-    return words.trim();
+    return words.trim()+" "+"Rupees Only";
   };
   
 

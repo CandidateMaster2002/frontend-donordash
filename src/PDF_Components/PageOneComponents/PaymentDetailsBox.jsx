@@ -6,6 +6,7 @@ const PaymentDetailsBox = ({
   paymentMode = "",
   paymentDetails = "",
   donationPurpose = "",
+  donationId="NA"
 }) => {
   const styles = StyleSheet.create({
     groupContainer: {
@@ -19,17 +20,19 @@ const PaymentDetailsBox = ({
       width: "100%",
       position: "relative",
     },
-    inputBox: {
-      height,
-      borderWidth: 1,
-      borderColor: "red",
-      backgroundColor: "#eee",
-      borderRadius: 4,
-      paddingLeft: 12,
-      paddingRight: 12,
-      justifyContent: "center",
-      zIndex: 0,
-    },
+  inputBox: {
+  height,
+  borderWidth: 1,
+  borderColor: "red",
+  backgroundColor: "#eee",
+  borderRadius: 4,
+  paddingLeft: 12,
+  paddingRight: 12,
+  justifyContent: "center",     // vertically center
+  alignItems: "center",         // horizontally center
+  zIndex: 0,
+},
+
     labelContainer: {
       position: "absolute",
       top: -9,
@@ -46,6 +49,7 @@ const PaymentDetailsBox = ({
     inputText: {
       fontSize: 18,
       color: "#000",
+      textAlign: "center",
     },
   });
 
@@ -59,6 +63,10 @@ const PaymentDetailsBox = ({
       </View>
     </View>
   );
+  // Update the label for payment details to include Donation Id
+ const paymentDetailsLabel = paymentDetails
+  ? `${paymentDetails} (Donation Id: ${donationId})`
+  : `Donation Id: ${donationId}`;
 
   return (
     <View style={styles.groupContainer}>
@@ -68,7 +76,7 @@ const PaymentDetailsBox = ({
       )}
       {renderField(
         "Payment Details (Cheque / Transaction Details)",
-        paymentDetails
+        paymentDetailsLabel
       )}
       {renderField(
         "Purpose of Donation (Corpus / General / Others)",

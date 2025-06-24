@@ -1,12 +1,11 @@
 // src/PDF_Components/PageOneComponents/SignatureFieldsBox.jsx
-import { View, Text, StyleSheet,Image } from "@react-pdf/renderer";
+import { View, Text, StyleSheet, Image } from "@react-pdf/renderer";
 import bhim_sign_base64 from "../../assets/BHIM_SIGN_64";
 import DGP_SIGN_BASE64 from "../../assets/DGP_SIGN_BASE64";
 import NPP_SIGN_BASE64 from "../../assets/NPP_SIGN_BASE64.JS";
 import SUNITA_SIGN_BASE64 from "../../assets/SUNITA_SIGN_BASE64.JS";
 import NIBEDITA_SIGN_BASE64 from "../../assets/NIBEDITA_SIGN_BASE64";
 import RAJEEV_SIGN_BASE64 from "../../assets/RAJEEV_SIGN_BASE64.JS";
-
 
 const getSignatureByDonorCultivatorId = (id) => {
   switch (String(id)) {
@@ -33,11 +32,7 @@ const getSignatureByDonorCultivatorId = (id) => {
   }
 };
 
-
-const SignatureFieldsBox = ({
-  height = 60,
-  donorCultivatorId="8"
-}) => {
+const SignatureFieldsBox = ({ height = 60, donorCultivatorId = "8" }) => {
   const styles = StyleSheet.create({
     rowContainer: {
       flexDirection: "row",
@@ -45,19 +40,21 @@ const SignatureFieldsBox = ({
       gap: 10,
       marginTop: 10,
     },
-    fieldContainer: {
-      width: "100%",
-      height,
-      borderWidth: 1,
-      borderColor: "red",
-      backgroundColor: "#eee",
-      borderRadius: 4,
-      paddingHorizontal: 12,
-      justifyContent: "flex-end",
-      position: "relative",
-    },
+fieldContainer: {
+  width: "100%",
+  height,
+  borderWidth: 1,
+  borderColor: "red",
+  backgroundColor: "#eee",
+  borderRadius: 4,
+  paddingHorizontal: 12,
+  justifyContent: "center",    // vertically center image
+  alignItems: "center",        // horizontally center image
+  position: "relative",
+},
+
     signatureText: {
-      fontSize: 16,
+      fontSize: 8,
       color: "#000",
     },
     bottomLabel: {
@@ -73,19 +70,26 @@ const SignatureFieldsBox = ({
     },
   });
 
-  const renderSignatureField = (label, value) => (
-    <View style={styles.fieldContainer}>
-      {/* <Text style={styles.signatureText}>{value || ""}</Text> */}
-      <Image src={value} style={styles.signatureText}/>
+const renderSignatureField = (label, value) => (
+  <View style={styles.fieldContainer}>
+    {value ? (
+      <Image
+        src={value}
+        style={{ width: "75%", objectFit: "contain" }}
+      />
+    ) : null}
+    <Text style={styles.bottomLabel}>{label}</Text>
+  </View>
+);
 
-      <Text style={styles.bottomLabel}>{label}</Text>
-    </View>
-  );
 
   return (
     <View style={styles.rowContainer}>
       {/* {renderSignatureField("Donor Signature for Cash Payment", donorSignature)} */}
-      {renderSignatureField("Signature of ISKCON Representative", getSignatureByDonorCultivatorId(donorCultivatorId))}
+      {renderSignatureField(
+        "Signature of ISKCON Representative",
+        getSignatureByDonorCultivatorId(donorCultivatorId)
+      )}
     </View>
   );
 };
