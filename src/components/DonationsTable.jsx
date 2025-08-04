@@ -8,6 +8,9 @@ import { useNavigate } from "react-router-dom";
 
 const DonationsTable = ({ data,onEdit,showStatus=true,showEditDonation=true,sortOption="date",showCutivatorName=false}) => {
 
+
+  console.log(data);
+
   const navigate = useNavigate();
   const handleReceiptClick = async (donationId) => {
     try {

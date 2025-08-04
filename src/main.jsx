@@ -19,6 +19,7 @@ import { LoadingProvider } from "./utils/LoadingContext.jsx";
 import NityaSevaReport from "./pages/donorCultivatorHomePage/NityaSevaReport.jsx";
 import BankDetails from "./components/BankDetails.jsx";
 import FormAndDownload from "./PDF_Components/FormAndDownload.jsx";
+import UnapprovedDonations from "./pages/donorCultivatorHomePage/UnapprovedDonations.jsx";
 
 const router = createBrowserRouter([
   {
@@ -46,6 +47,16 @@ const router = createBrowserRouter([
         path: "donor-home",
         element: (
           <PrivateRoute allowedRoles={["donor"]} component={DonorHomePage} />
+        ),
+      },
+
+      {
+        path:"unapproved-donations",
+        element: (
+          <PrivateRoute
+            allowedRoles={["donorCultivator"]}
+            component={UnapprovedDonations}
+          />
         ),
       },
       {

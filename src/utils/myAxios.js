@@ -2,7 +2,8 @@ import axios from "axios";
 // import { useLoading } from "../LoadingContext";
 
 const axiosInstance = axios.create({
-  baseURL:"https://backend-donordash.onrender.com/"
+  // baseURL:"https://backend-donordash.onrender.com/"
+  baseURL: "http://localhost:8080/",
 });
 
 export const setupInterceptors = (showLoader, hideLoader) => {

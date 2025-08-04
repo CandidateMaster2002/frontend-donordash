@@ -13,6 +13,7 @@ import EditDonationPopup from "../adminPage/EditDonationPopup";
 import { editDonation } from "../../utils/services";
 import SuccessPopup from "../../components/SuccessPopup";
 import { getDonorCultivatorIdFromLocalStorage } from "../../utils/services";
+import { useNavigate } from "react-router-dom";
 
 const DonorCultivatorHomePage = () => {
   const [filter, setFilter] = useState({
@@ -24,6 +25,7 @@ const DonorCultivatorHomePage = () => {
 
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
+  const navigate = useNavigate();
 
   const [donationsData, setDonationsData] = useState([]);
   const [donations, setDonations] = useState([]);
@@ -78,6 +80,8 @@ const DonorCultivatorHomePage = () => {
       toDate: filter.endDate,
     };
 
+    console.log("Filter DTO:", filterDto);
+
     try {
       const donations = await fetchDonations(filterDto);
       setDonationsData(donations);
@@ -85,7 +89,6 @@ const DonorCultivatorHomePage = () => {
       console.error("Error fetching donations:", error);
     }
   };
-
 
   useEffect(() => {
     fetchDonationSummaryData(
@@ -112,22 +115,34 @@ const DonorCultivatorHomePage = () => {
         </h1>
       </div>
 
-      <div className="flex gap-4 mb-8">
+      <div className="flex flex-wrap gap-4 mb-8">
         <button
-          onClick={() => (window.location.href = "/donor-list")}
+          onClick={() => navigate("/donor-list")}
           className="px-8 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg shadow-md hover:shadow-lg transition-all text-xl"
         >
           View All Donors
         </button>
+
+       <button
+  onClick={() =>
+    navigate("/donor-signup", {
+      state: { preselectedCultivatorId: getDonorCultivatorIdFromLocalStorage() }, // send via state
+    })
+  }
+  className="px-8 py-3 bg-gradient-to-r from-green-500 to-blue-500 text-white rounded-lg shadow-md hover:shadow-lg transition-all text-xl"
+>
+  Add a Donor
+</button>
+
+
         <button
-          onClick={() => (window.location.href = "/donor-signup")}
-          className="px-8 py-3 bg-gradient-to-r from-green-500 to-blue-500 text-white rounded-lg shadow-md hover:shadow-lg transition-all text-xl"
+          onClick={()=> navigate("/unapproved-donations")}
+          className="px-8 py-3 bg-gradient-to-r from-blue-800 to-blue-500 text-white rounded-lg shadow-md hover:shadow-lg transition-all text-xl"
         >
-          Add a Donor
+          Unapproved Donations
         </button>
       </div>
 
-    
       <DateFilter onFilterChange={handleFilterChange} />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
@@ -147,7 +162,6 @@ const DonorCultivatorHomePage = () => {
           columnName2="Amount"
         />
       </div>
-
 
       <DonationsTable data={donationsData} onEdit={handleEdit} />
 

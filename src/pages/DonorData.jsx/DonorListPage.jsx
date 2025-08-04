@@ -1,86 +1,174 @@
-import React, { useEffect, useState } from 'react';
-import {useNavigate } from 'react-router-dom';
-import { getDonors,getDonorCultivatorIdFromLocalStorage } from '../../utils/services';
-import { FaIndianRupeeSign } from "react-icons/fa6";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  getDonors,
+  getAllDonorCultivators,
+  getDonorCultivatorIdFromLocalStorage,
+  getDonorCultivatorFromLocalStorage,
+  requestDonorRelease,
+  requestAcquireDonor,
+} from "../../utils/services";
+import PendingTransferRequests from "./PendingTransferRequests";
 
 const DonorListPage = () => {
-  const [donors, setDonors] = useState([]);
+  const [myDonors, setMyDonors] = useState([]);
+  const [otherDonors, setOtherDonors] = useState([]);
+  const [cultivators, setCultivators] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showRequestsTab, setShowRequestsTab] = useState(false);
   const navigate = useNavigate();
-  useEffect(() => {
-    const fetchDonors = async () => {
-      try {
-        const params = { donorCultivator: getDonorCultivatorIdFromLocalStorage() };
-        const donorData = await getDonors(params);
-        setDonors(donorData);
-      } catch (error) {
-        console.error('Error fetching donors:', error.message);
-      }
-    };
+  const myCultivatorId = getDonorCultivatorIdFromLocalStorage();
+  const cultivatorName = getDonorCultivatorFromLocalStorage()?.name || "";
 
-    fetchDonors();
+  useEffect(() => {
+    fetchData();
   }, []);
+
+  const fetchData = async () => {
+    try {
+      const allDonors = await getDonors();
+      const cultivatorList = await getAllDonorCultivators();
+
+      const filteredMyDonors = allDonors.filter(
+        (d) => d.connectedTo === cultivatorName
+      );
+      const filteredOtherDonors = allDonors.filter(
+        (d) => d.connectedTo !== cultivatorName
+      );
+
+      setMyDonors(filteredMyDonors);
+      setOtherDonors(filteredOtherDonors);
+      setCultivators(cultivatorList);
+    } catch (error) {
+      alert(error.message);
+    }
+  };
 
   const handleShowDonorProfile = (donorId) => {
     navigate(`/donor-profile/${donorId}`);
   };
 
+  const handleReleaseRequest = async (donorId, targetCultivatorId) => {
+    try {
+      await requestDonorRelease(donorId, myCultivatorId, targetCultivatorId);
+      alert("Release request submitted");
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+
+  const handleAcquireRequest = async (donorId) => {
+    try {
+      await requestAcquireDonor(donorId, myCultivatorId);
+      alert("Acquire request submitted");
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+
+  const filteredMyDonors = myDonors.filter((d) =>
+    d?.donorName?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const filteredOtherDonors = otherDonors.filter((d) =>
+    d?.donorName?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
-    <div className="p-6 max-w-3xl mx-auto">
-      <h1 className="text-3xl font-bold text-center text-purple-800 mb-6">Donor List</h1>
-  
-      {/* Table Headings */}
-      <div className="grid grid-cols-3 gap-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-t-lg p-4 *:text-center">
-        <div className="font-semibold">Name</div>
-        <div className="font-semibold">Profile</div>
-        {/* <div className="font-semibold">Donations</div> */}
-      </div>
-  
-      {/* Donor Rows */}
-      <ul className="bg-white rounded-b-lg shadow-md">
-        {donors?.map((donor) => (
-          <li
-            key={donor?.id}
-            className="grid grid-cols-3 gap-4 items-center p-4 border-b border-gray-200 last:border-b-0 hover:bg-gray-50 transition-all"
-          >
-            {/* Donor Name */}
-            <div className="text-center text-gray-700 font-medium">{donor.name}</div>
-  
-            {/* Profile Icon */}
-            <button
-              onClick={() => handleShowDonorProfile(donor.id)}
-              className="flex justify-center text-purple-600 hover:text-purple-800 transition-all"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                />
-              </svg>
-            </button>
-  
-            {/* Donations Icon */}
-            <button
-              onClick={() => handleShowDonorDonations(donor.id)}
-              className="flex justify-center text-blue-600 hover:text-blue-800 transition-all"
-            >
-            {/* <FaIndianRupeeSign className="h-6 w-6 text-current" /> */}
+    <div className="p-6 max-w-5xl mx-auto">
+      <h1 className="text-3xl font-bold text-center text-purple-800 mb-4">
+        Donor Management
+      </h1>
 
-            </button>
-          </li>
-        ))}
-      </ul>
+      <div className="flex justify-between items-center mb-4">
+        <input
+          type="text"
+          placeholder="Search donors..."
+          className="w-full max-w-md px-4 py-2 border border-gray-300 rounded shadow"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        <button
+          className="ml-4 px-4 py-2 bg-blue-500 text-white rounded shadow"
+          onClick={() => setShowRequestsTab(!showRequestsTab)}
+        >
+          {showRequestsTab ? "Hide Requests" : "View Pending Requests"}
+        </button>
+      </div>
+
+      {!showRequestsTab && (
+        <>
+          <h2 className="text-xl font-semibold text-purple-700 mt-6 mb-2">
+            My Donors
+          </h2>
+          <ul className="bg-white shadow rounded mb-6">
+            {filteredMyDonors.map((donor) => (
+              <li
+                key={donor.donorId}
+                className="p-4 border-b text-xl flex justify-between items-center"
+              >
+                <span
+                  className="text-blue-600 underline cursor-pointer"
+                  onClick={() => handleShowDonorProfile(donor.donorId)}
+                >
+                  {donor.donorName}
+                </span>
+                <p className="font-medium">{donor?.mobile}</p>
+                <div className="flex items-center gap-2">
+                  <select
+                    onChange={(e) =>
+                      handleReleaseRequest(donor.donorId, e.target.value)
+                    }
+                    className="border px-2 py-1 rounded"
+                    defaultValue=""
+                  >
+                    <option value="">Request Release</option>
+                    {cultivators
+                      .filter((c) => c.id !== myCultivatorId)
+                      .map((cult) => (
+                        <option key={cult.id} value={cult.id}>
+                          {cult.name}
+                        </option>
+                      ))}
+                  </select>
+                </div>
+              </li>
+            ))}
+          </ul>
+
+          <h2 className="text-xl font-semibold text-purple-700 mb-2">
+            Other Donors
+          </h2>
+          <ul className="bg-white shadow rounded">
+            {filteredOtherDonors.map((donor) => (
+              <li
+                key={donor.donorId}
+                className="p-4 border-b flex justify-between items-center"
+              >
+                <div>
+                  <p className="font-medium">{donor.donorName}</p>
+                  <p className="font-medium">{donor.mobile}</p>
+                  <p className="text-sm text-gray-500">
+                    Cultivator: {donor?.connectedTo}
+                  </p>
+                </div>
+                <div>
+                  <button
+                    onClick={() => handleAcquireRequest(donor.donorId)}
+                    className="bg-green-500 text-white px-3 py-1 rounded disabled:bg-gray-300"
+                  >
+                    Request Acquire
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+
+      {showRequestsTab && <PendingTransferRequests />}
     </div>
   );
 };
-
 
 export default DonorListPage;

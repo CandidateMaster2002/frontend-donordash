@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useForm} from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { donationPurposes, paymentModes } from "../../constants/constants";
 import { validations } from "../../utils/validations";
 import axiosInstance from "../../utils/myAxios";
@@ -13,9 +13,8 @@ import {
 } from "../../utils/services";
 import { handleRazorpayPayment } from "../../utils/razorpayPayment";
 import BankDetails from "../../components/BankDetails";
-import { func } from "prop-types";
-import { set } from "date-fns";
 
+// Add donorCultivatorId as a hidden field in the form
 const DonateNowPopup = ({
   amount,
   purpose,
@@ -27,10 +26,17 @@ const DonateNowPopup = ({
   const [showPaymentDate, setShowPaymentDate] = useState(false);
   const [donors, setDonors] = useState([]);
   const [showBankDetails, setShowBankDetails] = useState(false);
-  const [FieldNameUTR, setFieldNameUTR] = useState("UTR No (12 digit numeric transaction ID)");
+  const [FieldNameUTR, setFieldNameUTR] = useState(
+    "UTR No (12 digit numeric transaction ID)"
+  );
+  const [generateReceipt, setGenerateReceipt] = useState(true);
+  const [showGenerateReceiptCheckbox, setShowGenerateReceiptCheckbox] = useState(false);
   const userType = getUserTypeFromLocalStorage();
   const [searchTerm, setSearchTerm] = useState("");
+  const [existingDonation, setExistingDonation] = useState(null);
 
+  const [cultivatorDonors, setCultivatorDonors] = useState([]);
+  // const [selectedDonorCultivatorId, setSelectedDonorCultivatorId] = useState("");
 
   const handleSuccess = () => {
     setSuccessMessage("Your donation has been successful!");
@@ -51,12 +57,13 @@ const DonateNowPopup = ({
       paymentDate: new Date().toISOString().split("T")[0],
       amount: amount || "",
       donorId: userType === "donor" ? getDonorIdFromLocalStorage() : "",
+      donorCultivatorId: "",
     },
   });
 
   useEffect(() => {
     if (userType === "donorCultivator") {
-      fetchDonors({ donorCultivator: getDonorCultivatorIdFromLocalStorage() });
+      fetchDonors();
     }
     if (userType === "admin") {
       fetchDonors({
@@ -68,7 +75,14 @@ const DonateNowPopup = ({
   const fetchDonors = async (params) => {
     try {
       const response = await axiosInstance.get(DONORS_FILTER, { params });
+      console.log("Fetched donors:", response.data);
       setDonors(response.data);
+      if (userType === "donorCultivator") {
+        const response = await axiosInstance.get(DONORS_FILTER, {
+          params: { donorCultivatorId: getDonorCultivatorIdFromLocalStorage() },
+        });
+        setCultivatorDonors(response.data);
+      }
     } catch (error) {
       console.error("Error fetching donors:", error.message);
     }
@@ -83,21 +97,45 @@ const DonateNowPopup = ({
       paymentDate: data.paymentDate || new Date().toISOString().split("T")[0],
       status: "Pending",
       remark: data.remark,
+      notGenerateReceipt: data.paymentMode==="Cash" ? !generateReceipt: false,
+      collectedById: getDonorCultivatorIdFromLocalStorage(),
       donorId:
         userType === "donor" ? getDonorIdFromLocalStorage() : data.donorId,
       createdAt: new Date().toISOString(),
     };
 
+    if (userType === "donorCultivator") {
+      const donorExists = cultivatorDonors.some(
+        (donor) => donor.id === donationData.donorId
+      );
+      if (!donorExists) {
+        donationData.status = "Unapproved";
+      }
+    }
 
     try {
-      
       if (donationData.paymentMode === "Razorpay") {
-         const donor = await getDonorById(donationData.donorId);
-         const {donations,donorCultivator,type,catoegory,specialDays,...donorData}=donor;
+        const donor = await getDonorById(donationData.donorId);
+        const {
+          donations,
+          donorCultivator,
+          type,
+          catoegory,
+          specialDays,
+          ...donorData
+        } = donor;
 
-      await handleRazorpayPayment(donationData,donorData);
+        await handleRazorpayPayment(donationData, donorData);
       } else {
+
         const response = await axiosInstance.post(DONATE, donationData);
+        if (
+          response?.data?.alreadyExists ===true
+        ) {
+          // Means it was existing one, show alert
+          setExistingDonation(response.data.donation);
+          return;
+        }
       }
       closePopup();
       handleSuccess();
@@ -114,15 +152,19 @@ const DonateNowPopup = ({
         selectedMethod === "Bank Transfer" ||
         selectedMethod === "Razorpay Link"
     );
-    if(selectedMethod === "Razorpay Link") setFieldNameUTR("Razorpay Transaction ID starting with 'pay_'");
+    setShowGenerateReceiptCheckbox(
+      selectedMethod === "Cash")
+    if (selectedMethod === "Razorpay Link")
+      setFieldNameUTR("Razorpay Transaction ID starting with 'pay_'");
     else setFieldNameUTR("UTR No.(12 digit numeric transaction ID)");
     setShowBankDetails(selectedMethod === "Bank Transfer");
     setShowPaymentDate(selectedMethod !== "Razorpay");
-  
   };
 
   return (
     <div className="fixed inset-0 z-100 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-lg">
+     
+
       <div className="rounded-lg shadow-lg w-full max-w-md relative max-h-[80vh] flex flex-col">
         <div className="p-6 overflow-y-auto">
           <button
@@ -134,44 +176,61 @@ const DonateNowPopup = ({
           <h3 className="text-2xl font-semibold mb-6 text-center">
             Donate Now
           </h3>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      {(userType === "admin" || userType === "donorCultivator") && (
-  <div>
-    <label className="block mb-2 font-medium">Search Donor:</label>
-    <input
-      type="text"
-      placeholder="Search donor by name or username"
-      value={searchTerm}
-      onChange={(e) => setSearchTerm(e.target.value)}
-      className="w-full border border-gray-300 rounded px-3 py-2 mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-    />
 
-    <label className="block mb-2 font-medium">Donor:</label>
-    <select
-      {...register("donorId", {
-        required: "Please select a donor",
-      })}
-      className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-    >
-      <option value="">Select Donor</option>
-      {donors
-        .filter((donor) =>
-          donor.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          donor.name?.toLowerCase().includes(searchTerm.toLowerCase())
-        )
-        .map((donor) => (
-          <option key={donor.id} value={donor.id}>
-            {donor.username} ({donor.name})
-          </option>
-        ))}
-    </select>
-    {errors.donorId && (
-      <span className="text-red-500 text-sm">
-        {errors.donorId.message}
-      </span>
-    )}
+          {existingDonation && (
+  <div className="mb-4 p-4 border border-yellow-400 bg-yellow-100 rounded text-sm text-yellow-800">
+    <h4 className="font-semibold text-base mb-2">Duplicate Donation Detected</h4>
+    <p><strong>Transaction ID:</strong> {existingDonation.transactionId}</p>
+    <p><strong>Amount:</strong> ₹{existingDonation.amount}</p>
+    <p><strong>Purpose:</strong> {existingDonation.purpose}</p>
+    <p><strong>Status:</strong> {existingDonation.status}</p>
+    <p><strong>Payment Date:</strong> {new Date(existingDonation.paymentDate).toLocaleDateString()}</p>
   </div>
 )}
+
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            {(userType === "admin" || userType === "donorCultivator") && (
+              <div>
+                <label className="block mb-2 font-medium">Search Donor:</label>
+                <input
+                  type="text"
+                  placeholder="Search donor by name or username"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full border border-gray-300 rounded px-3 py-2 mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+
+                <label className="block mb-2 font-medium">Donor:</label>
+                <select
+                  {...register("donorId", {
+                    required: "Please select a donor",
+                  })}
+                  className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">Select Donor</option>
+                  {donors
+                    .filter(
+                      (donor) =>
+                        donor.username
+                          ?.toLowerCase()
+                          .includes(searchTerm.toLowerCase()) ||
+                        donor.name
+                          ?.toLowerCase()
+                          .includes(searchTerm.toLowerCase())
+                    )
+                    .map((donor) => (
+                      <option key={donor.donorId} value={donor.donorId}>
+                        {donor.username}
+                      </option>
+                    ))}
+                </select>
+                {errors.donorId && (
+                  <span className="text-red-500 text-sm">
+                    {errors.donorId.message}
+                  </span>
+                )}
+              </div>
+            )}
 
             <div>
               <label className="block mb-2 font-medium">Amount:</label>
@@ -235,13 +294,30 @@ const DonateNowPopup = ({
               )}
             </div>
 
+            {showGenerateReceiptCheckbox && (
+  <div className="mt-2 flex items-start gap-2">
+    <input
+      type="checkbox"
+      id="generateReceipt"
+      checked={generateReceipt}
+      onChange={(e) => setGenerateReceipt(e.target.checked)}
+      className="mt-1"
+    />
+    <label htmlFor="generateReceipt" className="text-2xl text-bold text-red-900">
+      Do you need receipt for this?
+    </label>
+  </div>
+)}
+
+
             {showBankDetails && <BankDetails />}
 
             {showTransactionId &&
               (userType === "admin" || userType === "donorCultivator") && (
                 <div>
-
-                  <label className="block mb-2 font-medium">{FieldNameUTR}</label>
+                  <label className="block mb-2 font-medium">
+                    {FieldNameUTR}
+                  </label>
                   <input
                     type="text"
                     {...register("transactionId", {
@@ -249,7 +325,7 @@ const DonateNowPopup = ({
                         (userType !== "admin" &&
                           userType !== "donorCultivator") ||
                         value.trim() !== "" ||
-      "Please enter a UTR no.",
+                        "Please enter a UTR no.",
                     })}
                     className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
