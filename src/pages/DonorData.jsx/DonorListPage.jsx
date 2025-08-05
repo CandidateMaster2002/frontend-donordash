@@ -16,6 +16,7 @@ const DonorListPage = () => {
   const [cultivators, setCultivators] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [showRequestsTab, setShowRequestsTab] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
   const myCultivatorId = getDonorCultivatorIdFromLocalStorage();
   const cultivatorName = getDonorCultivatorFromLocalStorage()?.name || "";
@@ -25,15 +26,18 @@ const DonorListPage = () => {
   }, []);
 
   const fetchData = async () => {
+    setIsLoading(true);
     try {
-      const allDonors = await getDonors();
-      const cultivatorList = await getAllDonorCultivators();
+      const [allDonors, cultivatorList] = await Promise.all([
+        getDonors(),
+        getAllDonorCultivators(),
+      ]);
 
       const filteredMyDonors = allDonors.filter(
-        (d) => d.connectedTo === cultivatorName
+        (d) => d.connectedTo == cultivatorName
       );
       const filteredOtherDonors = allDonors.filter(
-        (d) => d.connectedTo !== cultivatorName
+        (d) => d.connectedTo != cultivatorName
       );
 
       setMyDonors(filteredMyDonors);
@@ -41,6 +45,8 @@ const DonorListPage = () => {
       setCultivators(cultivatorList);
     } catch (error) {
       alert(error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -49,9 +55,12 @@ const DonorListPage = () => {
   };
 
   const handleReleaseRequest = async (donorId, targetCultivatorId) => {
+    if (!targetCultivatorId) return;
+    
     try {
       await requestDonorRelease(donorId, myCultivatorId, targetCultivatorId);
-      alert("Release request submitted");
+      alert("Release request submitted successfully");
+      fetchData();
     } catch (err) {
       alert(err.message);
     }
@@ -60,7 +69,8 @@ const DonorListPage = () => {
   const handleAcquireRequest = async (donorId) => {
     try {
       await requestAcquireDonor(donorId, myCultivatorId);
-      alert("Acquire request submitted");
+      alert("Acquire request submitted successfully");
+      fetchData();
     } catch (err) {
       alert(err.message);
     }
@@ -70,103 +80,291 @@ const DonorListPage = () => {
     d?.donorName?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  console.log("Filtered My Donors:", filteredMyDonors);
+
   const filteredOtherDonors = otherDonors.filter((d) =>
     d?.donorName?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
-    <div className="p-6 max-w-5xl mx-auto">
-      <h1 className="text-3xl font-bold text-center text-purple-800 mb-4">
-        Donor Management
-      </h1>
+    <div className="min-h-screen bg-gray-50 p-4 md:p-8">
+      <div className="max-w-6xl mx-auto">
+        <div className="bg-white rounded-xl shadow-md overflow-hidden mb-6">
+          <div className="p-6 md:p-8">
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
+              Donor Management
+            </h1>
+            <p className="text-gray-600 mb-6">
+              Manage your donors and transfer requests
+            </p>
 
-      <div className="flex justify-between items-center mb-4">
-        <input
-          type="text"
-          placeholder="Search donors..."
-          className="w-full max-w-md px-4 py-2 border border-gray-300 rounded shadow"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-        <button
-          className="ml-4 px-4 py-2 bg-blue-500 text-white rounded shadow"
-          onClick={() => setShowRequestsTab(!showRequestsTab)}
-        >
-          {showRequestsTab ? "Hide Requests" : "View Pending Requests"}
-        </button>
-      </div>
-
-      {!showRequestsTab && (
-        <>
-          <h2 className="text-xl font-semibold text-purple-700 mt-6 mb-2">
-            My Donors
-          </h2>
-          <ul className="bg-white shadow rounded mb-6">
-            {filteredMyDonors.map((donor) => (
-              <li
-                key={donor.donorId}
-                className="p-4 border-b text-xl flex justify-between items-center"
-              >
-                <span
-                  className="text-blue-600 underline cursor-pointer"
-                  onClick={() => handleShowDonorProfile(donor.donorId)}
-                >
-                  {donor.donorName}
-                </span>
-                <p className="font-medium">{donor?.mobile}</p>
-                <div className="flex items-center gap-2">
-                  <select
-                    onChange={(e) =>
-                      handleReleaseRequest(donor.donorId, e.target.value)
-                    }
-                    className="border px-2 py-1 rounded"
-                    defaultValue=""
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+              <div className="flex-1">
+                <div className="relative">
+                  <input
+                    type="text"
+                    placeholder="Search donors by name..."
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                  <svg
+                    className="absolute right-3 top-3 h-5 w-5 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
                   >
-                    <option value="">Request Release</option>
-                    {cultivators
-                      .filter((c) => c.id !== myCultivatorId)
-                      .map((cult) => (
-                        <option key={cult.id} value={cult.id}>
-                          {cult.name}
-                        </option>
-                      ))}
-                  </select>
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                    />
+                  </svg>
                 </div>
-              </li>
-            ))}
-          </ul>
-
-          <h2 className="text-xl font-semibold text-purple-700 mb-2">
-            Other Donors
-          </h2>
-          <ul className="bg-white shadow rounded">
-            {filteredOtherDonors.map((donor) => (
-              <li
-                key={donor.donorId}
-                className="p-4 border-b flex justify-between items-center"
+              </div>
+              <button
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                  showRequestsTab
+                    ? "bg-gray-200 text-gray-800 hover:bg-gray-300"
+                    : "bg-purple-600 text-white hover:bg-purple-700"
+                }`}
+                onClick={() => setShowRequestsTab(!showRequestsTab)}
               >
-                <div>
-                  <p className="font-medium">{donor.donorName}</p>
-                  <p className="font-medium">{donor.mobile}</p>
-                  <p className="text-sm text-gray-500">
-                    Cultivator: {donor?.connectedTo}
-                  </p>
-                </div>
-                <div>
+                {showRequestsTab ? (
+                  <span className="flex items-center">
+                    <svg
+                      className="w-5 h-5 mr-2"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                    Hide Requests
+                  </span>
+                ) : (
+                  <span className="flex items-center">
+                    <svg
+                      className="w-5 h-5 mr-2"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                      />
+                    </svg>
+                    View Pending Requests
+                  </span>
+                )}
+              </button>
+            </div>
+
+            {isLoading ? (
+              <div className="flex justify-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+              </div>
+            ) : showRequestsTab ? (
+              <PendingTransferRequests />
+            ) : (
+              <>
+                <section className="mb-8">
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-xl font-semibold text-gray-800">
+                      My Donors
+                    </h2>
+                    <span className="bg-purple-100 text-purple-800 text-sm font-medium px-3 py-1 rounded-full">
+                      {filteredMyDonors.length} donors
+                    </span>
+                  </div>
+
+                  {filteredMyDonors.length === 0 ? (
+                    <div className="bg-gray-50 rounded-lg p-8 text-center">
+                      <p className="text-gray-500">
+                        {searchTerm
+                          ? "No matching donors found"
+                          : "You don't have any donors assigned yet"}
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                      {filteredMyDonors.map((donor) => (
+                        <div
+                          key={donor.donorId}
+                          className="border rounded-lg p-4 hover:shadow-md transition-shadow bg-white"
+                        >
+                          <div className="flex justify-between items-start mb-2">
+                            <h3
+                              className="text-lg font-semibold text-purple-700 cursor-pointer hover:underline"
+                              onClick={() => handleShowDonorProfile(donor.donorId)}
+                            >
+                              {donor.donorName}
+                            </h3>
+                          </div>
+                          <p className="text-gray-600 mb-3">
+                            <span className="font-medium">Phone:</span> {donor?.mobileNumber || "N/A"}
+                          </p>
+                          <div className="mt-4">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Request Release To:
+                            </label>
+                            <select
+                              onChange={(e) =>
+                                handleReleaseRequest(donor.donorId, e.target.value)
+                              }
+                              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                            >
+                              <option value="">Select cultivator...</option>
+                              {cultivators
+                                .filter((c) => c.id !== myCultivatorId)
+                                .map((cult) => (
+                                  <option key={cult.id} value={cult.id}>
+                                    {cult.name}
+                                  </option>
+                                ))}
+                            </select>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </section>
+
+        <section>
+  <div className="flex items-center justify-between mb-4">
+    <h2 className="text-xl font-semibold text-gray-800">
+      Other Donors
+    </h2>
+    <span className="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full">
+      {filteredOtherDonors.length} donors
+    </span>
+  </div>
+
+  {filteredOtherDonors.length === 0 ? (
+    <div className="bg-gray-50 rounded-lg p-8 text-center">
+      <p className="text-gray-500">
+        {searchTerm
+          ? "No matching donors found"
+          : "No other donors available"}
+      </p>
+    </div>
+  ) : (
+    <>
+      {/* Desktop Table View (hidden on mobile) */}
+      <div className="hidden md:block overflow-x-auto">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Donor Name
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Contact
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Current Cultivator
+              </th>
+              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {filteredOtherDonors.map((donor) => (
+              <tr key={donor.donorId}>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="flex items-center">
+                    <div
+                      className="text-sm font-medium text-purple-600 hover:text-purple-800 cursor-pointer"
+                      onClick={() => handleShowDonorProfile(donor.donorId)}
+                    >
+                      {donor.donorName}
+                    </div>
+                  </div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="text-sm text-gray-900">
+                    {donor.mobile}
+                  </div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="text-sm text-gray-500">
+                    {donor.connectedTo}
+                  </div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <button
                     onClick={() => handleAcquireRequest(donor.donorId)}
-                    className="bg-green-500 text-white px-3 py-1 rounded disabled:bg-gray-300"
+                    className="text-green-600 hover:text-green-900 bg-green-50 hover:bg-green-100 px-3 py-1 rounded-md text-sm font-medium transition-colors"
                   >
                     Request Acquire
                   </button>
-                </div>
-              </li>
+                </td>
+              </tr>
             ))}
-          </ul>
-        </>
-      )}
+          </tbody>
+        </table>
+      </div>
 
-      {showRequestsTab && <PendingTransferRequests />}
+      {/* Mobile Card View (shown on mobile) */}
+      <div className="md:hidden grid gap-4">
+        {filteredOtherDonors.map((donor) => (
+          <div
+            key={donor.donorId}
+            className="border rounded-lg p-4 hover:shadow-md transition-shadow bg-white"
+          >
+            <div className="flex justify-between items-start mb-2">
+              <h3
+                className="text-lg font-semibold text-purple-700 cursor-pointer hover:underline"
+                onClick={() => handleShowDonorProfile(donor.donorId)}
+              >
+                {donor.donorName}
+              </h3>
+              {/* <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
+                Available
+              </span> */}
+            </div>
+            
+            <div className="space-y-2">
+              <p className="text-gray-600">
+                <span className="font-medium">Phone:</span> {donor.mobileNumber || "N/A"}
+              </p>
+              <p className="text-gray-600">
+                <span className="font-medium">Cultivator:</span> {donor.connectedTo}
+              </p>
+            </div>
+            
+            <div className="mt-4 flex justify-end">
+              <button
+                className="text-green-600 hover:text-green-900 bg-green-50 hover:bg-green-100 px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                onClick={() => handleAcquireRequest(donor.donorId)}
+              >
+                Request Acquire
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </>
+  )}
+</section>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

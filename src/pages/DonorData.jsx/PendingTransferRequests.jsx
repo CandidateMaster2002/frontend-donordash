@@ -18,8 +18,11 @@ const PendingTransferRequests = () => {
   const fetchPendingRequests = async () => {
     try {
       const all = await getPendingDonorTransfers(cultivatorId);
-      const incoming = all.filter((req) => req.requestedTo?.id === cultivatorId);
-      const outgoing = all.filter((req) => req.requestedBy?.id === cultivatorId);
+      console.log("All pending requests:", all);
+      const requests = Array.isArray(all.data) ? all.data : [];
+
+      const incoming = requests.filter((req) => req.requestedTo?.id === cultivatorId);
+      const outgoing = requests.filter((req) => req.requestedBy?.id === cultivatorId);
 
       setPendingRequests(incoming);
       setOutgoingRequests(outgoing);
