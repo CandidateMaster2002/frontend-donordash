@@ -109,9 +109,8 @@ const DonateNowPopup = ({
       const response = await axiosInstance.get(DONORS_FILTER, { params });
       setDonors(response.data);
       if (userType === "donorCultivator") {
-        const cultivatorResponse = await getDonorsByCultivator(7);
-        console.log("cultivatorId", getDonorCultivatorIdFromLocalStorage());
-        console.log("Cultivddator Donors from api", cultivatorResponse);
+        const cultivatorResponse = await getDonorsByCultivator(getDonorCultivatorIdFromLocalStorage());
+        // console.log("Cultivddator Donors from api", cultivatorResponse);
         setCultivatorDonors(cultivatorResponse);
       }
     } catch (error) {
