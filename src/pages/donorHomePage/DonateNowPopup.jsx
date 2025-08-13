@@ -4,7 +4,7 @@ import { donationPurposes, paymentModes } from "../../constants/constants";
 import { validations } from "../../utils/validations";
 import axiosInstance from "../../utils/myAxios";
 import { DONATE, DONORS_FILTER } from "../../constants/apiEndpoints";
-import { getDonorById } from "../../utils/services";
+import { getDonorById,getDonorsByCultivator } from "../../utils/services";
 import {
   getDonorCultivatorIdFromLocalStorage,
   getDonorIdFromLocalStorage,
@@ -14,7 +14,6 @@ import {
 import { handleRazorpayPayment } from "../../utils/razorpayPayment";
 import BankDetails from "../../components/BankDetails";
 
-// Add donorCultivatorId as a hidden field in the form
 const DonateNowPopup = ({
   amount,
   purpose,
@@ -30,13 +29,16 @@ const DonateNowPopup = ({
     "UTR No (12 digit numeric transaction ID)"
   );
   const [generateReceipt, setGenerateReceipt] = useState(true);
-  const [showGenerateReceiptCheckbox, setShowGenerateReceiptCheckbox] = useState(false);
+  const [showGenerateReceiptCheckbox, setShowGenerateReceiptCheckbox] =
+    useState(false);
   const userType = getUserTypeFromLocalStorage();
   const [searchTerm, setSearchTerm] = useState("");
   const [existingDonation, setExistingDonation] = useState(null);
-
+  const [allowOtherCultivatorDonors, setAllowOtherCultivatorDonors] =
+    useState(false);
+  const [selectedDonorDetails, setSelectedDonorDetails] = useState(null);
   const [cultivatorDonors, setCultivatorDonors] = useState([]);
-  // const [selectedDonorCultivatorId, setSelectedDonorCultivatorId] = useState("");
+  const [shownDonors, setShownDonors] = useState([]);
 
   const handleSuccess = () => {
     setSuccessMessage("Your donation has been successful!");
@@ -48,6 +50,7 @@ const DonateNowPopup = ({
     handleSubmit,
     formState: { errors },
     reset,
+    setValue,
   } = useForm({
     defaultValues: {
       purpose: purpose || "",
@@ -72,16 +75,44 @@ const DonateNowPopup = ({
     }
   }, [userType]);
 
+  // Show the right donor list depending on checkbox and userType
+  useEffect(() => {
+    // console.log(userType)
+    if (userType === "admin") {
+      setShownDonors(donors);
+    } else if (userType === "donorCultivator") {
+      // console.log(allowOtherCultivatorDonors)
+      setShownDonors(allowOtherCultivatorDonors ? donors : cultivatorDonors);
+      console.log("Cultivator Donors:", cultivatorDonors);
+    }
+  }, [donors, cultivatorDonors, allowOtherCultivatorDonors, userType]);
+
+  const handleDonorChange = async (e) => {
+    const donorId = e.target.value;
+    setValue("donorId", donorId);
+    if (donorId) {
+      try {
+        const donorData = await getDonorById(donorId);
+        // console.log("Selected Donor Data:", donorData);
+        setSelectedDonorDetails(donorData);
+      } catch (error) {
+        console.error("Failed to fetch donor details:", error);
+        setSelectedDonorDetails(null);
+      }
+    } else {
+      setSelectedDonorDetails(null);
+    }
+  };
+
   const fetchDonors = async (params) => {
     try {
       const response = await axiosInstance.get(DONORS_FILTER, { params });
-      console.log("Fetched donors:", response.data);
       setDonors(response.data);
       if (userType === "donorCultivator") {
-        const response = await axiosInstance.get(DONORS_FILTER, {
-          params: { donorCultivatorId: getDonorCultivatorIdFromLocalStorage() },
-        });
-        setCultivatorDonors(response.data);
+        const cultivatorResponse = await getDonorsByCultivator(7);
+        console.log("cultivatorId", getDonorCultivatorIdFromLocalStorage());
+        console.log("Cultivddator Donors from api", cultivatorResponse);
+        setCultivatorDonors(cultivatorResponse);
       }
     } catch (error) {
       console.error("Error fetching donors:", error.message);
@@ -97,7 +128,8 @@ const DonateNowPopup = ({
       paymentDate: data.paymentDate || new Date().toISOString().split("T")[0],
       status: "Pending",
       remark: data.remark,
-      notGenerateReceipt: data.paymentMode==="Cash" ? !generateReceipt: false,
+      notGenerateReceipt:
+        data.paymentMode === "Cash" ? !generateReceipt : false,
       collectedById: getDonorCultivatorIdFromLocalStorage(),
       donorId:
         userType === "donor" ? getDonorIdFromLocalStorage() : data.donorId,
@@ -106,7 +138,7 @@ const DonateNowPopup = ({
 
     if (userType === "donorCultivator") {
       const donorExists = cultivatorDonors.some(
-        (donor) => donor.id === donationData.donorId
+        (donor) => donor.donorId === donationData.donorId
       );
       if (!donorExists) {
         donationData.status = "Unapproved";
@@ -122,17 +154,13 @@ const DonateNowPopup = ({
           type,
           catoegory,
           specialDays,
-          ...donorData
+          ...donorDataRest
         } = donor;
 
-        await handleRazorpayPayment(donationData, donorData);
+        await handleRazorpayPayment(donationData, donorDataRest);
       } else {
-
         const response = await axiosInstance.post(DONATE, donationData);
-        if (
-          response?.data?.alreadyExists ===true
-        ) {
-          // Means it was existing one, show alert
+        if (response?.data?.alreadyExists === true) {
           setExistingDonation(response.data.donation);
           return;
         }
@@ -152,8 +180,7 @@ const DonateNowPopup = ({
         selectedMethod === "Bank Transfer" ||
         selectedMethod === "Razorpay Link"
     );
-    setShowGenerateReceiptCheckbox(
-      selectedMethod === "Cash")
+    setShowGenerateReceiptCheckbox(selectedMethod === "Cash");
     if (selectedMethod === "Razorpay Link")
       setFieldNameUTR("Razorpay Transaction ID starting with 'pay_'");
     else setFieldNameUTR("UTR No.(12 digit numeric transaction ID)");
@@ -163,13 +190,12 @@ const DonateNowPopup = ({
 
   return (
     <div className="fixed inset-0 z-100 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-lg">
-     
-
       <div className="rounded-lg shadow-lg w-full max-w-md relative max-h-[80vh] flex flex-col">
         <div className="p-6 overflow-y-auto">
           <button
             className="absolute top-4 right-4 text-gray-600 hover:text-gray-900 text-2xl"
             onClick={closePopup}
+            type="button"
           >
             &times;
           </button>
@@ -178,19 +204,49 @@ const DonateNowPopup = ({
           </h3>
 
           {existingDonation && (
-  <div className="mb-4 p-4 border border-yellow-400 bg-yellow-100 rounded text-sm text-yellow-800">
-    <h4 className="font-semibold text-base mb-2">Duplicate Donation Detected</h4>
-    <p><strong>Transaction ID:</strong> {existingDonation.transactionId}</p>
-    <p><strong>Amount:</strong> ₹{existingDonation.amount}</p>
-    <p><strong>Purpose:</strong> {existingDonation.purpose}</p>
-    <p><strong>Status:</strong> {existingDonation.status}</p>
-    <p><strong>Payment Date:</strong> {new Date(existingDonation.paymentDate).toLocaleDateString()}</p>
-  </div>
-)}
+            <div className="mb-4 p-4 border border-yellow-400 bg-yellow-100 rounded text-sm text-yellow-800">
+              <h4 className="font-semibold text-base mb-2">
+                Duplicate Donation Detected
+              </h4>
+              <p>
+                <strong>Transaction ID:</strong>{" "}
+                {existingDonation.transactionId}
+              </p>
+              <p>
+                <strong>Amount:</strong> ₹{existingDonation.amount}
+              </p>
+              <p>
+                <strong>Purpose:</strong> {existingDonation.purpose}
+              </p>
+              <p>
+                <strong>Status:</strong> {existingDonation.status}
+              </p>
+              <p>
+                <strong>Payment Date:</strong>{" "}
+                {new Date(existingDonation.paymentDate).toLocaleDateString()}
+              </p>
+            </div>
+          )}
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             {(userType === "admin" || userType === "donorCultivator") && (
               <div>
+                {userType === "donorCultivator" && (
+                  <div className="mb-4 flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      id="allowOtherCultivatorDonors"
+                      checked={allowOtherCultivatorDonors}
+                      onChange={(e) =>
+                        setAllowOtherCultivatorDonors(e.target.checked)
+                      }
+                    />
+                    <label htmlFor="allowOtherCultivatorDonors" className="text-sm">
+                      Do you want to add donation for other cultivator's donor?
+                    </label>
+                  </div>
+                )}
+
                 <label className="block mb-2 font-medium">Search Donor:</label>
                 <input
                   type="text"
@@ -202,21 +258,16 @@ const DonateNowPopup = ({
 
                 <label className="block mb-2 font-medium">Donor:</label>
                 <select
-                  {...register("donorId", {
-                    required: "Please select a donor",
-                  })}
+                  {...register("donorId", { required: "Please select a donor" })}
+                  onChange={handleDonorChange}
                   className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="">Select Donor</option>
-                  {donors
+                  {shownDonors
                     .filter(
                       (donor) =>
-                        donor.username
-                          ?.toLowerCase()
-                          .includes(searchTerm.toLowerCase()) ||
-                        donor.name
-                          ?.toLowerCase()
-                          .includes(searchTerm.toLowerCase())
+                        donor.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                        donor.name?.toLowerCase().includes(searchTerm.toLowerCase())
                     )
                     .map((donor) => (
                       <option key={donor.donorId} value={donor.donorId}>
@@ -228,6 +279,16 @@ const DonateNowPopup = ({
                   <span className="text-red-500 text-sm">
                     {errors.donorId.message}
                   </span>
+                )}
+
+                {selectedDonorDetails && (
+                  <div className="mt-4 p-4 border border-gray-300 rounded bg-gray-50 text-sm">
+                    <p><strong>Name:</strong> {selectedDonorDetails?.name}</p>
+                    <p><strong>Address:</strong> {selectedDonorDetails?.address || "N/A"}</p>
+                    <p><strong>Mobile:</strong> {selectedDonorDetails?.mobileNumber || "N/A"}</p>
+                    <p><strong>PAN:</strong> {selectedDonorDetails?.panNumber || "N/A"}</p>
+                    <p><strong>Cultivator Name:</strong> {selectedDonorDetails?.donorCultivator?.name || "N/A"}</p>
+                  </div>
                 )}
               </div>
             )}
@@ -295,20 +356,22 @@ const DonateNowPopup = ({
             </div>
 
             {showGenerateReceiptCheckbox && (
-  <div className="mt-2 flex items-start gap-2">
-    <input
-      type="checkbox"
-      id="generateReceipt"
-      checked={generateReceipt}
-      onChange={(e) => setGenerateReceipt(e.target.checked)}
-      className="mt-1"
-    />
-    <label htmlFor="generateReceipt" className="text-2xl text-bold text-red-900">
-      Do you need receipt for this?
-    </label>
-  </div>
-)}
-
+              <div className="mt-2 flex items-start gap-2">
+                <input
+                  type="checkbox"
+                  id="generateReceipt"
+                  checked={generateReceipt}
+                  onChange={(e) => setGenerateReceipt(e.target.checked)}
+                  className="mt-1"
+                />
+                <label
+                  htmlFor="generateReceipt"
+                  className="text-2xl font-bold text-red-900"
+                >
+                  Do you need receipt for this?
+                </label>
+              </div>
+            )}
 
             {showBankDetails && <BankDetails />}
 
@@ -356,17 +419,15 @@ const DonateNowPopup = ({
                 rows="1"
               />
             </div>
+            <div className="p-0">
+              <button
+                type="submit"
+                className="bg-blue-500 text-white py-3 px-6 rounded w-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
+              >
+                Pay
+              </button>
+            </div>
           </form>
-        </div>
-
-        <div className="p-6 border-t border-gray-200">
-          <button
-            type="submit"
-            onClick={handleSubmit(onSubmit)}
-            className="bg-blue-500 text-white py-3 px-6 rounded w-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
-          >
-            Pay
-          </button>
         </div>
       </div>
     </div>
