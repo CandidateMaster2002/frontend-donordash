@@ -89,10 +89,9 @@ const DonorSignupForm = ({ onSubmit }) => {
       delete data.confirmPassword;
       if (data.panNumber === "") delete data.panNumber;
       console.log("Form Data:", data);
-      if (!data.email || data.email.trim() === "") {
+      // if (!data.email || data.email.trim() === "") {
         delete data.email;
-      }
-
+      // }
       const success = await handleDonorSignup(data, navigate);
       if (success) methods.reset();
     } finally {
