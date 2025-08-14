@@ -15,7 +15,11 @@ import { handleDonorSignup } from "./handleDonorSignup";
 import { useNavigate } from "react-router-dom";
 import { zones } from "../../constants/constants";
 import { useLocation } from "react-router-dom";
-import { getRedirectPath, getAllDonorCultivators, checkDonorRegisteredByMobile } from "../../utils/services";
+import {
+  getRedirectPath,
+  getAllDonorCultivators,
+  checkDonorRegisteredByMobile,
+} from "../../utils/services";
 
 const DonorSignupForm = ({ onSubmit }) => {
   const navigate = useNavigate();
@@ -26,8 +30,8 @@ const DonorSignupForm = ({ onSubmit }) => {
   const [checkLoading, setCheckLoading] = useState(false);
 
   const location = useLocation();
-const preselectedCultivatorId = location.state?.preselectedCultivatorId || null;
-
+  const preselectedCultivatorId =
+    location.state?.preselectedCultivatorId || null;
 
   const handleCheckMobile = async () => {
     setCheckLoading(true);
@@ -63,7 +67,7 @@ const preselectedCultivatorId = location.state?.preselectedCultivatorId || null;
       password: "",
       remark: "Not Mentioned",
       zone: "Other",
-       donorCultivatorId: preselectedCultivatorId || "",
+      donorCultivatorId: preselectedCultivatorId || "",
     },
   });
 
@@ -84,7 +88,11 @@ const preselectedCultivatorId = location.state?.preselectedCultivatorId || null;
       data.donorCultivatorId = parseInt(data.donorCultivatorId, 10);
       delete data.confirmPassword;
       if (data.panNumber === "") delete data.panNumber;
-      if(data.email === "") delete data.email;
+      console.log("Form Data:", data);
+      if (!data.email || data.email.trim() === "") {
+        delete data.email;
+      }
+
       const success = await handleDonorSignup(data, navigate);
       if (success) methods.reset();
     } finally {
@@ -190,11 +198,11 @@ const preselectedCultivatorId = location.state?.preselectedCultivatorId || null;
                   <FiMail className="absolute left-3 top-3 text-gray-400" />
                   <input
                     type="email"
-                    {...methods.register('email', validations.email.validation)}
+                    {...methods.register("email", validations.email.validation)}
                     placeholder="Email / ईमेल (optional)"
                     className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
-                  {renderError('email')}
+                  {renderError("email")}
                 </div>
               </div>
 
