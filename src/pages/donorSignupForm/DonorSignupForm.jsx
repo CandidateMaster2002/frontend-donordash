@@ -59,7 +59,6 @@ const DonorSignupForm = ({ onSubmit }) => {
     defaultValues: {
       name: "",
       mobileNumber: "",
-      email: null,
       address: "",
       city: "",
       state: "",
