@@ -135,15 +135,6 @@ const DonateNowPopup = ({
       createdAt: new Date().toISOString(),
     };
 
-    if (userType === "donorCultivator") {
-      const donorExists = cultivatorDonors.some(
-        (donor) => donor.donorId === donationData.donorId
-      );
-      if (!donorExists) {
-        donationData.status = "Unapproved";
-      }
-    }
-
     try {
       if (donationData.paymentMode === "Razorpay") {
         const donor = await getDonorById(donationData.donorId);
