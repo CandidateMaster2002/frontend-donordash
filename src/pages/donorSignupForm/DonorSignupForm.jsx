@@ -55,7 +55,7 @@ const preselectedCultivatorId = location.state?.preselectedCultivatorId || null;
     defaultValues: {
       name: "",
       mobileNumber: "",
-      email: "",
+      email: null,
       address: "",
       city: "",
       state: "",
@@ -84,6 +84,7 @@ const preselectedCultivatorId = location.state?.preselectedCultivatorId || null;
       data.donorCultivatorId = parseInt(data.donorCultivatorId, 10);
       delete data.confirmPassword;
       if (data.panNumber === "") delete data.panNumber;
+      if(data.email === "") delete data.email;
       const success = await handleDonorSignup(data, navigate);
       if (success) methods.reset();
     } finally {
