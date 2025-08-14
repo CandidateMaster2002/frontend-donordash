@@ -89,7 +89,7 @@ const DonorSignupForm = ({ onSubmit }) => {
       if (data.panNumber === "") delete data.panNumber;
       console.log("Form Data:", data);
       // if (!data.email || data.email.trim() === "") {
-        delete data.email;
+      delete data.email;
       // }
       const success = await handleDonorSignup(data, navigate);
       if (success) methods.reset();
@@ -192,7 +192,7 @@ const DonorSignupForm = ({ onSubmit }) => {
                   </div>
                 )}
 
-                <div className="relative">
+                {/* <div className="relative">
                   <FiMail className="absolute left-3 top-3 text-gray-400" />
                   <input
                     type="email"
@@ -201,7 +201,7 @@ const DonorSignupForm = ({ onSubmit }) => {
                     className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                   {renderError("email")}
-                </div>
+                </div> */}
               </div>
 
               {/* Address Information */}
