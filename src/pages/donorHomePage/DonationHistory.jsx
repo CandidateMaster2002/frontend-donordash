@@ -30,14 +30,19 @@ const navigate = useNavigate();
 
   const totalPages = Math.ceil(donationsByDonorId.length / rowsPerPage);
 
-  const handleReceiptClick = async (donationId) => {
-    try {
-      const receiptData = await getReceiptByDonationId(donationId);
-      navigate("/receipt", { state: { receiptData } });
-    } catch (error) {
-      console.error("Error fetching receipt data:", error);
-    }
-  };
+
+
+    const handleReceiptClick = async (donationId) => {
+      try {
+        const pdfData = await getReceiptByDonationId(donationId);
+        console.log("PDF Data:", pdfData);
+        navigate("/receipt", { state: { pdfData } });
+        console.log(pdfData);
+      } catch (error) {
+        console.error("Error fetching receipt data:", error);
+      }
+    };
+  
 
   const handlePageChange = (page) => {
     if (page > 0 && page <= totalPages) {
