@@ -43,6 +43,10 @@ const DonationsTable = ({ data, onEdit }) => {
   const handleReceiptClick = async (donationId) => {
     try {
       const receiptData = await getReceiptByDonationId(donationId);
+       if (!pdfData || !pdfData.receiptNumber || !pdfData.receiptNumber.startsWith("ISK")){
+        alert("Receipt number is missing. Cannot generate receipt.");
+        return;
+      }
       navigate("/receipt", { state: { receiptData } });
     } catch (error) {
       console.error("Error fetching receipt data:", error);

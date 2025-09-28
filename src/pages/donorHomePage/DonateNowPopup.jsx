@@ -28,6 +28,7 @@ const DonateNowPopup = ({
   const [FieldNameUTR, setFieldNameUTR] = useState(
     "UTR No (12 digit numeric transaction ID)"
   );
+  const [hasOfflineReceipt, setHasOfflineReceipt] = useState(false);
   const [generateReceipt, setGenerateReceipt] = useState(true);
   const [showGenerateReceiptCheckbox, setShowGenerateReceiptCheckbox] =
     useState(false);
@@ -128,11 +129,12 @@ const DonateNowPopup = ({
       status: "Pending",
       remark: data.remark,
       notGenerateReceipt:
-        data.paymentMode === "Cash" ? !generateReceipt : false,
+        hasOfflineReceipt || (data.paymentMode === "Cash" ? !generateReceipt : false),
       collectedById: getDonorCultivatorIdFromLocalStorage(),
       donorId:
         userType === "donor" ? getDonorIdFromLocalStorage() : data.donorId,
       createdAt: new Date().toISOString(),
+      receiptId: hasOfflineReceipt ? data.offlineReceiptNumber : null
     };
 
     try {
@@ -170,7 +172,7 @@ const DonateNowPopup = ({
         selectedMethod === "Bank Transfer" ||
         selectedMethod === "Razorpay Link"
     );
-    setShowGenerateReceiptCheckbox(selectedMethod === "Cash");
+    setShowGenerateReceiptCheckbox(selectedMethod === "Cash"&&hasOfflineReceipt===false);
     if (selectedMethod === "Razorpay Link")
       setFieldNameUTR("Razorpay Transaction ID starting with 'pay_'");
     else setFieldNameUTR("UTR No.(12 digit numeric transaction ID)");
@@ -219,6 +221,41 @@ const DonateNowPopup = ({
           )}
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            {/* 🔹 Offline Receipt Option */}
+<div className="mb-4 flex items-center gap-2">
+  <input
+    type="checkbox"
+    id="hasOfflineReceipt"
+    checked={hasOfflineReceipt}
+    onChange={(e) => setHasOfflineReceipt(e.target.checked)}
+  />
+  <label htmlFor="hasOfflineReceipt" className="text-xl">
+    Have you generated an offline receipt?
+  </label>
+</div>
+
+{hasOfflineReceipt && (
+  <div>
+    <label className="block mb-2 font-medium">
+      Offline Receipt Number:
+    </label>
+    <input
+      type="text"
+      {...register("offlineReceiptNumber", {
+        required: hasOfflineReceipt
+          ? "Please enter the offline receipt number"
+          : false,
+      })}
+      className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+    />
+    {errors.offlineReceiptNumber && (
+      <span className="text-red-500 text-sm">
+        {errors.offlineReceiptNumber.message}
+      </span>
+    )}
+  </div>
+)}
+
             {(userType === "admin" || userType === "donorCultivator") && (
               <div>
                 {userType === "donorCultivator" && (

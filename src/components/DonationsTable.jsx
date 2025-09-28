@@ -16,6 +16,11 @@ const DonationsTable = ({ data,onEdit,showStatus=true,showEditDonation=true,sort
     try {
       const pdfData = await getReceiptByDonationId(donationId);
       console.log("PDF Data:", pdfData);
+      if (!pdfData || !pdfData.receiptNumber || !pdfData.receiptNumber.startsWith("ISK")){
+        alert("Receipt number is missing. Cannot generate receipt.");
+        return;
+      }
+      console.log("PDF Data:", pdfData);
       navigate("/receipt", { state: { pdfData } });
       console.log(pdfData);
     } catch (error) {

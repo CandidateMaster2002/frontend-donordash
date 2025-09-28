@@ -35,6 +35,10 @@ const navigate = useNavigate();
     const handleReceiptClick = async (donationId) => {
       try {
         const pdfData = await getReceiptByDonationId(donationId);
+        if (!pdfData || !pdfData.receiptNumber || !pdfData.receiptNumber.startsWith("ISK")) {
+        alert("Receipt number is missing. Cannot generate receipt.");
+        return;
+      }
         console.log("PDF Data:", pdfData);
         navigate("/receipt", { state: { pdfData } });
         console.log(pdfData);
