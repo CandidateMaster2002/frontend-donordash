@@ -2,14 +2,14 @@ import axios from "axios";
 // import { useLoading } from "../LoadingContext";
 
 const axiosInstance = axios.create({
-  baseURL:"https://backend-donordash.onrender.com/"
-  // baseURL: "http://localhost:8080/",
+  // baseURL:"https://backend-donordash.onrender.com/"
+  baseURL: "http://localhost:8080/",
 });
 
 export const setupInterceptors = (showLoader, hideLoader) => {
   axiosInstance.interceptors.request.use(
     (config) => {
-      showLoader();  
+      showLoader();
       return config;
     },
     (error) => {
@@ -19,11 +19,11 @@ export const setupInterceptors = (showLoader, hideLoader) => {
 
   axiosInstance.interceptors.response.use(
     (response) => {
-      hideLoader();  // Hide loader on success
+      hideLoader(); // Hide loader on success
       return response;
     },
     (error) => {
-      hideLoader();  // Hide loader on error
+      hideLoader(); // Hide loader on error
       return Promise.reject(error);
     }
   );

@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  fetchDonations,
-  editDonation,
-} from "../../utils/services";
+import { fetchDonations, editDonation } from "../../utils/services";
 import DonationsTable from "./DonationsTable";
 import DonationStatusFilters from "./DonationStatusFilters";
 import EditDonationPopup from "./EditDonationPopup";
@@ -63,7 +60,9 @@ const AdminPage = () => {
 
   // Extract unique cultivator names
   useEffect(() => {
-    const uniqueNames = [...new Set(donations.map(d => d.donorCultivatorName).filter(Boolean))];
+    const uniqueNames = [
+      ...new Set(donations.map((d) => d.donorCultivatorName).filter(Boolean)),
+    ];
     setCultivators(uniqueNames);
   }, [donations]);
 
@@ -80,7 +79,7 @@ const AdminPage = () => {
         selectedCultivators.includes(d.donorCultivatorName)
       );
     }
-
+    console.log("Filtered Donations:", filtered);
     setData(filtered);
   }, [donations, selectedFilter, selectedCultivators]);
 

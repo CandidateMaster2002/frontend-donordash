@@ -33,21 +33,24 @@ const DonationsTable = ({ data, onEdit }) => {
 
     // Simulating successful status change
     setSuccessMessage(
-      `The donation status has been changed from ${
-        selectedDonation.status
-      } to ${status}.`
+      `The donation status has been changed from ${selectedDonation.status} to ${status}.`
     );
     setShowSuccessPopup(true);
   };
 
   const handleReceiptClick = async (donationId) => {
     try {
-      const receiptData = await getReceiptByDonationId(donationId);
-       if (!pdfData || !pdfData.receiptNumber || !pdfData.receiptNumber.startsWith("ISK")){
+      const pdfData = await getReceiptByDonationId(donationId);
+      if (
+        !pdfData ||
+        !pdfData.receiptNumber ||
+        !pdfData.receiptNumber.startsWith("ISK")
+      ) {
         alert("Receipt number is missing. Cannot generate receipt.");
         return;
       }
-      navigate("/receipt", { state: { receiptData } });
+      console.log("pdf Data:", pdfData);
+      navigate("/receipt", { state: { pdfData } });
     } catch (error) {
       console.error("Error fetching receipt data:", error);
     }

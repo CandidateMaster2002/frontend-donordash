@@ -4,11 +4,12 @@ import MyPDFDocument from "./MyPDFDocument";
 import { useLocation } from "react-router-dom";
 
 const FormAndDownload = () => {
-  const { pdfData } = useLocation().state;
+  const location = useLocation();
+  const pdfData = location.state?.pdfData || {};
   const [formData, setFormData] = useState({
     receiptNumber: pdfData.receiptNumber,
     receiptDate: pdfData.paymentDate,
-    amountWords:"dd",
+    amountWords: "dd",
     amountNumber: pdfData.amount,
     name: pdfData.donorName,
     address: pdfData.donorAddress,
@@ -20,8 +21,11 @@ const FormAndDownload = () => {
     paymentDetails: pdfData.transactionID,
     donationPurpose: pdfData.purpose,
     donorCultivatorId: pdfData.donorCultivatorId,
-    donationId:pdfData.donationId||"NA",
+    donationId: pdfData.donationId || "NA",
   });
+
+  console.log("PDF Data in FormAndDownload:", pdfData);
+  console.log("Form Data in FormAndDownload:", formData);
 
   const [showDownloadLink, setShowDownloadLink] = useState(true);
   const [documentData, setDocumentData] = useState({
@@ -39,9 +43,10 @@ const FormAndDownload = () => {
     paymentDetails: pdfData.transactionID,
     donationPurpose: pdfData.purpose,
     donorCultivatorId: pdfData.donorCultivatorId,
-    donationId: pdfData.donationId||"NA",
+    donationId: pdfData.donationId || "NA",
   });
 
+  console.log("Document Data in FormAndDownload:", documentData);
   // Format date to display nicely
   const formatDate = (dateString) => {
     if (!dateString) return "";
@@ -62,7 +67,8 @@ const FormAndDownload = () => {
           <h2 className="text-2xl font-bold text-gray-800">ISKCON Dhanbad</h2>
           <p className="text-lg text-gray-600 mt-1">Donation Receipt</p>
           <div className="mt-4 text-gray-700">
-            Receipt No: <span className="font-semibold">{formData.receiptNumber}</span>
+            Receipt No:{" "}
+            <span className="font-semibold">{formData.receiptNumber}</span>
           </div>
         </div>
 
@@ -70,11 +76,15 @@ const FormAndDownload = () => {
         <div className="p-6 space-y-4">
           <div className="flex">
             <div className="w-1/3 font-medium text-gray-700">Date:</div>
-            <div className="w-2/3 text-gray-800">{formatDate(formData.receiptDate)}</div>
+            <div className="w-2/3 text-gray-800">
+              {formatDate(formData.receiptDate)}
+            </div>
           </div>
 
           <div className="flex">
-            <div className="w-1/3 font-medium text-gray-700">Received from:</div>
+            <div className="w-1/3 font-medium text-gray-700">
+              Received from:
+            </div>
             <div className="w-2/3 text-gray-800">{formData.name}</div>
           </div>
 
@@ -107,19 +117,26 @@ const FormAndDownload = () => {
           <div className="flex">
             <div className="w-1/3 font-medium text-gray-700">Amount:</div>
             <div className="w-2/3 text-gray-800">
-              ₹{formData.amountNumber.toLocaleString("en-IN")} ({formData.paymentMode})
+              ₹{(formData.amountNumber || 0).toLocaleString("en-IN")} (
+              {formData.paymentMode})
             </div>
           </div>
 
           <div className="flex">
             <div className="w-1/3 font-medium text-gray-700">Purpose:</div>
-            <div className="w-2/3 text-gray-800">{formData.donationPurpose}</div>
+            <div className="w-2/3 text-gray-800">
+              {formData.donationPurpose}
+            </div>
           </div>
 
           {formData.paymentDetails && (
             <div className="flex">
-              <div className="w-1/3 font-medium text-gray-700">Transaction ID:</div>
-              <div className="w-2/3 text-gray-800">{formData.paymentDetails}</div>
+              <div className="w-1/3 font-medium text-gray-700">
+                Transaction ID:
+              </div>
+              <div className="w-2/3 text-gray-800">
+                {formData.paymentDetails}
+              </div>
             </div>
           )}
         </div>
@@ -134,10 +151,14 @@ const FormAndDownload = () => {
       {/* Download Section */}
       {showDownloadLink && (
         <div className="mt-8 text-center">
-          <p className="text-gray-600 mb-4">Generate and download your receipt</p>
+          <p className="text-gray-600 mb-4">
+            Generate and download your receipt
+          </p>
           <PDFDownloadLink
             document={<MyPDFDocument formData={documentData} />}
-            fileName={`${pdfData.donorName}_${pdfData.receiptNumber}_${pdfData.amount}.pdf`}
+            fileName={`${pdfData.donorName || "Receipt"}_${
+              pdfData.receiptNumber
+            }_${pdfData.amount}.pdf`}
             className="inline-block"
           >
             {({ loading }) => (

@@ -4,7 +4,7 @@ import { donationPurposes, paymentModes } from "../../constants/constants";
 import { validations } from "../../utils/validations";
 import axiosInstance from "../../utils/myAxios";
 import { DONATE, DONORS_FILTER } from "../../constants/apiEndpoints";
-import { getDonorById,getDonorsByCultivator } from "../../utils/services";
+import { getDonorById, getDonorsByCultivator } from "../../utils/services";
 import {
   getDonorCultivatorIdFromLocalStorage,
   getDonorIdFromLocalStorage,
@@ -110,7 +110,9 @@ const DonateNowPopup = ({
       const response = await axiosInstance.get(DONORS_FILTER, { params });
       setDonors(response.data);
       if (userType === "donorCultivator") {
-        const cultivatorResponse = await getDonorsByCultivator(getDonorCultivatorIdFromLocalStorage());
+        const cultivatorResponse = await getDonorsByCultivator(
+          getDonorCultivatorIdFromLocalStorage()
+        );
         // console.log("Cultivddator Donors from api", cultivatorResponse);
         setCultivatorDonors(cultivatorResponse);
       }
@@ -129,14 +131,16 @@ const DonateNowPopup = ({
       status: "Pending",
       remark: data.remark,
       notGenerateReceipt:
-        hasOfflineReceipt || (data.paymentMode === "Cash" ? !generateReceipt : false),
+        hasOfflineReceipt ||
+        (data.paymentMode === "Cash" ? !generateReceipt : false),
       collectedById: getDonorCultivatorIdFromLocalStorage(),
       donorId:
         userType === "donor" ? getDonorIdFromLocalStorage() : data.donorId,
       createdAt: new Date().toISOString(),
-      receiptId: hasOfflineReceipt ? data.offlineReceiptNumber : null
+      receiptId: hasOfflineReceipt ? data.offlineReceiptNumber : null,
     };
-
+    console.log("Donation Data to be sent:", donationData);
+    console.log("generateReceipt:", generateReceipt);
     try {
       if (donationData.paymentMode === "Razorpay") {
         const donor = await getDonorById(donationData.donorId);
@@ -172,7 +176,9 @@ const DonateNowPopup = ({
         selectedMethod === "Bank Transfer" ||
         selectedMethod === "Razorpay Link"
     );
-    setShowGenerateReceiptCheckbox(selectedMethod === "Cash"&&hasOfflineReceipt===false);
+    setShowGenerateReceiptCheckbox(
+      selectedMethod === "Cash" && hasOfflineReceipt === false
+    );
     if (selectedMethod === "Razorpay Link")
       setFieldNameUTR("Razorpay Transaction ID starting with 'pay_'");
     else setFieldNameUTR("UTR No.(12 digit numeric transaction ID)");
@@ -222,39 +228,39 @@ const DonateNowPopup = ({
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             {/* 🔹 Offline Receipt Option */}
-<div className="mb-4 flex items-center gap-2">
-  <input
-    type="checkbox"
-    id="hasOfflineReceipt"
-    checked={hasOfflineReceipt}
-    onChange={(e) => setHasOfflineReceipt(e.target.checked)}
-  />
-  <label htmlFor="hasOfflineReceipt" className="text-xl">
-    Have you generated an offline receipt?
-  </label>
-</div>
+            <div className="mb-4 flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="hasOfflineReceipt"
+                checked={hasOfflineReceipt}
+                onChange={(e) => setHasOfflineReceipt(e.target.checked)}
+              />
+              <label htmlFor="hasOfflineReceipt" className="text-xl">
+                Have you generated an offline receipt?
+              </label>
+            </div>
 
-{hasOfflineReceipt && (
-  <div>
-    <label className="block mb-2 font-medium">
-      Offline Receipt Number:
-    </label>
-    <input
-      type="text"
-      {...register("offlineReceiptNumber", {
-        required: hasOfflineReceipt
-          ? "Please enter the offline receipt number"
-          : false,
-      })}
-      className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-    />
-    {errors.offlineReceiptNumber && (
-      <span className="text-red-500 text-sm">
-        {errors.offlineReceiptNumber.message}
-      </span>
-    )}
-  </div>
-)}
+            {hasOfflineReceipt && (
+              <div>
+                <label className="block mb-2 font-medium">
+                  Offline Receipt Number:
+                </label>
+                <input
+                  type="text"
+                  {...register("offlineReceiptNumber", {
+                    required: hasOfflineReceipt
+                      ? "Please enter the offline receipt number"
+                      : false,
+                  })}
+                  className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                {errors.offlineReceiptNumber && (
+                  <span className="text-red-500 text-sm">
+                    {errors.offlineReceiptNumber.message}
+                  </span>
+                )}
+              </div>
+            )}
 
             {(userType === "admin" || userType === "donorCultivator") && (
               <div>
@@ -268,7 +274,10 @@ const DonateNowPopup = ({
                         setAllowOtherCultivatorDonors(e.target.checked)
                       }
                     />
-                    <label htmlFor="allowOtherCultivatorDonors" className="text-sm">
+                    <label
+                      htmlFor="allowOtherCultivatorDonors"
+                      className="text-sm"
+                    >
                       Do you want to add donation for other cultivator's donor?
                     </label>
                   </div>
@@ -285,7 +294,9 @@ const DonateNowPopup = ({
 
                 <label className="block mb-2 font-medium">Donor:</label>
                 <select
-                  {...register("donorId", { required: "Please select a donor" })}
+                  {...register("donorId", {
+                    required: "Please select a donor",
+                  })}
                   onChange={handleDonorChange}
                   className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
@@ -293,8 +304,12 @@ const DonateNowPopup = ({
                   {shownDonors
                     .filter(
                       (donor) =>
-                        donor.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                        donor.name?.toLowerCase().includes(searchTerm.toLowerCase())
+                        donor.username
+                          ?.toLowerCase()
+                          .includes(searchTerm.toLowerCase()) ||
+                        donor.name
+                          ?.toLowerCase()
+                          .includes(searchTerm.toLowerCase())
                     )
                     .map((donor) => (
                       <option key={donor.donorId} value={donor.donorId}>
@@ -310,11 +325,25 @@ const DonateNowPopup = ({
 
                 {selectedDonorDetails && (
                   <div className="mt-4 p-4 border border-gray-300 rounded bg-gray-50 text-sm">
-                    <p><strong>Name:</strong> {selectedDonorDetails?.name}</p>
-                    <p><strong>Address:</strong> {selectedDonorDetails?.address || "N/A"}</p>
-                    <p><strong>Mobile:</strong> {selectedDonorDetails?.mobileNumber || "N/A"}</p>
-                    <p><strong>PAN:</strong> {selectedDonorDetails?.panNumber || "N/A"}</p>
-                    <p><strong>Cultivator Name:</strong> {selectedDonorDetails?.donorCultivator?.name || "N/A"}</p>
+                    <p>
+                      <strong>Name:</strong> {selectedDonorDetails?.name}
+                    </p>
+                    <p>
+                      <strong>Address:</strong>{" "}
+                      {selectedDonorDetails?.address || "N/A"}
+                    </p>
+                    <p>
+                      <strong>Mobile:</strong>{" "}
+                      {selectedDonorDetails?.mobileNumber || "N/A"}
+                    </p>
+                    <p>
+                      <strong>PAN:</strong>{" "}
+                      {selectedDonorDetails?.panNumber || "N/A"}
+                    </p>
+                    <p>
+                      <strong>Cultivator Name:</strong>{" "}
+                      {selectedDonorDetails?.donorCultivator?.name || "N/A"}
+                    </p>
                   </div>
                 )}
               </div>

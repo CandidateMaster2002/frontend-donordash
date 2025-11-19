@@ -17,7 +17,7 @@ import {
   UNAPPROVED_DONATIONS_BY_CULTIVATOR,
   CHECK_DONOR_REGSITERED_BY_MOBILE,
   REQUEST_ACQUIRE_DONOR,
-  REQUEST_DONOR_RELEASE,  
+  REQUEST_DONOR_RELEASE,
   DONOR_APPROVE_ACQUIRE,
   DONOR_APPROVE_RELEASE,
   GET_PENDING_DONOR_TRANSFERS,
@@ -85,8 +85,6 @@ export const getDonorCultivatorFromLocalStorage = () => {
   }
 };
 
-
-
 export const getDonorCultivatorIdFromLocalStorage = () => {
   const user = JSON.parse(localStorage.getItem("user"));
   if (user && user.userType === "donorCultivator") {
@@ -94,7 +92,6 @@ export const getDonorCultivatorIdFromLocalStorage = () => {
   }
   return null;
 };
-
 
 export const getDonorSupervisorIdForAdminFromLocalStorage = () => {
   const user = JSON.parse(localStorage.getItem("user"));
@@ -150,8 +147,6 @@ export const getUnApprovedDonationsByCultivator = async (cultivatorId) => {
     );
   }
 };
-
-
 
 export const getDonorById = async (donorId) => {
   try {
@@ -267,18 +262,26 @@ export const getAllDonorCultivators = async () => {
 
 export const requestAcquireDonor = async (donorId, cultivatorId) => {
   try {
-    const response = await axiosInstance.post(`${REQUEST_ACQUIRE_DONOR}`, null, {
-      params: { donorId, requestedById: cultivatorId },
-    });
+    const response = await axiosInstance.post(
+      `${REQUEST_ACQUIRE_DONOR}`,
+      null,
+      {
+        params: { donorId, requestedById: cultivatorId },
+      }
+    );
     return response.data;
   } catch (error) {
-    throw new Error(error.response?.data || 'Failed to request donor acquisition');
+    throw new Error(
+      error.response?.data || "Failed to request donor acquisition"
+    );
   }
 };
 
 export const getPendingDonorTransfers = async (cultivatorId) => {
   try {
-    const response = await axiosInstance.get(`${GET_PENDING_DONOR_TRANSFERS}/${cultivatorId}`);
+    const response = await axiosInstance.get(
+      `${GET_PENDING_DONOR_TRANSFERS}/${cultivatorId}`
+    );
     return response.data;
   } catch (error) {
     console.error("Error fetching pending donor transfers:", error.message);
@@ -289,36 +292,48 @@ export const getPendingDonorTransfers = async (cultivatorId) => {
 // 2. Request to Release a Donor
 export const requestDonorRelease = async (donorId, fromId, toId) => {
   try {
-    const response = await axiosInstance.post(`${REQUEST_DONOR_RELEASE}`, null, {
-      params: { donorId, fromId, toId },
-    });
+    const response = await axiosInstance.post(
+      `${REQUEST_DONOR_RELEASE}`,
+      null,
+      {
+        params: { donorId, fromId, toId },
+      }
+    );
     return response.data;
   } catch (error) {
-    throw new Error(error.response?.data || 'Failed to request donor release');
+    throw new Error(error.response?.data || "Failed to request donor release");
   }
 };
 
 // 3. Approve Donor Acquisition
 export const approveDonorAcquire = async (donorId, fromId, toId) => {
   try {
-    const response = await axiosInstance.post(`${DONOR_APPROVE_ACQUIRE}`, null, {
-      params: { donorId, fromId, toId },
-    });
+    const response = await axiosInstance.post(
+      `${DONOR_APPROVE_ACQUIRE}`,
+      null,
+      {
+        params: { donorId, fromId, toId },
+      }
+    );
     return response.data;
   } catch (error) {
-    throw new Error(error.response?.data || 'Failed to approve acquisition');
+    throw new Error(error.response?.data || "Failed to approve acquisition");
   }
 };
 
 // 4. Approve Donor Release
 export const approveDonorRelease = async (donorId, fromId, toId) => {
   try {
-    const response = await axiosInstance.post(`${DONOR_APPROVE_RELEASE}`, null, {
-      params: { donorId, fromId, toId },
-    });
+    const response = await axiosInstance.post(
+      `${DONOR_APPROVE_RELEASE}`,
+      null,
+      {
+        params: { donorId, fromId, toId },
+      }
+    );
     return response.data;
   } catch (error) {
-    throw new Error(error.response?.data || 'Failed to approve release');
+    throw new Error(error.response?.data || "Failed to approve release");
   }
 };
 
@@ -375,7 +390,6 @@ export const checkDonorRegisteredByMobile = async (mobileNumber) => {
   }
 };
 
-
 export const fetchDonationSummary = async (params) => {
   try {
     const response = await axiosInstance.get(DONATIONS_FILTER_SUM, { params });
@@ -402,6 +416,7 @@ export const editDonation = async (donationId, donationData) => {
 export const getReceiptByDonationId = async (donationId) => {
   try {
     const response = await axiosInstance.get(`${GET_RECEIPT}/${donationId}`);
+    console.log("Receipt response data:", response.data);
     return response.data;
   } catch (error) {
     console.error(

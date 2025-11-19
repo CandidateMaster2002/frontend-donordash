@@ -6,23 +6,32 @@ import { MdEdit } from "react-icons/md";
 import { getReceiptByDonationId } from "../utils/services";
 import { useNavigate } from "react-router-dom";
 
-const DonationsTable = ({ data,onEdit,showStatus=true,showEditDonation=true,sortOption="date",showCutivatorName=false}) => {
-
-
-  console.log(data);
+const DonationsTable = ({
+  data,
+  onEdit,
+  showStatus = true,
+  showEditDonation = true,
+  sortOption = "date",
+  showCutivatorName = false,
+}) => {
+  console.log("Data :", data);
 
   const navigate = useNavigate();
   const handleReceiptClick = async (donationId) => {
     try {
       const pdfData = await getReceiptByDonationId(donationId);
       console.log("PDF Data:", pdfData);
-      if (!pdfData || !pdfData.receiptNumber || !pdfData.receiptNumber.startsWith("ISK")){
+      if (
+        !pdfData ||
+        !pdfData.receiptNumber ||
+        !pdfData.receiptNumber.startsWith("ISK")
+      ) {
         alert("Receipt number is missing. Cannot generate receipt.");
         return;
       }
       console.log("PDF Data:", pdfData);
       navigate("/receipt", { state: { pdfData } });
-      console.log(pdfData);
+      console.log("jksdbskjb", pdfData);
     } catch (error) {
       console.error("Error fetching receipt data:", error);
     }
@@ -39,7 +48,9 @@ const DonationsTable = ({ data,onEdit,showStatus=true,showEditDonation=true,sort
     } else if (sortOption === "amount") {
       return [...data].sort((a, b) => b.amount - a.amount); // Sort by amount (highest to lowest)
     } else if (sortOption === "date") {
-      return [...data].sort((a, b) => new Date(b.paymentDate) - new Date(a.paymentDate)); // Sort by date (latest first)
+      return [...data].sort(
+        (a, b) => new Date(b.paymentDate) - new Date(a.paymentDate)
+      ); // Sort by date (latest first)
     }
     return data;
   };
@@ -53,7 +64,9 @@ const DonationsTable = ({ data,onEdit,showStatus=true,showEditDonation=true,sort
           <tr>
             <th className="py-3 px-4 text-left">Payment Date</th>
             <th className="py-3 px-4 text-left">Donor</th>
-            {showCutivatorName &&  <th className="py-3 px-4 text-left">Cultivator</th>}
+            {showCutivatorName && (
+              <th className="py-3 px-4 text-left">Cultivator</th>
+            )}
             <th className="py-3 px-4 text-left">Amount</th>
             <th className="py-3 px-4 text-left">Mode</th>
             <th className="py-3 px-4 text-left">Purpose</th>
@@ -69,7 +82,11 @@ const DonationsTable = ({ data,onEdit,showStatus=true,showEditDonation=true,sort
                 {formatDate(row.paymentDate)}
               </td>
               <td className="py-3 px-4 border-b">{row.donorName}</td>
-             {showCutivatorName && <td className="py-3 px-4 border-b">{row.donorCultivatorName}</td>}
+              {showCutivatorName && (
+                <td className="py-3 px-4 border-b">
+                  {row.donorCultivatorName}
+                </td>
+              )}
               <td className="py-3 px-4 border-b">₹ {row.amount}</td>
               <td className="py-3 px-4 border-b">{row.paymentMode}</td>
               <td className="py-3 px-4 border-b">{row.purpose}</td>
