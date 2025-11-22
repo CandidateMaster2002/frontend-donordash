@@ -21,6 +21,7 @@ import {
   DONOR_APPROVE_ACQUIRE,
   DONOR_APPROVE_RELEASE,
   GET_PENDING_DONOR_TRANSFERS,
+  ALL_DONATIONS,
 } from "../constants/apiEndpoints";
 
 export const getRedirectPath = (userType) => {
@@ -355,6 +356,16 @@ export const donate = async (donationData) => {
 export const fetchDonations = async (filterDto) => {
   try {
     const response = await axiosInstance.post(DONATIONS_FILTER, filterDto);
+    return response.data;
+  } catch (error) {
+    console.error("There was an error fetching the donations!", error);
+    throw error;
+  }
+};
+
+export const fetchAllDonations = async () => {
+  try {
+    const response = await axiosInstance.get(ALL_DONATIONS);
     return response.data;
   } catch (error) {
     console.error("There was an error fetching the donations!", error);

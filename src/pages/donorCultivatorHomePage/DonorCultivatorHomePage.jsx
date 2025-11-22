@@ -14,6 +14,8 @@ import { editDonation } from "../../utils/services";
 import SuccessPopup from "../../components/SuccessPopup";
 import { getDonorCultivatorIdFromLocalStorage } from "../../utils/services";
 import { useNavigate } from "react-router-dom";
+import HareKrishnaLoader from "../../components/HareKrishnaLoader";
+import { set } from "date-fns";
 
 const DonorCultivatorHomePage = () => {
   const [filter, setFilter] = useState({
@@ -33,6 +35,7 @@ const DonorCultivatorHomePage = () => {
   const [showAddDonationPopup, setShowAddDonationPopup] = useState(false);
 
   const [editingDonation, setEditingDonation] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const handleEditDonation = async (updatedDonation) => {
     try {
@@ -74,19 +77,22 @@ const DonorCultivatorHomePage = () => {
     }
   };
   const fetchDonationsData = async (filter) => {
-    const filterDto = {
-      donorCultivatorId: getDonorCultivatorIdFromLocalStorage(),
-      fromDate: filter.startDate,
-      toDate: filter.endDate,
-    };
-
-    console.log("Filter DTO:", filterDto);
-
+    setLoading(true);
     try {
+      const filterDto = {
+        donorCultivatorId: getDonorCultivatorIdFromLocalStorage(),
+        fromDate: filter.startDate,
+        toDate: filter.endDate,
+      };
+
+      // console.log("Filter DTO:", filterDto);
+
       const donations = await fetchDonations(filterDto);
       setDonationsData(donations);
     } catch (error) {
       console.error("Error fetching donations:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -106,7 +112,9 @@ const DonorCultivatorHomePage = () => {
     setShowAddDonationPopup(false);
   };
 
-  return (
+  return loading ? (
+    <HareKrishnaLoader />
+  ) : (
     <div className="p-6 relative bg-gradient-to-br from-purple-50 to-blue-50 min-h-screen">
       {/* Page Header */}
       <div className="mb-8">
@@ -123,20 +131,21 @@ const DonorCultivatorHomePage = () => {
           View All Donors
         </button>
 
-       <button
-  onClick={() =>
-    navigate("/donor-signup", {
-      state: { preselectedCultivatorId: getDonorCultivatorIdFromLocalStorage() }, // send via state
-    })
-  }
-  className="px-8 py-3 bg-gradient-to-r from-green-500 to-blue-500 text-white rounded-lg shadow-md hover:shadow-lg transition-all text-xl"
->
-  Add a Donor
-</button>
-
+        <button
+          onClick={() =>
+            navigate("/donor-signup", {
+              state: {
+                preselectedCultivatorId: getDonorCultivatorIdFromLocalStorage(),
+              }, // send via state
+            })
+          }
+          className="px-8 py-3 bg-gradient-to-r from-green-500 to-blue-500 text-white rounded-lg shadow-md hover:shadow-lg transition-all text-xl"
+        >
+          Add a Donor
+        </button>
 
         <button
-          onClick={()=> navigate("/unapproved-donations")}
+          onClick={() => navigate("/unapproved-donations")}
           className="px-8 py-3 bg-gradient-to-r from-blue-800 to-blue-500 text-white rounded-lg shadow-md hover:shadow-lg transition-all text-xl"
         >
           Unapproved Donations

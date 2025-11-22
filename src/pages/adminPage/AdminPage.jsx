@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { fetchDonations, editDonation } from "../../utils/services";
+import { editDonation, fetchAllDonations } from "../../utils/services";
 import DonationsTable from "./DonationsTable";
 import DonationStatusFilters from "./DonationStatusFilters";
 import EditDonationPopup from "./EditDonationPopup";
 import DonateNowPopup from "../donorHomePage/DonateNowPopup";
 import SuccessPopup from "../../components/SuccessPopup";
 import { RiAddCircleFill } from "react-icons/ri";
+import HareKrishnaLoader from "../../components/HareKrishnaLoader";
 
 const AdminPage = () => {
   const [activeTab, setActiveTab] = useState("master");
@@ -22,6 +23,7 @@ const AdminPage = () => {
 
   const closePopup = () => setShowAddDonationPopup(false);
   const handleAddDonation = () => setShowAddDonationPopup(true);
+  const [loading, setLoading] = useState(false);
 
   const handleEdit = (row) => {
     setEditingDonation(row);
@@ -50,11 +52,14 @@ const AdminPage = () => {
   };
 
   const fetchAndSetDonations = async () => {
+    setLoading(true);
     try {
-      const fetchedDonations = await fetchDonations({});
+      const fetchedDonations = await fetchAllDonations();
       setDonations(fetchedDonations);
     } catch (err) {
       console.error("Error fetching donations:", err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -87,7 +92,9 @@ const AdminPage = () => {
     fetchAndSetDonations();
   }, []);
 
-  return (
+  return loading ? (
+    <HareKrishnaLoader />
+  ) : (
     <div className="flex flex-col lg:flex-row">
       {/* Side Navigation */}
       <div className="flex lg:flex-col bg-gray-100 p-4 lg:w-1/4">

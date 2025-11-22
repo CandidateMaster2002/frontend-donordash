@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { donationPurposes, paymentModes } from "../../constants/constants";
 import { validations } from "../../utils/validations";
@@ -13,6 +13,7 @@ import {
 } from "../../utils/services";
 import { handleRazorpayPayment } from "../../utils/razorpayPayment";
 import BankDetails from "../../components/BankDetails";
+import HareKrishnaLoader from "../../components/HareKrishnaLoader";
 
 const DonateNowPopup = ({
   amount,
@@ -40,6 +41,18 @@ const DonateNowPopup = ({
   const [selectedDonorDetails, setSelectedDonorDetails] = useState(null);
   const [cultivatorDonors, setCultivatorDonors] = useState([]);
   const [shownDonors, setShownDonors] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const formRef = useRef(null);
+  const headingRef = useRef(null);
+
+  useEffect(() => {
+    if (existingDonation) {
+      formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+
+      headingRef.current?.focus();
+    }
+  }, [existingDonation]);
 
   const handleSuccess = () => {
     setSuccessMessage("Your donation has been successful!");
@@ -78,13 +91,10 @@ const DonateNowPopup = ({
 
   // Show the right donor list depending on checkbox and userType
   useEffect(() => {
-    // console.log(userType)
     if (userType === "admin") {
       setShownDonors(donors);
     } else if (userType === "donorCultivator") {
-      // console.log(allowOtherCultivatorDonors)
       setShownDonors(allowOtherCultivatorDonors ? donors : cultivatorDonors);
-      console.log("Cultivator Donors:", cultivatorDonors);
     }
   }, [donors, cultivatorDonors, allowOtherCultivatorDonors, userType]);
 
@@ -122,26 +132,26 @@ const DonateNowPopup = ({
   };
 
   const onSubmit = async (data) => {
-    const donationData = {
-      amount: data.amount,
-      purpose: data.purpose,
-      paymentMode: data.paymentMode,
-      transactionId: data.transactionId || null,
-      paymentDate: data.paymentDate || new Date().toISOString().split("T")[0],
-      status: "Pending",
-      remark: data.remark,
-      notGenerateReceipt:
-        hasOfflineReceipt ||
-        (data.paymentMode === "Cash" ? !generateReceipt : false),
-      collectedById: getDonorCultivatorIdFromLocalStorage(),
-      donorId:
-        userType === "donor" ? getDonorIdFromLocalStorage() : data.donorId,
-      createdAt: new Date().toISOString(),
-      receiptId: hasOfflineReceipt ? data.offlineReceiptNumber : null,
-    };
-    console.log("Donation Data to be sent:", donationData);
-    console.log("generateReceipt:", generateReceipt);
+    setLoading(true);
     try {
+      const donationData = {
+        amount: data.amount,
+        purpose: data.purpose,
+        paymentMode: data.paymentMode,
+        transactionId: data.transactionId || null,
+        paymentDate: data.paymentDate || new Date().toISOString().split("T")[0],
+        status: "Pending",
+        remark: data.remark,
+        notGenerateReceipt:
+          hasOfflineReceipt ||
+          (data.paymentMode === "Cash" ? !generateReceipt : false),
+        collectedById: getDonorCultivatorIdFromLocalStorage(),
+        donorId:
+          userType === "donor" ? getDonorIdFromLocalStorage() : data.donorId,
+        createdAt: new Date().toISOString(),
+        receiptId: hasOfflineReceipt ? data.offlineReceiptNumber : null,
+      };
+
       if (donationData.paymentMode === "Razorpay") {
         const donor = await getDonorById(donationData.donorId);
         const {
@@ -166,6 +176,8 @@ const DonateNowPopup = ({
     } catch (error) {
       console.error("Donation failed:", error.message);
       alert("Donation failed: " + error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -203,7 +215,11 @@ const DonateNowPopup = ({
 
           {existingDonation && (
             <div className="mb-4 p-4 border border-yellow-400 bg-yellow-100 rounded text-sm text-yellow-800">
-              <h4 className="font-semibold text-base mb-2">
+              <h4
+                ref={headingRef}
+                tabIndex={-1}
+                className="font-semibold text-base mb-2"
+              >
                 Duplicate Donation Detected
               </h4>
               <p>
@@ -226,7 +242,14 @@ const DonateNowPopup = ({
             </div>
           )}
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <form
+            ref={formRef}
+            onSubmit={handleSubmit(onSubmit)}
+            className={`space-y-4 ${
+              loading ? "pointer-events-none opacity-60" : ""
+            }`}
+            aria-busy={loading}
+          >
             {/* 🔹 Offline Receipt Option */}
             <div className="mb-4 flex items-center gap-2">
               <input
@@ -234,6 +257,7 @@ const DonateNowPopup = ({
                 id="hasOfflineReceipt"
                 checked={hasOfflineReceipt}
                 onChange={(e) => setHasOfflineReceipt(e.target.checked)}
+                disabled={loading}
               />
               <label htmlFor="hasOfflineReceipt" className="text-xl">
                 Have you generated an offline receipt?
@@ -478,9 +502,11 @@ const DonateNowPopup = ({
             <div className="p-0">
               <button
                 type="submit"
-                className="bg-blue-500 text-white py-3 px-6 rounded w-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
+                // className="bg-blue-500 text-white py-3 px-6 rounded w-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
+                className="px-4 py-2 bg-red-500 text-white rounded"
+                disabled={loading}
               >
-                Pay
+                {loading ? <HareKrishnaLoader /> : "Pay"}
               </button>
             </div>
           </form>
