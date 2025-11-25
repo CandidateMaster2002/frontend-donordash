@@ -92,18 +92,127 @@ const AdminPage = () => {
     fetchAndSetDonations();
   }, []);
 
+  // return loading ? (
+  //   <HareKrishnaLoader />
+  // ) : (
+  //   <div className="flex flex-col lg:flex-row">
+  //     {/* Side Navigation */}
+  //     <div className="flex lg:flex-col bg-gray-100 p-4 lg:w-1/4">
+  //       <button
+  //         onClick={() => handleActiveTabChange("master")}
+  //         className={`p-4 w-full text-left ${
+  //           activeTab === "master"
+  //             ? "bg-blue-500 text-white"
+  //             : "bg-white text-black"
+  //         }`}
+  //       >
+  //         Master Donations
+  //       </button>
+  //     </div>
+
+  //     {/* Main Content */}
+  //     <div className="flex-1 p-4">
+  //       <h2 className="text-2xl font-bold mb-4">
+  //         {activeTab === "pending" ? "Pending Donations" : "Master Donations"}
+  //       </h2>
+
+  //       {activeTab === "master" && (
+  //         <>
+  //           <DonationStatusFilters
+  //             selectedFilter={selectedFilter}
+  //             setSelectedFilter={setSelectedFilter}
+  //           />
+
+  //           {/* Cultivator Checkbox Filter */}
+  //           <div className="mb-4">
+  //             <label className="font-semibold block mb-2">
+  //               Filter by Cultivator(s):
+  //             </label>
+  //             <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto border border-gray-300 rounded p-2">
+  //               {cultivators.map((name) => (
+  //                 <label key={name} className="flex items-center space-x-2">
+  //                   <input
+  //                     type="checkbox"
+  //                     value={name}
+  //                     checked={selectedCultivators.includes(name)}
+  //                     onChange={(e) => {
+  //                       if (e.target.checked) {
+  //                         setSelectedCultivators((prev) => [...prev, name]);
+  //                       } else {
+  //                         setSelectedCultivators((prev) =>
+  //                           prev.filter((c) => c !== name)
+  //                         );
+  //                       }
+  //                     }}
+  //                   />
+  //                   <span>{name}</span>
+  //                 </label>
+  //               ))}
+  //             </div>
+  //             {selectedCultivators.length > 0 && (
+  //               <button
+  //                 className="mt-2 text-sm text-blue-600 hover:underline"
+  //                 onClick={() => setSelectedCultivators([])}
+  //               >
+  //                 Clear selection
+  //               </button>
+  //             )}
+  //           </div>
+  //         </>
+  //       )}
+
+  //       {/* Table */}
+  //       <DonationsTable data={data} onEdit={handleEdit} />
+
+  //       {/* Edit Popup */}
+  //       {editingDonation && (
+  //         <EditDonationPopup
+  //           donation={editingDonation}
+  //           onSave={handleEditDonation}
+  //           onClose={() => setEditingDonation(null)}
+  //         />
+  //       )}
+  //     </div>
+
+  //     {/* Floating "+" Button */}
+  //     <button
+  //       onClick={handleAddDonation}
+  //       className="fixed bottom-8 right-8 w-14 h-14 rounded-full bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg hover:scale-110 transition-all flex items-center justify-center"
+  //     >
+  //       <RiAddCircleFill className="w-8 h-8" />
+  //     </button>
+
+  //     {/* Add Donation Popup */}
+  //     {showAddDonationPopup && (
+  //       <DonateNowPopup
+  //         closePopup={closePopup}
+  //         setShowSuccessPopup={setShowSuccessPopup}
+  //         setSuccessMessage={setSuccessMessage}
+  //       />
+  //     )}
+
+  //     {/* Success Popup */}
+  //     {showSuccessPopup && (
+  //       <SuccessPopup
+  //         message={successMessage}
+  //         onClose={() => setShowSuccessPopup(false)}
+  //       />
+  //     )}
+  //   </div>
+  // );
+
   return loading ? (
     <HareKrishnaLoader />
   ) : (
-    <div className="flex flex-col lg:flex-row">
+    <div className="flex flex-col lg:flex-row bg-white dark:bg-white">
       {/* Side Navigation */}
-      <div className="flex lg:flex-col bg-gray-100 p-4 lg:w-1/4">
+      <div className="flex lg:flex-col bg-gray-100 dark:bg-gray-100 p-4 lg:w-1/4">
         <button
           onClick={() => handleActiveTabChange("master")}
           className={`p-4 w-full text-left ${
             activeTab === "master"
               ? "bg-blue-500 text-white"
-              : "bg-white text-black"
+              : "bg-white text-black dark:bg-white dark:text-black"
           }`}
         >
           Master Donations
@@ -111,8 +220,8 @@ const AdminPage = () => {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 p-4">
-        <h2 className="text-2xl font-bold mb-4">
+      <div className="flex-1 p-4 bg-white dark:bg-white">
+        <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-900">
           {activeTab === "pending" ? "Pending Donations" : "Master Donations"}
         </h2>
 
@@ -125,12 +234,15 @@ const AdminPage = () => {
 
             {/* Cultivator Checkbox Filter */}
             <div className="mb-4">
-              <label className="font-semibold block mb-2">
+              <label className="font-semibold block mb-2 text-gray-900 dark:text-gray-900">
                 Filter by Cultivator(s):
               </label>
-              <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto border border-gray-300 rounded p-2">
+              <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto border border-gray-300 dark:border-gray-300 rounded p-2 bg-white dark:bg-white">
                 {cultivators.map((name) => (
-                  <label key={name} className="flex items-center space-x-2">
+                  <label
+                    key={name}
+                    className="flex items-center space-x-2 text-gray-900 dark:text-gray-900"
+                  >
                     <input
                       type="checkbox"
                       value={name}
@@ -162,7 +274,9 @@ const AdminPage = () => {
         )}
 
         {/* Table */}
-        <DonationsTable data={data} onEdit={handleEdit} />
+        <div className="bg-white dark:bg-white">
+          <DonationsTable data={data} onEdit={handleEdit} />
+        </div>
 
         {/* Edit Popup */}
         {editingDonation && (
@@ -178,6 +292,7 @@ const AdminPage = () => {
       <button
         onClick={handleAddDonation}
         className="fixed bottom-8 right-8 w-14 h-14 rounded-full bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg hover:scale-110 transition-all flex items-center justify-center"
+        aria-label="Add donation"
       >
         <RiAddCircleFill className="w-8 h-8" />
       </button>

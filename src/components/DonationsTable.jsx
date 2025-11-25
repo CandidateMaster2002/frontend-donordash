@@ -57,8 +57,88 @@ const DonationsTable = ({
 
   const sortedData = sortData(data, sortOption);
 
+  // return (
+  //   <div className="overflow-x-auto overflow-y-auto max-w-full">
+  //     <table className="min-w-full">
+  //       <thead className="bg-gradient-to-r from-purple-600 to-blue-600 text-white">
+  //         <tr>
+  //           <th className="py-3 px-4 text-left">Payment Date</th>
+  //           <th className="py-3 px-4 text-left">Donor</th>
+  //           {showCutivatorName && (
+  //             <th className="py-3 px-4 text-left">Cultivator</th>
+  //           )}
+  //           <th className="py-3 px-4 text-left">Amount</th>
+  //           <th className="py-3 px-4 text-left">Mode</th>
+  //           <th className="py-3 px-4 text-left">Purpose</th>
+  //           {showStatus && <th className="py-3 px-4 text-left">Status</th>}
+  //           <th className="py-3 px-4 text-left">Receipt</th>
+  //           {showEditDonation && <th className="py-3 px-4 text-left">Edit</th>}
+  //         </tr>
+  //       </thead>
+  //       <tbody>
+  //         {sortedData.map((row, index) => (
+  //           <tr key={row.id} className="hover:bg-gray-50 transition-all">
+  //             <td className="py-3 px-4 border-b">
+  //               {formatDate(row.paymentDate)}
+  //             </td>
+  //             <td className="py-3 px-4 border-b">{row.donorName}</td>
+  //             {showCutivatorName && (
+  //               <td className="py-3 px-4 border-b">
+  //                 {row.donorCultivatorName}
+  //               </td>
+  //             )}
+  //             <td className="py-3 px-4 border-b">₹ {row.amount}</td>
+  //             <td className="py-3 px-4 border-b">{row.paymentMode}</td>
+  //             <td className="py-3 px-4 border-b">{row.purpose}</td>
+  //             {showStatus && (
+  //               <td className="py-3 px-4 border-b">
+  //                 <span
+  //                   className={`px-2 py-1 rounded-full text-sm ${getStatusStyles(
+  //                     row.status
+  //                   )}`}
+  //                 >
+  //                   {row.status}
+  //                 </span>
+  //               </td>
+  //             )}
+  //             <td className="py-3 px-4 border-b">
+  //               <FaDownload
+  //                 className={`inline-block mr-2 ${
+  //                   row.status === "Verified"
+  //                     ? "cursor-pointer  text-purple-600"
+  //                     : "text-gray-400"
+  //                 }`}
+  //                 onClick={
+  //                   row.status === "Verified"
+  //                     ? () => handleReceiptClick(row.id)
+  //                     : undefined
+  //                 }
+  //               />
+  //             </td>
+  //             {showEditDonation && (
+  //               <td className="py-3 px-4 border-b">
+  //                 <FaEdit
+  //                   className={`inline-block mr-2 ${
+  //                     row.status === "Verified" || row.status === "Pending"
+  //                       ? "cursor-pointer text-purple-600"
+  //                       : "text-gray-400"
+  //                   }`}
+  //                   onClick={
+  //                     row.status === "Verified" || row.status === "Pending"
+  //                       ? () => onEdit(row)
+  //                       : undefined
+  //                   }
+  //                 />
+  //               </td>
+  //             )}
+  //           </tr>
+  //         ))}
+  //       </tbody>
+  //     </table>
+  //   </div>
+  // );
   return (
-    <div className="overflow-x-auto overflow-y-auto max-w-full">
+    <div className="overflow-x-auto overflow-y-auto max-w-full bg-white dark:bg-white">
       <table className="min-w-full">
         <thead className="bg-gradient-to-r from-purple-600 to-blue-600 text-white">
           <tr>
@@ -77,36 +157,47 @@ const DonationsTable = ({
         </thead>
         <tbody>
           {sortedData.map((row, index) => (
-            <tr key={row.id} className="hover:bg-gray-50 transition-all">
-              <td className="py-3 px-4 border-b">
+            <tr
+              key={row.id}
+              className="hover:bg-gray-50 dark:hover:bg-gray-50 transition-all"
+            >
+              <td className="py-3 px-4 border-b border-gray-200 dark:border-gray-200 text-gray-800 dark:text-gray-800">
                 {formatDate(row.paymentDate)}
               </td>
-              <td className="py-3 px-4 border-b">{row.donorName}</td>
+              <td className="py-3 px-4 border-b border-gray-200 dark:border-gray-200 text-gray-800 dark:text-gray-800">
+                {row.donorName}
+              </td>
               {showCutivatorName && (
-                <td className="py-3 px-4 border-b">
+                <td className="py-3 px-4 border-b border-gray-200 dark:border-gray-200 text-gray-800 dark:text-gray-800">
                   {row.donorCultivatorName}
                 </td>
               )}
-              <td className="py-3 px-4 border-b">₹ {row.amount}</td>
-              <td className="py-3 px-4 border-b">{row.paymentMode}</td>
-              <td className="py-3 px-4 border-b">{row.purpose}</td>
+              <td className="py-3 px-4 border-b border-gray-200 dark:border-gray-200 text-gray-800 dark:text-gray-800">
+                ₹ {row.amount}
+              </td>
+              <td className="py-3 px-4 border-b border-gray-200 dark:border-gray-200 text-gray-800 dark:text-gray-800">
+                {row.paymentMode}
+              </td>
+              <td className="py-3 px-4 border-b border-gray-200 dark:border-gray-200 text-gray-800 dark:text-gray-800">
+                {row.purpose}
+              </td>
               {showStatus && (
-                <td className="py-3 px-4 border-b">
+                <td className="py-3 px-4 border-b border-gray-200 dark:border-gray-200">
                   <span
                     className={`px-2 py-1 rounded-full text-sm ${getStatusStyles(
                       row.status
-                    )}`}
+                    )} text-gray-800 dark:text-gray-800`}
                   >
                     {row.status}
                   </span>
                 </td>
               )}
-              <td className="py-3 px-4 border-b">
+              <td className="py-3 px-4 border-b border-gray-200 dark:border-gray-200">
                 <FaDownload
                   className={`inline-block mr-2 ${
                     row.status === "Verified"
-                      ? "cursor-pointer  text-purple-600"
-                      : "text-gray-400"
+                      ? "cursor-pointer text-purple-600 dark:text-purple-600"
+                      : "text-gray-400 dark:text-gray-400"
                   }`}
                   onClick={
                     row.status === "Verified"
@@ -116,12 +207,12 @@ const DonationsTable = ({
                 />
               </td>
               {showEditDonation && (
-                <td className="py-3 px-4 border-b">
+                <td className="py-3 px-4 border-b border-gray-200 dark:border-gray-200">
                   <FaEdit
                     className={`inline-block mr-2 ${
                       row.status === "Verified" || row.status === "Pending"
-                        ? "cursor-pointer text-purple-600"
-                        : "text-gray-400"
+                        ? "cursor-pointer text-purple-600 dark:text-purple-600"
+                        : "text-gray-400 dark:text-gray-400"
                     }`}
                     onClick={
                       row.status === "Verified" || row.status === "Pending"
