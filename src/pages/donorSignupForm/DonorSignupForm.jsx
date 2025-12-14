@@ -8,7 +8,7 @@ import {
   FiMapPin,
   FiLock,
 } from "react-icons/fi";
-import { FaIdCard, FaHandshake } from "react-icons/fa";
+import { FaIdCard, FaHandshake, FaWhatsapp } from "react-icons/fa";
 import { validations } from "../../utils/validations";
 import useFetchCityAndState from "../../hooks/useFetchCityAndState";
 import { handleDonorSignup } from "./handleDonorSignup";
@@ -59,6 +59,7 @@ const DonorSignupForm = ({ onSubmit }) => {
     defaultValues: {
       name: "",
       mobileNumber: "",
+      email: "",
       address: "",
       city: "",
       state: "",
@@ -82,15 +83,15 @@ const DonorSignupForm = ({ onSubmit }) => {
   useFetchCityAndState(pincode, methods.setValue);
 
   const onFormSubmit = async (data) => {
+    // console.log("email snapshot:", methods.getValues("email"));
+    // console.log("data snapshot:", JSON.stringify(data));
+
     setIsSubmitting(true);
     try {
       data.donorCultivatorId = parseInt(data.donorCultivatorId, 10);
       delete data.confirmPassword;
       if (data.panNumber === "") delete data.panNumber;
       console.log("Form Data:", data);
-      // if (!data.email || data.email.trim() === "") {
-      delete data.email;
-      // }
       const success = await handleDonorSignup(data, navigate);
       if (success) methods.reset();
     } finally {
@@ -139,7 +140,10 @@ const DonorSignupForm = ({ onSubmit }) => {
 
                 <div className="relative flex items-center gap-2">
                   <div className="relative flex-1">
-                    <FiPhone className="absolute left-3 top-3 text-gray-400" />
+                    <FaWhatsapp
+                      className="absolute left-3 top-3 text-green-500"
+                      aria-hidden="true"
+                    />
                     <input
                       type="text"
                       maxLength={10}
@@ -147,7 +151,7 @@ const DonorSignupForm = ({ onSubmit }) => {
                         "mobileNumber",
                         validations.mobileNumber.validation
                       )}
-                      placeholder="Mobile Number / मोबाइल नंबर"
+                      placeholder="WhatsApp Number / मोबाइल नंबर"
                       className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                     {renderError("mobileNumber")}
@@ -192,7 +196,7 @@ const DonorSignupForm = ({ onSubmit }) => {
                   </div>
                 )}
 
-                {/* <div className="relative">
+                <div className="relative">
                   <FiMail className="absolute left-3 top-3 text-gray-400" />
                   <input
                     type="email"
@@ -201,7 +205,7 @@ const DonorSignupForm = ({ onSubmit }) => {
                     className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                   {renderError("email")}
-                </div> */}
+                </div>
               </div>
 
               {/* Address Information */}
@@ -286,7 +290,7 @@ const DonorSignupForm = ({ onSubmit }) => {
                     <select
                       {...methods.register(
                         "donorCultivatorId",
-                        validations.connectedTo.validation
+                        validations.donorCultivatorId.validation
                       )}
                       className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     >
@@ -297,7 +301,7 @@ const DonorSignupForm = ({ onSubmit }) => {
                         </option>
                       ))}
                     </select>
-                    {renderError("connectedTo")}
+                    {renderError("donorCultivatorId")}
                   </div>
                 </div>
 
