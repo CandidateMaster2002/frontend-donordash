@@ -70,6 +70,14 @@ export const validations = {
       },
     },
   },
+  connectedTo: {
+    validation: {
+      required: true,
+      errorMessages: {
+        required: "Please select who you are connected to",
+      },
+    },
+  },
   donorCultivatorId: {
     validation: {
       required: true,

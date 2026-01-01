@@ -12,6 +12,9 @@ import useFetchCityAndState from "../../hooks/useFetchCityAndState";
 import { validations } from "../../utils/validations";
 import { zones } from "../../constants/constants";
 import SuccessPopup from "../../components/SuccessPopup";
+import HareKrishnaLoader from "../../components/HareKrishnaLoader";
+import { toast } from "react-toastify";
+import { set } from "date-fns";
 
 const DonorProfilePage = () => {
   const [isEditing, setIsEditing] = useState(false);
@@ -20,9 +23,11 @@ const DonorProfilePage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchDonor = async () => {
+      setLoading(true);
       try {
         const donorData = await getDonorById(id);
         setDonor(donorData);
@@ -32,11 +37,34 @@ const DonorProfilePage = () => {
         }
       } catch (error) {
         console.error("Error fetching donor data:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchDonor();
   }, [id]);
+
+  const getDefaultValues = () => ({
+    legalName: donor?.name ?? "",
+    wantPrasadam: donor?.wantPrasadam ?? false,
+    category: donor?.category ?? "",
+    mobileNumber: donor?.mobileNumber ?? "",
+    email: donor?.email ?? "",
+    fullPostalAddress: donor?.address ?? "",
+    city: donor?.city ?? "",
+    state: donor?.state ?? "",
+    pincode: donor?.pincode ?? "",
+    panNumber: donor?.panNumber ?? "",
+    connectedTo: donor?.donorCultivator?.name ?? "",
+    zone: donor?.zone ?? "",
+    remark: donor?.remark ?? "",
+    supervisor: donor?.donorCultivator?.donationSupervisor?.name ?? "",
+    specialDays: (specialDays ?? []).map((day) => ({
+      ...day,
+      date: new Date(day.date).toISOString().split("T")[0],
+    })),
+  });
 
   const {
     register,
@@ -45,6 +73,7 @@ const DonorProfilePage = () => {
     setValue,
     watch,
     control,
+    reset,
   } = useForm();
 
   const { fields, append, remove } = useFieldArray({
@@ -54,35 +83,15 @@ const DonorProfilePage = () => {
 
   useEffect(() => {
     if (donor) {
-      setValue("legalName", donor.name);
-      setValue("wantPrasadam", donor.wantPrasadam);
-      setValue("category", donor.category);
-      setValue("mobileNumber", donor.mobileNumber);
-      setValue("email", donor.email);
-      setValue("fullPostalAddress", donor.address);
-      setValue("city", donor.city);
-      setValue("state", donor.state);
-      setValue("pincode", donor.pincode);
-      setValue("panNumber", donor.panNumber);
-      setValue("connectedTo", donor.donorCultivator.name);
-      setValue("zone", donor.zone);
-      setValue("remark", donor.remark);
-      setValue("supervisor", donor.donorCultivator.donationSupervisor.name);
-      if (specialDays)
-        setValue(
-          "specialDays",
-          specialDays?.map((day) => ({
-            ...day,
-            date: new Date(day.date).toISOString().split("T")[0],
-          }))
-        );
+      reset(getDefaultValues());
     }
-  }, [donor, specialDays, setValue]);
+  }, [donor, specialDays, reset]);
 
   const pincode = watch("pincode");
   useFetchCityAndState(pincode, setValue);
 
   const onSubmit = async (data) => {
+    setLoading(true);
     try {
       const donorData = {
         name: data.legalName,
@@ -101,19 +110,25 @@ const DonorProfilePage = () => {
       };
 
       await editDonorById(id, donorData);
-      setIsEditing(false);
       setShowSuccessPopup(true);
     } catch (error) {
       console.error("Error updating donor data:", error);
+      toast.error(error.message || "Failed to edit donor");
+      reset(getDefaultValues());
+    } finally {
+      setLoading(false);
+      setIsEditing(false);
     }
   };
 
-  return (
+  return loading ? (
+    <HareKrishnaLoader />
+  ) : (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-6">
       <div className="bg-white rounded-lg shadow-lg w-full max-w-4xl p-8">
         <h1 className="text-3xl font-bold text-gray-800 mb-6">Donor Profile</h1>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 ">
             {/* Legal Name */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -123,10 +138,13 @@ const DonorProfilePage = () => {
                 type="text"
                 {...register("legalName", validations.name.validation)}
                 className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                  isEditing ? "focus:ring-blue-500" : "focus:ring-gray-300"
+                  isEditing
+                    ? "focus:ring-blue-500"
+                    : "focus:ring-gray-300 cursor-default caret-transparent"
                 } ${errors.legalName ? "border-red-500" : "border-gray-300"}`}
                 readOnly={!isEditing}
               />
+
               {errors.legalName && (
                 <span className="text-sm text-red-500">
                   {validations.name.validation.errorMessages.required}
@@ -143,7 +161,9 @@ const DonorProfilePage = () => {
                   type="text"
                   {...register("category", validations.category?.validation)}
                   className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                    isEditing ? "focus:ring-blue-500" : "focus:ring-gray-300"
+                    isEditing
+                      ? "focus:ring-blue-500"
+                      : "focus:ring-gray-300 cursor-default caret-transparent"
                   } ${errors.category ? "border-red-500" : "border-gray-300"}`}
                   readOnly={!isEditing}
                 />
@@ -168,7 +188,9 @@ const DonorProfilePage = () => {
                   validations.mobileNumber.validation
                 )}
                 className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                  isEditing ? "focus:ring-blue-500" : "focus:ring-gray-300"
+                  isEditing
+                    ? "focus:ring-blue-500"
+                    : "focus:ring-gray-300 cursor-default caret-transparent"
                 } ${
                   errors.mobileNumber ? "border-red-500" : "border-gray-300"
                 }`}
@@ -194,8 +216,10 @@ const DonorProfilePage = () => {
                 type="email"
                 {...register("email", validations.email.validation)}
                 className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                  isEditing ? "focus:ring-blue-500" : "focus:ring-gray-300"
-                } ${errors.email ? "border-red-500" : "border-gray-300"}`}
+                  isEditing
+                    ? "focus:ring-blue-500"
+                    : "focus:ring-gray-300 cursor-default caret-transparent"
+                } ${errors.email ? "border-red-500" : "border-gray-300 "}`}
                 readOnly={!isEditing}
               />
               {errors.email && (
@@ -220,7 +244,9 @@ const DonorProfilePage = () => {
                   validations.address.validation
                 )}
                 className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                  isEditing ? "focus:ring-blue-500" : "focus:ring-gray-300"
+                  isEditing
+                    ? "focus:ring-blue-500"
+                    : "focus:ring-gray-300 cursor-default caret-transparent"
                 } ${
                   errors.fullPostalAddress
                     ? "border-red-500"
@@ -245,7 +271,9 @@ const DonorProfilePage = () => {
                 type="text"
                 {...register("city", validations.city.validation)}
                 className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                  isEditing ? "focus:ring-blue-500" : "focus:ring-gray-300"
+                  isEditing
+                    ? "focus:ring-blue-500"
+                    : "focus:ring-gray-300 cursor-default caret-transparent"
                 } ${errors.city ? "border-red-500" : "border-gray-300"}`}
                 readOnly
               />
@@ -265,8 +293,10 @@ const DonorProfilePage = () => {
                 type="text"
                 {...register("state", validations.state.validation)}
                 className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                  isEditing ? "focus:ring-blue-500" : "focus:ring-gray-300"
-                } ${errors.state ? "border-red-500" : "border-gray-300"}`}
+                  isEditing
+                    ? "focus:ring-blue-500"
+                    : "focus:ring-gray-300 cursor-default caret-transparent"
+                } ${errors.state ? "border-red-500" : "border-gray-300 "}`}
                 readOnly
               />
               {errors.state && (
@@ -285,7 +315,9 @@ const DonorProfilePage = () => {
                 type="text"
                 {...register("pincode", validations.pincode.validation)}
                 className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                  isEditing ? "focus:ring-blue-500" : "focus:ring-gray-300"
+                  isEditing
+                    ? "focus:ring-blue-500"
+                    : "focus:ring-gray-300 cursor-default caret-transparent"
                 } ${errors.pincode ? "border-red-500" : "border-gray-300"}`}
                 readOnly={!isEditing}
               />
@@ -309,7 +341,9 @@ const DonorProfilePage = () => {
                 type="text"
                 {...register("panNumber", validations.panNumber.validation)}
                 className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                  isEditing ? "focus:ring-blue-500" : "focus:ring-gray-300"
+                  isEditing
+                    ? "focus:ring-blue-500"
+                    : "focus:ring-gray-300 cursor-default caret-transparent"
                 } ${errors.panNumber ? "border-red-500" : "border-gray-300"}`}
                 readOnly={!isEditing}
               />
@@ -333,7 +367,9 @@ const DonorProfilePage = () => {
                 type="text"
                 {...register("connectedTo", validations.connectedTo.validation)}
                 className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                  isEditing ? "focus:ring-blue-500" : "focus:ring-gray-300"
+                  isEditing
+                    ? "focus:ring-blue-500"
+                    : "focus:ring-gray-300 cursor-default caret-transparent"
                 } ${errors.connectedTo ? "border-red-500" : "border-gray-300"}`}
                 readOnly
               />
@@ -352,7 +388,9 @@ const DonorProfilePage = () => {
               <select
                 {...register("zone", validations.zone.validation)}
                 className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                  isEditing ? "focus:ring-blue-500" : "focus:ring-gray-300"
+                  isEditing
+                    ? "focus:ring-blue-500"
+                    : "focus:ring-gray-300 cursor-default caret-transparent"
                 } ${errors.zone ? "border-red-500" : "border-gray-300"}`}
                 disabled={!isEditing}
               >
@@ -372,7 +410,9 @@ const DonorProfilePage = () => {
               <textarea
                 {...register("remark", validations.remark?.validation)}
                 className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                  isEditing ? "focus:ring-blue-500" : "focus:ring-gray-300"
+                  isEditing
+                    ? "focus:ring-blue-500"
+                    : "focus:ring-gray-300 cursor-default caret-transparent"
                 } ${errors.remark ? "border-red-500" : "border-gray-300"}`}
                 readOnly={!isEditing}
                 rows={3}
@@ -416,7 +456,7 @@ const DonorProfilePage = () => {
                       className={`w-full md:w-1/3 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
                         isEditing
                           ? "focus:ring-blue-500"
-                          : "focus:ring-gray-300"
+                          : "focus:ring-gray-300 cursor-default caret-transparent"
                       } ${
                         errors.specialDays?.[index]?.date
                           ? "border-red-500"
@@ -431,7 +471,7 @@ const DonorProfilePage = () => {
                       className={`w-full md:w-1/3 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
                         isEditing
                           ? "focus:ring-blue-500"
-                          : "focus:ring-gray-300"
+                          : "focus:ring-gray-300 cursor-default caret-transparent"
                       } ${
                         errors.specialDays?.[index]?.purpose
                           ? "border-red-500"
@@ -450,7 +490,7 @@ const DonorProfilePage = () => {
                         className={`w-full md:w-1/3 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
                           isEditing
                             ? "focus:ring-blue-500"
-                            : "focus:ring-gray-300"
+                            : "focus:ring-gray-300 cursor-default caret-transparent"
                         } ${
                           errors.specialDays?.[index]?.otherPurpose
                             ? "border-red-500"

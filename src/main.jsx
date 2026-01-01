@@ -31,8 +31,8 @@ const router = createBrowserRouter([
         element: <DonorSignupForm />,
       },
       {
-        path:"bank-details",
-        element:<BankDetails />
+        path: "bank-details",
+        element: <BankDetails />,
       },
       {
         path: "receipt",
@@ -49,9 +49,8 @@ const router = createBrowserRouter([
           <PrivateRoute allowedRoles={["donor"]} component={DonorHomePage} />
         ),
       },
-
       {
-        path:"unapproved-donations",
+        path: "unapproved-donations",
         element: (
           <PrivateRoute
             allowedRoles={["donorCultivator"]}

@@ -2,6 +2,9 @@ import React from "react";
 import { Outlet, Navigate, useLocation, useNavigate } from "react-router-dom";
 import HeaderLoggedIn from "./components/HeaderLoggedIn";
 import { getRedirectPath } from "./utils/services";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 // import FormAndDownload from "./PDF_Components/FormAndDownload";
 const App = () => {
   const location = useLocation();
@@ -22,7 +25,7 @@ const App = () => {
   }
 
   return (
-    <div className="w-screen min-h-screen">
+    <div className="w-screen min-h-screen select-none cursor-default">
       {/* <FormAndDownload /> */}
       <div style={{ position: "sticky", top: 0, zIndex: 1000 }}>
         <HeaderLoggedIn />
@@ -30,6 +33,11 @@ const App = () => {
       {/* <div style={{ marginTop: '64px' }}> */}
       <div>
         <Outlet />
+        <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          style={{ zIndex: 9999 }}
+        />
       </div>
     </div>
   );
