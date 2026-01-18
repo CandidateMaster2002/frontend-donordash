@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { editDonation, fetchAllDonations } from "../../utils/services";
+import { editDonation, fetchDonations } from "../../utils/services";
 import DonationsTable from "./DonationsTable";
 import DonationStatusFilters from "./DonationStatusFilters";
 import EditDonationPopup from "./EditDonationPopup";
@@ -54,7 +54,7 @@ const AdminPage = () => {
   const fetchAndSetDonations = async () => {
     setLoading(true);
     try {
-      const fetchedDonations = await fetchAllDonations();
+      const fetchedDonations = await fetchDonations({});
       setDonations(fetchedDonations);
     } catch (err) {
       console.error("Error fetching donations:", err.message);

@@ -5,15 +5,21 @@ import { paymentModes } from "../../constants/constants";
 const EditDonationPopup = ({ donation, onSave, onClose }) => {
   const [isVerified, setIsVerified] = useState(donation.status === "Verified");
   const [formData, setFormData] = useState(donation);
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSave(formData);
+    setLoading(true);
+    try {
+      await onSave(formData);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -102,9 +108,16 @@ const EditDonationPopup = ({ donation, onSave, onClose }) => {
             </button>
             <button
               type="submit"
-              className="p-2 bg-blue-500 text-white rounded"
+              disabled={loading}
+              className={`p-2 rounded text-white
+              ${
+                loading
+                  ? "bg-blue-400 cursor-not-allowed opacity-70"
+                  : "bg-blue-500 hover:bg-blue-600"
+              }
+            `}
             >
-              Save
+              {loading ? "Saving..." : "Save"}
             </button>
           </div>
         </form>

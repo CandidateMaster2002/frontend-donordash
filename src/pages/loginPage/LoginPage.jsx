@@ -38,11 +38,10 @@ const LoginPage = () => {
     handleUserLogin({ mobileNumber, password });
   };
 
-
   return (
     <>
       <HeaderLoggedOut />
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-blue-50 py-12 px-4 sm:px-6 lg:px-8  bg-gradient-to-r from-purple-300 to-blue-200">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-blue-50 py-12 px-4 sm:px-6 lg:px-8 select-none cursor-default">
         <div className="max-w-4xl w-full space-y-8 p-10 bg-white rounded-lg shadow-2xl  bg-gradient-to-r from-purple-200 to-blue-100">
           {/* Logo Section */}
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">

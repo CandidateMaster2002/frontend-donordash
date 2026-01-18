@@ -149,9 +149,12 @@ export const getUnApprovedDonationsByCultivator = async (cultivatorId) => {
   }
 };
 
-export const getDonorById = async (donorId) => {
+export const getDonorById = async (donorId, axiosConfig = {}) => {
   try {
-    const response = await axiosInstance.get(`${GET_DONOR_BY_ID}/${donorId}`);
+    const response = await axiosInstance.get(
+      `${GET_DONOR_BY_ID}/${donorId}`,
+      axiosConfig
+    );
     return response.data;
   } catch (error) {
     console.error(
@@ -224,7 +227,10 @@ export const getDonorsByCultivator = async (donorCultivatorId) => {
 
 export const getDonors = async (params) => {
   try {
-    const response = await axiosInstance.get(DONORS_FILTER, params);
+    const response = await axiosInstance.get(DONORS_FILTER, {
+      params,
+      showLoader: { type: "inline", scope: "donor-list" }, // 👈 loader flag
+    });
     return response.data;
   } catch (error) {
     console.error(
@@ -353,9 +359,13 @@ export const donate = async (donationData) => {
   }
 };
 
-export const fetchDonations = async (filterDto) => {
+export const fetchDonations = async (filterDto, axiosConfig = {}) => {
   try {
-    const response = await axiosInstance.post(DONATIONS_FILTER, filterDto);
+    const response = await axiosInstance.post(
+      DONATIONS_FILTER,
+      filterDto,
+      axiosConfig
+    );
     return response.data;
   } catch (error) {
     console.error("There was an error fetching the donations!", error);

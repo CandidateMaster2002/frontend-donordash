@@ -8,13 +8,12 @@ import nitya_seva from "../assets/images/nitya_seva.jpg";
 import janmashtami from "../assets/images/janmashtami.png";
 import rathYtra from "../assets/images/rath_yatra.jpg";
 import fruitSeller from "../assets/images/fruitseller.jpg";
-import qrImage from "../assets/images/iskcon_dhanbad_payment_qr.jpeg"
-
+import qrImage from "../assets/images/iskcon_dhanbad_payment_qr.jpeg";
 
 export const donationAmounts = [
   { id: 2, value: 501 },
   { id: 3, value: 1001 },
-  {id:4,value:5001},
+  { id: 4, value: 5001 },
 ];
 
 export const paymentModes = [
@@ -22,7 +21,7 @@ export const paymentModes = [
   { id: 2, label: "Cash", value: "Cash" },
   { id: 3, label: "UPI/NEFT/IMPS - Bank Transfer", value: "Bank Transfer" },
   { id: 4, label: "Cheque", value: "Cheque" },
-  {id:5,label:"Razorpay Link",value:"Razorpay Link"}
+  { id: 5, label: "Razorpay Link", value: "Razorpay Link" },
 ];
 
 export const zones = [
@@ -49,18 +48,16 @@ export const donationPurposes = [
   { id: 2, value: "Easy Donation ISM Voice", imgAddress: easy },
   { id: 3, value: "Easy Donation BIT Sindri Voice", imgAddress: easy },
   { id: 4, value: "Sunday Feast", imgAddress: sunday_feast },
-  {id:5,value:"Nitya Seva",imgAddress:nitya_seva},
+  { id: 5, value: "Nitya Seva", imgAddress: nitya_seva },
   { id: 6, value: "Mahaprasad (Sponsorship)", imgAddress: mahaprasad },
   { id: 7, value: "Spiritual Books (Sponsorship)", imgAddress: bbt },
   { id: 8, value: "House Program", imgAddress: houseProgram },
   { id: 9, value: "Temple Construction", imgAddress: mandir },
-  {id:10,value:"Janmashtami",imgAddress:janmashtami},
-  {id:11,value:"RathYatra",imgAddress:rathYtra},
-  { id:12, value: "Other", imgAddress:fruitSeller },
-
+  { id: 10, value: "Janmashtami", imgAddress: janmashtami },
+  { id: 11, value: "RathYatra", imgAddress: rathYtra },
+  { id: 12, value: "Girls Voice", imgAddress: easy },
+  { id: 13, value: "Other", imgAddress: fruitSeller },
 ];
-
-
 
 export const bankDetails = {
   ifsc: "ICIC0000196",
@@ -68,5 +65,5 @@ export const bankDetails = {
   accountName: "ISKCON",
   upiId: "iskcon.eazypay@icici",
   mobileNumber: "7644070770",
-  qrImage:{qrImage}
+  qrImage: { qrImage },
 };

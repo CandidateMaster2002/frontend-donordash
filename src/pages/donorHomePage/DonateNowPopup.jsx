@@ -47,6 +47,28 @@ const DonateNowPopup = ({
   const headingRef = useRef(null);
 
   useEffect(() => {
+    const scrollY = window.scrollY || window.pageYOffset;
+
+    // Lock body without breaking layout or inner scrolling
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.left = "0";
+    document.body.style.right = "0";
+    document.body.style.width = "100%";
+    // don't set overflow:hidden here — position:fixed is enough
+
+    return () => {
+      // restore
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.left = "";
+      document.body.style.right = "";
+      document.body.style.width = "";
+      window.scrollTo(0, scrollY);
+    };
+  }, []);
+
+  useEffect(() => {
     if (existingDonation) {
       formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
 
@@ -199,16 +221,29 @@ const DonateNowPopup = ({
   };
 
   return (
-    <div className="fixed inset-0 z-100 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-lg">
-      <div className="rounded-lg shadow-lg w-full max-w-md relative max-h-[80vh] flex flex-col">
-        <div className="p-6 overflow-y-auto">
-          <button
-            className="absolute top-4 right-4 text-gray-600 hover:text-gray-900 text-2xl"
-            onClick={closePopup}
-            type="button"
-          >
-            &times;
-          </button>
+    <div
+      className="fixed inset-0 z-[9999] flex items-center justify-center"
+      style={{ backgroundColor: "rgba(0,0,0,0.6)" }}
+    >
+      <div
+        className="relative w-full max-w-md rounded-xl shadow-2xl bg-white no-scrollbar"
+        style={{
+          maxHeight: "80vh",
+          overflowY: "auto",
+          WebkitOverflowScrolling: "touch",
+        }}
+      >
+        <button
+          onClick={closePopup}
+          type="button"
+          className="absolute top-3 right-3 z-50 w-9 h-9 flex items-center justify-center
+             rounded-full bg-red-500 text-white shadow
+             hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400"
+        >
+          &times;
+        </button>
+
+        <div className="p-6">
           <h3 className="text-2xl font-semibold mb-6 text-center">
             Donate Now
           </h3>
@@ -331,7 +366,7 @@ const DonateNowPopup = ({
                         donor.username
                           ?.toLowerCase()
                           .includes(searchTerm.toLowerCase()) ||
-                        donor.name
+                        donor.donorName
                           ?.toLowerCase()
                           .includes(searchTerm.toLowerCase())
                     )
@@ -350,7 +385,7 @@ const DonateNowPopup = ({
                 {selectedDonorDetails && (
                   <div className="mt-4 p-4 border border-gray-300 rounded bg-gray-50 text-sm">
                     <p>
-                      <strong>Name:</strong> {selectedDonorDetails?.name}
+                      <strong>Name:</strong> {selectedDonorDetails?.donorName}
                     </p>
                     <p>
                       <strong>Address:</strong>{" "}
@@ -366,7 +401,7 @@ const DonateNowPopup = ({
                     </p>
                     <p>
                       <strong>Cultivator Name:</strong>{" "}
-                      {selectedDonorDetails?.donorCultivator?.name || "N/A"}
+                      {selectedDonorDetails?.cultivatorName || "N/A"}
                     </p>
                   </div>
                 )}
@@ -506,12 +541,16 @@ const DonateNowPopup = ({
                 className="px-4 py-2 bg-red-500 text-white rounded"
                 disabled={loading}
               >
-                {loading ? <HareKrishnaLoader /> : "Pay"}
+                {loading ? "Processing..." : "Pay"}
               </button>
             </div>
           </form>
         </div>
       </div>
+      <style>{`
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { scrollbar-width: none; }
+  `}</style>
     </div>
   );
 };

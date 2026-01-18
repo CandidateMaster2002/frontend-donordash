@@ -20,6 +20,9 @@ import {
   getAllDonorCultivators,
   checkDonorRegisteredByMobile,
 } from "../../utils/services";
+import SuccessPopup from "../../components/SuccessPopup";
+import { toast } from "react-toastify";
+import { set } from "date-fns";
 
 const DonorSignupForm = ({ onSubmit }) => {
   const navigate = useNavigate();
@@ -32,6 +35,7 @@ const DonorSignupForm = ({ onSubmit }) => {
   const location = useLocation();
   const preselectedCultivatorId =
     location.state?.preselectedCultivatorId || null;
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
   const handleCheckMobile = async () => {
     setCheckLoading(true);
@@ -83,17 +87,29 @@ const DonorSignupForm = ({ onSubmit }) => {
   useFetchCityAndState(pincode, methods.setValue);
 
   const onFormSubmit = async (data) => {
-    // console.log("email snapshot:", methods.getValues("email"));
-    // console.log("data snapshot:", JSON.stringify(data));
-
     setIsSubmitting(true);
+
     try {
-      data.donorCultivatorId = parseInt(data.donorCultivatorId, 10);
-      delete data.confirmPassword;
-      if (data.panNumber === "") delete data.panNumber;
-      console.log("Form Data:", data);
-      const success = await handleDonorSignup(data, navigate);
-      if (success) methods.reset();
+      const payload = {
+        ...data,
+        donorCultivatorId: Number(data.donorCultivatorId),
+      };
+
+      delete payload.confirmPassword;
+      if (!payload.panNumber) delete payload.panNumber;
+
+      const success = await handleDonorSignup(payload, navigate);
+      if (success) {
+        methods.reset();
+        setShowSuccessPopup(true);
+        setTimeout(() => navigate("/"), 3000);
+      } else {
+        toast.error("Donor signup failed. Please try again.");
+      }
+    } catch (error) {
+      toast.error(
+        "Could not register donor. Ensure email id, mobile number & pan no are not registered already."
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -366,6 +382,12 @@ const DonorSignupForm = ({ onSubmit }) => {
             </form>
           </div>
         </div>
+        {showSuccessPopup && (
+          <SuccessPopup
+            message="Signup successful. Please login to continue."
+            onClose={() => setShowSuccessPopup(false)}
+          />
+        )}
       </div>
     </FormProvider>
   );

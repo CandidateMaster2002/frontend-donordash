@@ -14,12 +14,13 @@ import DonorProfilePage from "./pages/DonorData.jsx/DonorProfilePage.jsx";
 import AdminPage from "./pages/adminPage/AdminPage.jsx";
 import PrivateRoute from "./utils/PrivateRoute.jsx";
 import SupervisorHomePage from "./pages/supervisorPage/SupervisorHomePage.jsx";
-import GlobarLoader from "./utils/GlobalLoader.jsx";
+import GlobalLoader from "./utils/GlobalLoader.jsx";
 import { LoadingProvider } from "./utils/LoadingContext.jsx";
 import NityaSevaReport from "./pages/donorCultivatorHomePage/NityaSevaReport.jsx";
 import BankDetails from "./components/BankDetails.jsx";
 import FormAndDownload from "./PDF_Components/FormAndDownload.jsx";
 import UnapprovedDonations from "./pages/donorCultivatorHomePage/UnapprovedDonations.jsx";
+import AxiosInterceptor from "./utils/axiosInterceptor.jsx";
 
 const router = createBrowserRouter([
   {
@@ -111,7 +112,8 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <LoadingProvider>
-      <GlobarLoader />
+      <AxiosInterceptor />
+      <GlobalLoader />
       <RouterProvider router={router} />
     </LoadingProvider>
   </React.StrictMode>

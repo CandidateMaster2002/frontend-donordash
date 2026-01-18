@@ -23,13 +23,13 @@ const DonorProfilePage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchDonor = async () => {
-      setLoading(true);
       try {
-        const donorData = await getDonorById(id);
+        const axiosConfig = { showLoader: "fullscreen" };
+        const donorData = await getDonorById(id, axiosConfig);
         setDonor(donorData);
         if (donorData.wantPrasadam) {
           const specialDaysData = await fetchSpecialDaysByDonorId(id);
@@ -37,8 +37,6 @@ const DonorProfilePage = () => {
         }
       } catch (error) {
         console.error("Error fetching donor data:", error);
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -46,7 +44,7 @@ const DonorProfilePage = () => {
   }, [id]);
 
   const getDefaultValues = () => ({
-    legalName: donor?.name ?? "",
+    legalName: donor?.donorName ?? "",
     wantPrasadam: donor?.wantPrasadam ?? false,
     category: donor?.category ?? "",
     mobileNumber: donor?.mobileNumber ?? "",
@@ -56,10 +54,10 @@ const DonorProfilePage = () => {
     state: donor?.state ?? "",
     pincode: donor?.pincode ?? "",
     panNumber: donor?.panNumber ?? "",
-    connectedTo: donor?.donorCultivator?.name ?? "",
+    connectedTo: donor?.cultivatorName ?? "",
     zone: donor?.zone ?? "",
     remark: donor?.remark ?? "",
-    supervisor: donor?.donorCultivator?.donationSupervisor?.name ?? "",
+    supervisor: donor?.supervisorName ?? "",
     specialDays: (specialDays ?? []).map((day) => ({
       ...day,
       date: new Date(day.date).toISOString().split("T")[0],
@@ -121,9 +119,7 @@ const DonorProfilePage = () => {
     }
   };
 
-  return loading ? (
-    <HareKrishnaLoader />
-  ) : (
+  return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-6">
       <div className="bg-white rounded-lg shadow-lg w-full max-w-4xl p-8">
         <h1 className="text-3xl font-bold text-gray-800 mb-6">Donor Profile</h1>
@@ -542,9 +538,17 @@ const DonorProfilePage = () => {
                 </button>
                 <button
                   type="submit"
-                  className="flex items-center bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+                  disabled={loading}
+                  className={`flex items-center px-4 py-2 rounded-lg text-white 
+                    ${
+                      loading
+                        ? "bg-blue-400 cursor-not-allowed opacity-70"
+                        : "bg-blue-500 hover:bg-blue-600"
+                    }
+                  `}
                 >
-                  <FaSave className="mr-2" /> Save
+                  <FaSave className="mr-2" />
+                  {loading ? "Saving..." : "Save Changes"}
                 </button>
               </>
             ) : (
