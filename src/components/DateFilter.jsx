@@ -68,10 +68,14 @@ const DateFilter = ({ filter, onFilterChange, loading }) => {
   return (
     <div className="py-4 max-w-lg mx-auto">
       {/* Filter Type Buttons */}
-      <div className="flex justify-around mb-6 text-lg">
+      <div className="flex items-center justify-around w-full text-lg flex-nowrap">
+        <div className="font-semibold text-lg mr-4 whitespace-nowrap">
+          Filter By Date
+        </div>
+
         <button
           type="button"
-          className={`px-4 py-2 rounded-full font-medium transition-all ${
+          className={`px-4 py-2 mr-2 rounded-full font-medium transition-all whitespace-nowrap ${
             draft.type === "all"
               ? "bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-md"
               : "bg-gray-100 text-gray-700 hover:bg-gray-200"
@@ -83,7 +87,7 @@ const DateFilter = ({ filter, onFilterChange, loading }) => {
 
         <button
           type="button"
-          className={`px-4 py-2 rounded-full font-medium transition-all ${
+          className={`px-4 py-2 mr-2 rounded-full font-medium transition-all whitespace-nowrap ${
             draft.type === "month"
               ? "bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-md"
               : "bg-gray-100 text-gray-700 hover:bg-gray-200"
@@ -95,7 +99,7 @@ const DateFilter = ({ filter, onFilterChange, loading }) => {
 
         <button
           type="button"
-          className={`px-4 py-2 rounded-full font-medium transition-all ${
+          className={`px-4 py-2 mr-2 rounded-full font-medium transition-all whitespace-nowrap ${
             draft.type === "range"
               ? "bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-md"
               : "bg-gray-100 text-gray-700 hover:bg-gray-200"

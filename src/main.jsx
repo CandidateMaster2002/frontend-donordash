@@ -20,7 +20,7 @@ import NityaSevaReport from "./pages/donorCultivatorHomePage/NityaSevaReport.jsx
 import BankDetails from "./components/BankDetails.jsx";
 import FormAndDownload from "./PDF_Components/FormAndDownload.jsx";
 import UnapprovedDonations from "./pages/donorCultivatorHomePage/UnapprovedDonations.jsx";
-import AxiosInterceptor from "./utils/axiosInterceptor.jsx";
+import AxiosInterceptor from "./utils/AxiosInterceptor";
 
 const router = createBrowserRouter([
   {

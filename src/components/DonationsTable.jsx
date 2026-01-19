@@ -89,6 +89,11 @@ const DonationsTable = ({
     result.reverse();
   }
   sortedData = result;
+  const totalColumns =
+    6 +
+    (showCutivatorName ? 1 : 0) +
+    (showStatus ? 1 : 0) +
+    (showEditDonation ? 1 : 0);
 
   return (
     <div className="overflow-x-auto overflow-y-auto max-w-full bg-white dark:bg-white">
@@ -109,74 +114,90 @@ const DonationsTable = ({
           </tr>
         </thead>
         <tbody>
-          {sortedData.map((row, index) => (
-            <tr
-              key={row.id}
-              className="hover:bg-gray-50 dark:hover:bg-gray-50 transition-all"
-            >
-              <td className="py-3 px-4 border-b border-gray-200 dark:border-gray-200 text-gray-800 dark:text-gray-800">
-                {formatDate(row.paymentDate)}
+          {sortedData.length === 0 ? (
+            <tr>
+              <td
+                colSpan={totalColumns}
+                className="py-10 text-center text-gray-500 text-lg font-medium"
+              >
+                No donations found for the current filter
               </td>
-              <td className="py-3 px-4 border-b border-gray-200 dark:border-gray-200 text-gray-800 dark:text-gray-800">
-                {row.donorName}
-              </td>
-              {showCutivatorName && (
-                <td className="py-3 px-4 border-b border-gray-200 dark:border-gray-200 text-gray-800 dark:text-gray-800">
-                  {row.donorCultivatorName}
+            </tr>
+          ) : (
+            sortedData.map((row) => (
+              <tr key={row.id} className="hover:bg-gray-50 transition-all">
+                <td className="py-3 px-4 border-b border-gray-200 text-gray-800">
+                  {formatDate(row.paymentDate)}
                 </td>
-              )}
-              <td className="py-3 px-4 border-b border-gray-200 dark:border-gray-200 text-gray-800 dark:text-gray-800">
-                ₹ {row.amount}
-              </td>
-              <td className="py-3 px-4 border-b border-gray-200 dark:border-gray-200 text-gray-800 dark:text-gray-800">
-                {row.paymentMode}
-              </td>
-              <td className="py-3 px-4 border-b border-gray-200 dark:border-gray-200 text-gray-800 dark:text-gray-800">
-                {row.purpose}
-              </td>
-              {showStatus && (
-                <td className="py-3 px-4 border-b border-gray-200 dark:border-gray-200">
-                  <span
-                    className={`px-2 py-1 rounded-full text-sm ${getStatusStyles(
-                      row.status
-                    )} text-gray-800 dark:text-gray-800`}
-                  >
-                    {row.status}
-                  </span>
+
+                <td className="py-3 px-4 border-b border-gray-200 text-gray-800">
+                  {row.donorName}
                 </td>
-              )}
-              <td className="py-3 px-4 border-b border-gray-200 dark:border-gray-200">
-                <FaDownload
-                  className={`inline-block mr-2 ${
-                    row.status === "Verified"
-                      ? "cursor-pointer text-purple-600 dark:text-purple-600"
-                      : "text-gray-400 dark:text-gray-400"
-                  }`}
-                  onClick={
-                    row.status === "Verified"
-                      ? () => handleReceiptClick(row.id)
-                      : undefined
-                  }
-                />
-              </td>
-              {showEditDonation && (
-                <td className="py-3 px-4 border-b border-gray-200 dark:border-gray-200">
-                  <FaEdit
+
+                {showCutivatorName && (
+                  <td className="py-3 px-4 border-b border-gray-200 text-gray-800">
+                    {row.donorCultivatorName}
+                  </td>
+                )}
+
+                <td className="py-3 px-4 border-b border-gray-200 text-gray-800">
+                  ₹ {row.amount}
+                </td>
+
+                <td className="py-3 px-4 border-b border-gray-200 text-gray-800">
+                  {row.paymentMode}
+                </td>
+
+                <td className="py-3 px-4 border-b border-gray-200 text-gray-800">
+                  {row.purpose}
+                </td>
+
+                {showStatus && (
+                  <td className="py-3 px-4 border-b border-gray-200">
+                    <span
+                      className={`px-2 py-1 rounded-full text-sm ${getStatusStyles(
+                        row.status
+                      )}`}
+                    >
+                      {row.status}
+                    </span>
+                  </td>
+                )}
+
+                <td className="py-3 px-4 border-b border-gray-200">
+                  <FaDownload
                     className={`inline-block mr-2 ${
-                      row.status === "Verified" || row.status === "Pending"
-                        ? "cursor-pointer text-purple-600 dark:text-purple-600"
-                        : "text-gray-400 dark:text-gray-400"
+                      row.status === "Verified"
+                        ? "cursor-pointer text-purple-600"
+                        : "text-gray-400"
                     }`}
                     onClick={
-                      row.status === "Verified" || row.status === "Pending"
-                        ? () => onEdit(row)
+                      row.status === "Verified"
+                        ? () => handleReceiptClick(row.id)
                         : undefined
                     }
                   />
                 </td>
-              )}
-            </tr>
-          ))}
+
+                {showEditDonation && (
+                  <td className="py-3 px-4 border-b border-gray-200">
+                    <FaEdit
+                      className={`inline-block mr-2 ${
+                        row.status === "Verified" || row.status === "Pending"
+                          ? "cursor-pointer text-purple-600"
+                          : "text-gray-400"
+                      }`}
+                      onClick={
+                        row.status === "Verified" || row.status === "Pending"
+                          ? () => onEdit(row)
+                          : undefined
+                      }
+                    />
+                  </td>
+                )}
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
     </div>
