@@ -96,110 +96,200 @@ const DonationsTable = ({
     (showEditDonation ? 1 : 0);
 
   return (
-    <div className="overflow-x-auto overflow-y-auto max-w-full bg-white dark:bg-white">
-      <table className="min-w-full">
-        <thead className="bg-gradient-to-r from-purple-600 to-blue-600 text-white">
-          <tr>
-            <th className="py-3 px-4 text-left">Payment Date</th>
-            <th className="py-3 px-4 text-left">Donor</th>
-            {showCutivatorName && (
-              <th className="py-3 px-4 text-left">Cultivator</th>
-            )}
-            <th className="py-3 px-4 text-left">Amount</th>
-            <th className="py-3 px-4 text-left">Mode</th>
-            <th className="py-3 px-4 text-left">Purpose</th>
-            {showStatus && <th className="py-3 px-4 text-left">Status</th>}
-            <th className="py-3 px-4 text-left">Receipt</th>
-            {showEditDonation && <th className="py-3 px-4 text-left">Edit</th>}
-          </tr>
-        </thead>
-        <tbody>
-          {sortedData.length === 0 ? (
+    <div className="w-full bg-white dark:bg-white">
+      {/* Desktop / Tablet Table */}
+      <div className="hidden md:block overflow-x-auto">
+        <table className="min-w-full">
+          <thead className="bg-gradient-to-r from-purple-600 to-blue-600 text-white">
             <tr>
-              <td
-                colSpan={totalColumns}
-                className="py-10 text-center text-gray-500 text-lg font-medium"
-              >
-                No donations found for the current filter
-              </td>
+              <th className="py-3 px-4 text-left whitespace-nowrap">
+                Payment Date
+              </th>
+              <th className="py-3 px-4 text-left whitespace-nowrap">Donor</th>
+              {showCutivatorName && (
+                <th className="py-3 px-4 text-left whitespace-nowrap">
+                  Cultivator
+                </th>
+              )}
+              <th className="py-3 px-4 text-left whitespace-nowrap">Amount</th>
+              <th className="py-3 px-4 text-left whitespace-nowrap">Mode</th>
+              <th className="py-3 px-4 text-left whitespace-nowrap">Purpose</th>
+              {showStatus && (
+                <th className="py-3 px-4 text-left whitespace-nowrap">
+                  Status
+                </th>
+              )}
+              <th className="py-3 px-4 text-left whitespace-nowrap">Receipt</th>
+              {showEditDonation && (
+                <th className="py-3 px-4 text-left whitespace-nowrap">Edit</th>
+              )}
             </tr>
-          ) : (
-            sortedData.map((row) => (
-              <tr key={row.id} className="hover:bg-gray-50 transition-all">
-                <td className="py-3 px-4 border-b border-gray-200 text-gray-800">
-                  {formatDate(row.paymentDate)}
-                </td>
+          </thead>
 
-                <td className="py-3 px-4 border-b border-gray-200 text-gray-800">
-                  {row.donorName}
+          <tbody>
+            {sortedData.length === 0 ? (
+              <tr>
+                <td
+                  colSpan={totalColumns}
+                  className="py-10 text-center text-gray-500 text-lg font-medium"
+                >
+                  No donations found for the current filter
                 </td>
-
-                {showCutivatorName && (
-                  <td className="py-3 px-4 border-b border-gray-200 text-gray-800">
-                    {row.donorCultivatorName}
+              </tr>
+            ) : (
+              sortedData.map((row) => (
+                <tr key={row.id} className="hover:bg-gray-50 transition-colors">
+                  <td className="py-3 px-4 border-b">
+                    {formatDate(row.paymentDate)}
                   </td>
-                )}
+                  <td className="py-3 px-4 border-b">{row.donorName}</td>
 
-                <td className="py-3 px-4 border-b border-gray-200 text-gray-800">
-                  ₹ {row.amount}
-                </td>
+                  {showCutivatorName && (
+                    <td className="py-3 px-4 border-b">
+                      {row.donorCultivatorName}
+                    </td>
+                  )}
 
-                <td className="py-3 px-4 border-b border-gray-200 text-gray-800">
-                  {row.paymentMode}
-                </td>
-
-                <td className="py-3 px-4 border-b border-gray-200 text-gray-800">
-                  {row.purpose}
-                </td>
-
-                {showStatus && (
-                  <td className="py-3 px-4 border-b border-gray-200">
-                    <span
-                      className={`px-2 py-1 rounded-full text-sm ${getStatusStyles(
-                        row.status
-                      )}`}
-                    >
-                      {row.status}
-                    </span>
+                  <td className="py-3 px-4 border-b font-semibold">
+                    ₹ {row.amount}
                   </td>
-                )}
+                  <td className="py-3 px-4 border-b">{row.paymentMode}</td>
+                  <td className="py-3 px-4 border-b">{row.purpose}</td>
 
-                <td className="py-3 px-4 border-b border-gray-200">
-                  <FaDownload
-                    className={`inline-block mr-2 ${
-                      row.status === "Verified"
-                        ? "cursor-pointer text-purple-600"
-                        : "text-gray-400"
-                    }`}
-                    onClick={
-                      row.status === "Verified"
-                        ? () => handleReceiptClick(row.id)
-                        : undefined
-                    }
-                  />
-                </td>
+                  {showStatus && (
+                    <td className="py-3 px-4 border-b">
+                      <span
+                        className={`px-2 py-1 rounded-full text-sm ${getStatusStyles(
+                          row.status
+                        )}`}
+                      >
+                        {row.status}
+                      </span>
+                    </td>
+                  )}
 
-                {showEditDonation && (
-                  <td className="py-3 px-4 border-b border-gray-200">
-                    <FaEdit
-                      className={`inline-block mr-2 ${
-                        row.status === "Verified" || row.status === "Pending"
+                  <td className="py-3 px-4 border-b">
+                    <FaDownload
+                      className={`${
+                        row.status === "Verified"
                           ? "cursor-pointer text-purple-600"
                           : "text-gray-400"
                       }`}
                       onClick={
-                        row.status === "Verified" || row.status === "Pending"
-                          ? () => onEdit(row)
+                        row.status === "Verified"
+                          ? () => handleReceiptClick(row.id)
                           : undefined
                       }
                     />
                   </td>
+
+                  {showEditDonation && (
+                    <td className="py-3 px-4 border-b">
+                      <FaEdit
+                        className={`${
+                          row.status === "Verified" || row.status === "Pending"
+                            ? "cursor-pointer text-purple-600"
+                            : "text-gray-400"
+                        }`}
+                        onClick={
+                          row.status === "Verified" || row.status === "Pending"
+                            ? () => onEdit(row)
+                            : undefined
+                        }
+                      />
+                    </td>
+                  )}
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Mobile Cards */}
+      <div className="md:hidden space-y-4 p-3">
+        {sortedData.length === 0 ? (
+          <div className="text-center text-gray-500 py-10">
+            No donations found for the current filter
+          </div>
+        ) : (
+          sortedData.map((row) => (
+            <div
+              key={row.id}
+              className="border rounded-xl shadow-sm p-4 space-y-2"
+            >
+              <div className="text-sm text-gray-500">
+                {formatDate(row.paymentDate)}
+              </div>
+
+              <div className="font-semibold text-lg">{row.donorName}</div>
+
+              {showCutivatorName && (
+                <div className="text-sm">
+                  <span className="font-medium">Cultivator:</span>{" "}
+                  {row.donorCultivatorName}
+                </div>
+              )}
+
+              <div className="flex justify-between text-sm">
+                <span>Amount</span>
+                <span className="font-semibold">₹ {row.amount}</span>
+              </div>
+
+              <div className="flex justify-between text-sm">
+                <span>Mode</span>
+                <span>{row.paymentMode}</span>
+              </div>
+
+              <div className="text-sm">
+                <span className="font-medium">Purpose:</span> {row.purpose}
+              </div>
+
+              {showStatus && (
+                <div>
+                  <span
+                    className={`inline-block px-3 py-1 rounded-full text-sm ${getStatusStyles(
+                      row.status
+                    )}`}
+                  >
+                    {row.status}
+                  </span>
+                </div>
+              )}
+
+              <div className="flex justify-end gap-4 pt-2">
+                <FaDownload
+                  className={`${
+                    row.status === "Verified"
+                      ? "cursor-pointer text-purple-600"
+                      : "text-gray-400"
+                  }`}
+                  onClick={
+                    row.status === "Verified"
+                      ? () => handleReceiptClick(row.id)
+                      : undefined
+                  }
+                />
+
+                {showEditDonation && (
+                  <FaEdit
+                    className={`${
+                      row.status === "Verified" || row.status === "Pending"
+                        ? "cursor-pointer text-purple-600"
+                        : "text-gray-400"
+                    }`}
+                    onClick={
+                      row.status === "Verified" || row.status === "Pending"
+                        ? () => onEdit(row)
+                        : undefined
+                    }
+                  />
                 )}
-              </tr>
-            ))
-          )}
-        </tbody>
-      </table>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
     </div>
   );
 };

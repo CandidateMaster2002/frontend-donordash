@@ -46,27 +46,27 @@ const DonateNowPopup = ({
   const formRef = useRef(null);
   const headingRef = useRef(null);
 
-  useEffect(() => {
-    const scrollY = window.scrollY || window.pageYOffset;
+  // useEffect(() => {
+  //   const scrollY = window.scrollY || window.pageYOffset;
 
-    // Lock body without breaking layout or inner scrolling
-    document.body.style.position = "fixed";
-    document.body.style.top = `-${scrollY}px`;
-    document.body.style.left = "0";
-    document.body.style.right = "0";
-    document.body.style.width = "100%";
-    // don't set overflow:hidden here — position:fixed is enough
+  //   // Lock body without breaking layout or inner scrolling
+  //   document.body.style.position = "fixed";
+  //   document.body.style.top = `-${scrollY}px`;
+  //   document.body.style.left = "0";
+  //   document.body.style.right = "0";
+  //   document.body.style.width = "100%";
+  //   // don't set overflow:hidden here — position:fixed is enough
 
-    return () => {
-      // restore
-      document.body.style.position = "";
-      document.body.style.top = "";
-      document.body.style.left = "";
-      document.body.style.right = "";
-      document.body.style.width = "";
-      window.scrollTo(0, scrollY);
-    };
-  }, []);
+  //   return () => {
+  //     // restore
+  //     document.body.style.position = "";
+  //     document.body.style.top = "";
+  //     document.body.style.left = "";
+  //     document.body.style.right = "";
+  //     document.body.style.width = "";
+  //     window.scrollTo(0, scrollY);
+  //   };
+  // }, []);
 
   useEffect(() => {
     if (existingDonation) {
@@ -185,7 +185,8 @@ const DonateNowPopup = ({
           ...donorDataRest
         } = donor;
 
-        await handleRazorpayPayment(donationData, donorDataRest);
+        const { wantPrasadam, zone, ...rest } = donorDataRest;
+        await handleRazorpayPayment(donationData, rest);
       } else {
         const response = await axiosInstance.post(DONATE, donationData);
         if (response?.data?.alreadyExists === true) {

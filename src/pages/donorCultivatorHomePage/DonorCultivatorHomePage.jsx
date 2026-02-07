@@ -21,6 +21,7 @@ import { getDonorsByCultivator } from "../../utils/services";
 
 const DonorCultivatorHomePage = () => {
   const today = new Date();
+  today.setDate(today.getDate() + 1);
   const lastMonth = new Date();
   lastMonth.setMonth(today.getMonth() - 1);
 
@@ -41,6 +42,7 @@ const DonorCultivatorHomePage = () => {
   const [showAddDonationPopup, setShowAddDonationPopup] = useState(false);
   const [editingDonation, setEditingDonation] = useState(null);
   const [activeTab, setActiveTab] = useState("home");
+  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
 
   useEffect(() => {
     setHeaderExtras(
@@ -247,107 +249,248 @@ const DonorCultivatorHomePage = () => {
 
       {activeTab === "home" && (
         <>
+          {/* --- DateFilter stays as-is --- */}
           <DateFilter
             filter={filter}
             onFilterChange={handleFilterChange}
             loading={loading}
           />
-          {/* --- Filters Row --- */}
-          <div className="flex flex-wrap gap-3 items-center justify-center my-4">
-            <div className="font-semibold text-lg mr-2">Filter By</div>
-            {/* Cultivator Donors */}
-            <select
-              value={selectedDonorId}
-              onChange={(e) => setSelectedDonorId(e.target.value)}
-              className="px-3 py-2 rounded-md border"
-            >
-              <option value="">All Donors</option>
-              {cultivatorDonors.map((d) => (
-                <option key={d.donorId} value={d.donorId}>
-                  {d.donorName}
-                </option>
-              ))}
-            </select>
 
-            {/* Status */}
-            <select
-              value={selectedStatus}
-              onChange={(e) => setSelectedStatus(e.target.value)}
-              className="px-3 py-2 rounded-md border"
-            >
-              <option value="">All Statuses</option>
-              {paymentStatuses.map((s) => (
-                <option key={s} value={s}>
-                  {s}
-                </option>
-              ))}
-            </select>
+          {/* --- Responsive Filters Row --- */}
+          <div className="my-4">
+            {/* Row: label + mobile open button */}
+            <div className="flex items-center justify-between md:justify-center gap-3">
+              {/* Mobile: open filters button (visible on small screens only) */}
+              <button
+                type="button"
+                onClick={() => setIsFiltersOpen(true)}
+                className="sm:hidden px-3 py-2 rounded-md border bg-white text-sm"
+                aria-expanded={isFiltersOpen}
+                aria-controls="mobile-filters-panel"
+              >
+                Filters
+              </button>
+            </div>
 
-            {/* Purpose (use .value) */}
-            <select
-              value={selectedPurpose}
-              onChange={(e) => setSelectedPurpose(e.target.value)}
-              className="px-3 py-2 rounded-md border"
-            >
-              <option value="">All Purposes</option>
-              {donationPurposes.map((p) => (
-                <option key={p.value} value={p.value}>
-                  {p.value}
-                </option>
-              ))}
-            </select>
+            {/* Desktop filters (visible on md and up) */}
+            <div className="hidden md:flex flex-wrap gap-3 items-center justify-center">
+              <div className="font-semibold text-lg mr-2">Filter By</div>
+              <select
+                value={selectedDonorId}
+                onChange={(e) => setSelectedDonorId(e.target.value)}
+                className="px-3 py-2 rounded-md border"
+              >
+                <option value="">All Donors</option>
+                {cultivatorDonors.map((d) => (
+                  <option key={d.donorId} value={d.donorId}>
+                    {d.donorName}
+                  </option>
+                ))}
+              </select>
 
-            {/* Payment Mode (use .value) */}
-            <select
-              value={selectedPaymentMode}
-              onChange={(e) => setSelectedPaymentMode(e.target.value)}
-              className="px-3 py-2 rounded-md border"
-            >
-              <option value="">All Payment Modes</option>
-              {paymentModes.map((m) => (
-                <option key={m.value} value={m.value}>
-                  {m.value}
-                </option>
-              ))}
-            </select>
+              <select
+                value={selectedStatus}
+                onChange={(e) => setSelectedStatus(e.target.value)}
+                className="px-3 py-2 rounded-md border"
+              >
+                <option value="">All Statuses</option>
+                {paymentStatuses.map((s) => (
+                  <option key={s} value={s}>
+                    {s}
+                  </option>
+                ))}
+              </select>
 
-            {/* Sort controls */}
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="px-3 py-2 rounded-md border"
-            >
-              <option value="date">Sort By: Date</option>
-              <option value="amount">Sort By: Amount</option>
-            </select>
+              <select
+                value={selectedPurpose}
+                onChange={(e) => setSelectedPurpose(e.target.value)}
+                className="px-3 py-2 rounded-md border"
+              >
+                <option value="">All Purposes</option>
+                {donationPurposes.map((p) => (
+                  <option key={p.value} value={p.value}>
+                    {p.value}
+                  </option>
+                ))}
+              </select>
 
-            <select
-              value={sortOrder}
-              onChange={(e) => setSortOrder(e.target.value)}
-              className="px-3 py-2 rounded-md border"
-            >
-              <option value="desc">Desc</option>
-              <option value="asc">Asc</option>
-            </select>
+              <select
+                value={selectedPaymentMode}
+                onChange={(e) => setSelectedPaymentMode(e.target.value)}
+                className="px-3 py-2 rounded-md border"
+              >
+                <option value="">All Payment Modes</option>
+                {paymentModes.map((m) => (
+                  <option key={m.value} value={m.value}>
+                    {m.value}
+                  </option>
+                ))}
+              </select>
 
-            {/* Clear filters */}
-            <button
-              type="button"
-              onClick={() => {
-                setSelectedDonorId("");
-                setSelectedStatus("");
-                setSelectedPurpose("");
-                setSelectedPaymentMode("");
-                setSortBy("date");
-                setSortOrder("desc");
-              }}
-              className="px-3 py-2 rounded-md bg-red-500 text-white
-                hover:bg-red-600 transition-colors
-                focus:outline-none focus:ring-0"
-            >
-              Clear
-            </button>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="px-3 py-2 rounded-md border"
+              >
+                <option value="date">Sort By: Date</option>
+                <option value="amount">Sort By: Amount</option>
+              </select>
+
+              <select
+                value={sortOrder}
+                onChange={(e) => setSortOrder(e.target.value)}
+                className="px-3 py-2 rounded-md border"
+              >
+                <option value="desc">Desc</option>
+                <option value="asc">Asc</option>
+              </select>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedDonorId("");
+                  setSelectedStatus("");
+                  setSelectedPurpose("");
+                  setSelectedPaymentMode("");
+                  setSortBy("date");
+                  setSortOrder("desc");
+                }}
+                className="px-3 py-2 rounded-md bg-red-500 text-white hover:bg-red-600 transition-colors focus:outline-none focus:ring-0"
+              >
+                Clear
+              </button>
+            </div>
+
+            {/* Mobile slide-over panel */}
+            {isFiltersOpen && (
+              <div
+                id="mobile-filters-panel"
+                className="fixed inset-0 z-50 flex md:hidden"
+                role="dialog"
+                aria-modal="true"
+              >
+                {/* overlay */}
+                <div
+                  className="fixed inset-0 bg-black/40"
+                  onClick={() => setIsFiltersOpen(false)}
+                  aria-hidden="true"
+                />
+
+                {/* panel */}
+                <div className="relative ml-auto w-full max-w-sm bg-white h-full p-4 overflow-auto shadow-xl">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="font-semibold text-lg">Filters</div>
+                    <button
+                      onClick={() => setIsFiltersOpen(false)}
+                      className="px-3 py-1 rounded-md border"
+                      aria-label="Close filters"
+                    >
+                      Close
+                    </button>
+                  </div>
+
+                  {/* mobile: stacked controls for easier tapping */}
+                  <div className="flex flex-col gap-3">
+                    <select
+                      value={selectedDonorId}
+                      onChange={(e) => setSelectedDonorId(e.target.value)}
+                      className="px-3 py-2 rounded-md border w-full"
+                    >
+                      <option value="">All Donors</option>
+                      {cultivatorDonors.map((d) => (
+                        <option key={d.donorId} value={d.donorId}>
+                          {d.donorName}
+                        </option>
+                      ))}
+                    </select>
+
+                    <select
+                      value={selectedStatus}
+                      onChange={(e) => setSelectedStatus(e.target.value)}
+                      className="px-3 py-2 rounded-md border w-full"
+                    >
+                      <option value="">All Statuses</option>
+                      {paymentStatuses.map((s) => (
+                        <option key={s} value={s}>
+                          {s}
+                        </option>
+                      ))}
+                    </select>
+
+                    <select
+                      value={selectedPurpose}
+                      onChange={(e) => setSelectedPurpose(e.target.value)}
+                      className="px-3 py-2 rounded-md border w-full"
+                    >
+                      <option value="">All Purposes</option>
+                      {donationPurposes.map((p) => (
+                        <option key={p.value} value={p.value}>
+                          {p.value}
+                        </option>
+                      ))}
+                    </select>
+
+                    <select
+                      value={selectedPaymentMode}
+                      onChange={(e) => setSelectedPaymentMode(e.target.value)}
+                      className="px-3 py-2 rounded-md border w-full"
+                    >
+                      <option value="">All Payment Modes</option>
+                      {paymentModes.map((m) => (
+                        <option key={m.value} value={m.value}>
+                          {m.value}
+                        </option>
+                      ))}
+                    </select>
+
+                    <select
+                      value={sortBy}
+                      onChange={(e) => setSortBy(e.target.value)}
+                      className="px-3 py-2 rounded-md border w-full"
+                    >
+                      <option value="date">Sort By: Date</option>
+                      <option value="amount">Sort By: Amount</option>
+                    </select>
+
+                    <select
+                      value={sortOrder}
+                      onChange={(e) => setSortOrder(e.target.value)}
+                      className="px-3 py-2 rounded-md border w-full"
+                    >
+                      <option value="desc">Desc</option>
+                      <option value="asc">Asc</option>
+                    </select>
+
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedDonorId("");
+                          setSelectedStatus("");
+                          setSelectedPurpose("");
+                          setSelectedPaymentMode("");
+                          setSortBy("date");
+                          setSortOrder("desc");
+                        }}
+                        className="flex-1 px-3 py-2 rounded-md bg-red-500 text-white hover:bg-red-600"
+                      >
+                        Clear
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setIsFiltersOpen(false)}
+                        className="flex-1 px-3 py-2 rounded-md border"
+                      >
+                        Apply
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
+
           <DonationsTable
             data={donationsData}
             uiFilter={uiFilter}
