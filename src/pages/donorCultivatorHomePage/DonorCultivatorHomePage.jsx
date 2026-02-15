@@ -48,18 +48,18 @@ const DonorCultivatorHomePage = () => {
 
   useEffect(() => {
     setHeaderExtras(
-      <div className="flex items-center gap-4 text-white font-semibold">
+      <div className="flex items-center gap-4 font-semibold">
         {/* Tabs */}
         <div className="flex gap-6">
           <button
             onClick={() => setActiveTab('home')}
             className={`px-3 py-2 rounded-full font-semibold transition-all duration-300
-              focus:outline-none focus:ring-0
-              ${
-                activeTab === 'home'
-                  ? 'bg-white text-purple-700 shadow-md'
-                  : 'text-white/90 hover:bg-white/20'
-              }`}
+            focus:outline-none focus:ring-0
+            ${
+              activeTab === 'home'
+                ? 'bg-white text-purple-700 shadow-md'
+                : 'hover:bg-gray-100 md:hover:bg-white/20'
+            }`}
           >
             Home
           </button>
@@ -67,11 +67,11 @@ const DonorCultivatorHomePage = () => {
           <button
             onClick={() => setActiveTab('reports')}
             className={`px-3 py-2 rounded-full font-semibold transition-all duration-300
-              focus:outline-none focus:ring-0 ${
-                activeTab === 'reports'
-                  ? 'bg-white text-purple-700 shadow-md'
-                  : 'text-white/90 hover:bg-white/20'
-              }`}
+            focus:outline-none focus:ring-0 ${
+              activeTab === 'reports'
+                ? 'bg-white text-purple-700 shadow-md'
+                : 'hover:bg-gray-100 md:hover:bg-white/20'
+            }`}
           >
             Reports
           </button>
@@ -81,30 +81,21 @@ const DonorCultivatorHomePage = () => {
         <div className="flex gap-4 ml-8">
           <NavLink
             to="/donor-list"
-            className="px-4 py-2 rounded-full font-medium text-white/90
-               transition-all duration-300
-               hover:bg-white/20 hover:text-white
-               focus:outline-none"
+            className="px-4 py-2 rounded-full font-medium transition-all duration-300 hover:bg-gray-100 md:hover:bg-white/20 focus:outline-none"
           >
             View All Donors
           </NavLink>
 
           <NavLink
             to="/donor-signup"
-            className="px-4 py-2 rounded-full font-medium text-white/90
-               transition-all duration-300
-               hover:bg-white/20 hover:text-white
-               focus:outline-none"
+            className="px-4 py-2 rounded-full font-medium transition-all duration-300 hover:bg-gray-100 md:hover:bg-white/20 focus:outline-none"
           >
             Add Donor
           </NavLink>
 
           <NavLink
             to="/unapproved-donations"
-            className="px-4 py-2 rounded-full font-medium text-white/90
-               transition-all duration-300
-               hover:bg-white/20 hover:text-white
-               focus:outline-none"
+            className="px-4 py-2 rounded-full font-medium transition-all duration-300 hover:bg-gray-100 md:hover:bg-white/20 focus:outline-none"
           >
             Unapproved Donations
           </NavLink>
@@ -260,12 +251,11 @@ const DonorCultivatorHomePage = () => {
 
       {activeTab === 'home' && (
         <>
-          <DateFilter
-            filter={filter}
-            onFilterChange={handleFilterChange}
-            loading={loading}
-          />
-
+          <div className="mt-4 mb-2 text-center">
+            <h2 className="text-lg md:text-xl font-semibold text-gray-800 dark:text-gray-800">
+              Donations collected in last 30 days appear here
+            </h2>
+          </div>
           {/* --- Responsive Filters Row --- */}
           <div className="my-4">
             {/* Row: label + mobile open button */}
@@ -274,14 +264,13 @@ const DonorCultivatorHomePage = () => {
               <button
                 type="button"
                 onClick={() => setIsFiltersOpen(true)}
-                className="sm:hidden px-3 py-2 rounded-md border bg-white text-sm"
+                className="sm:hidden px-3 py-2 rounded-md border border-gray-300 bg-white text-gray-700 dark:bg-white dark:text-gray-700 dark:border-gray-300 text-sm"
                 aria-expanded={isFiltersOpen}
                 aria-controls="mobile-filters-panel"
               >
                 Filters
               </button>
             </div>
-
             {/* Desktop filters (visible on md and up) */}
             <DesktopFilters
               selectedDonorId={selectedDonorId}
@@ -302,7 +291,6 @@ const DonorCultivatorHomePage = () => {
               paymentModes={paymentModes}
               onClear={clearAll}
             />
-
             {/* Mobile slide-over panel */}
             <MobileFilters
               isOpen={isFiltersOpen}
@@ -339,23 +327,102 @@ const DonorCultivatorHomePage = () => {
       )}
 
       {activeTab === 'reports' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
-          <DonationSummaryTable
-            data={summaryData.zone}
-            columnName1="Zone"
-            columnName2="Amount"
-          />
-          <DonationSummaryTable
-            data={summaryData.paymentMode}
-            columnName1="Payment Mode"
-            columnName2="Amount"
-          />
-          <DonationSummaryTable
-            data={summaryData.purpose}
-            columnName1="Purpose"
-            columnName2="Amount"
-          />
-        </div>
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
+            <DonationSummaryTable
+              data={summaryData.zone}
+              columnName1="Zone"
+              columnName2="Amount"
+            />
+            <DonationSummaryTable
+              data={summaryData.paymentMode}
+              columnName1="Payment Mode"
+              columnName2="Amount"
+            />
+            <DonationSummaryTable
+              data={summaryData.purpose}
+              columnName1="Purpose"
+              columnName2="Amount"
+            />
+          </div>
+          <>
+            <DateFilter
+              filter={filter}
+              onFilterChange={handleFilterChange}
+              loading={loading}
+            />
+
+            {/* --- Responsive Filters Row --- */}
+            <div className="my-4">
+              {/* Row: label + mobile open button */}
+              <div className="flex items-center justify-between md:justify-center gap-3">
+                {/* Mobile: open filters button (visible on small screens only) */}
+                <button
+                  type="button"
+                  onClick={() => setIsFiltersOpen(true)}
+                  className="md:hidden px-3 py-2 rounded-md border border-gray-300 bg-white text-gray-800 dark:border-gray-300 dark:bg-white dark:text-gray-800 text-sm"
+                  aria-expanded={isFiltersOpen}
+                  aria-controls="mobile-filters-panel"
+                >
+                  Filters
+                </button>
+              </div>
+
+              {/* Desktop filters (visible on md and up) */}
+              <DesktopFilters
+                selectedDonorId={selectedDonorId}
+                setSelectedDonorId={setSelectedDonorId}
+                selectedStatus={selectedStatus}
+                setSelectedStatus={setSelectedStatus}
+                selectedPurpose={selectedPurpose}
+                setSelectedPurpose={setSelectedPurpose}
+                selectedPaymentMode={selectedPaymentMode}
+                setSelectedPaymentMode={setSelectedPaymentMode}
+                sortBy={sortBy}
+                setSortBy={setSortBy}
+                sortOrder={sortOrder}
+                setSortOrder={setSortOrder}
+                cultivatorDonors={cultivatorDonors}
+                paymentStatuses={paymentStatuses}
+                donationPurposes={donationPurposes}
+                paymentModes={paymentModes}
+                onClear={clearAll}
+              />
+
+              {/* Mobile slide-over panel */}
+              <MobileFilters
+                isOpen={isFiltersOpen}
+                onClose={() => setIsFiltersOpen(false)}
+                selectedDonorId={selectedDonorId}
+                setSelectedDonorId={setSelectedDonorId}
+                selectedStatus={selectedStatus}
+                setSelectedStatus={setSelectedStatus}
+                selectedPurpose={selectedPurpose}
+                setSelectedPurpose={setSelectedPurpose}
+                selectedPaymentMode={selectedPaymentMode}
+                setSelectedPaymentMode={setSelectedPaymentMode}
+                sortBy={sortBy}
+                setSortBy={setSortBy}
+                sortOrder={sortOrder}
+                setSortOrder={setSortOrder}
+                cultivatorDonors={cultivatorDonors}
+                paymentStatuses={paymentStatuses}
+                donationPurposes={donationPurposes}
+                paymentModes={paymentModes}
+                onClear={() => {
+                  clearAll();
+                  setIsFiltersOpen(false);
+                }}
+              />
+            </div>
+
+            <DonationsTable
+              data={donationsData}
+              uiFilter={uiFilter}
+              onEdit={handleEdit}
+            />
+          </>
+        </>
       )}
 
       {editingDonation && (

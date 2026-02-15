@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 // DesktopFilters: visible from md and up
 const DesktopFilters = ({
@@ -21,13 +21,15 @@ const DesktopFilters = ({
   onClear,
 }) => {
   return (
-    <div className="hidden md:flex flex-wrap gap-3 items-center justify-center">
-      <div className="font-semibold text-lg mr-2">Filter By</div>
+    <div className="hidden md:flex flex-wrap gap-3 items-center justify-center text-gray-800 dark:text-gray-800">
+      <div className="font-semibold text-lg mr-2 text-gray-800 dark:text-gray-800">
+        Filter By
+      </div>
 
       <select
         value={selectedDonorId}
         onChange={(e) => setSelectedDonorId(e.target.value)}
-        className="px-3 py-2 rounded-md border"
+        className="px-3 py-2 rounded-md border border-gray-300 dark:border-gray-300 bg-white dark:bg-white text-gray-800 dark:text-gray-800"
       >
         <option value="">All Donors</option>
         {cultivatorDonors.map((d) => (
@@ -40,7 +42,7 @@ const DesktopFilters = ({
       <select
         value={selectedStatus}
         onChange={(e) => setSelectedStatus(e.target.value)}
-        className="px-3 py-2 rounded-md border"
+        className="px-3 py-2 rounded-md border border-gray-300 dark:border-gray-300 bg-white dark:bg-white text-gray-800 dark:text-gray-800"
       >
         <option value="">All Statuses</option>
         {paymentStatuses.map((s) => (
@@ -53,7 +55,7 @@ const DesktopFilters = ({
       <select
         value={selectedPurpose}
         onChange={(e) => setSelectedPurpose(e.target.value)}
-        className="px-3 py-2 rounded-md border"
+        className="px-3 py-2 rounded-md border border-gray-300 dark:border-gray-300 bg-white dark:bg-white text-gray-800 dark:text-gray-800"
       >
         <option value="">All Purposes</option>
         {donationPurposes.map((p) => (
@@ -66,7 +68,7 @@ const DesktopFilters = ({
       <select
         value={selectedPaymentMode}
         onChange={(e) => setSelectedPaymentMode(e.target.value)}
-        className="px-3 py-2 rounded-md border"
+        className="px-3 py-2 rounded-md border border-gray-300 dark:border-gray-300 bg-white dark:bg-white text-gray-800 dark:text-gray-800"
       >
         <option value="">All Payment Modes</option>
         {paymentModes.map((m) => (
@@ -79,7 +81,7 @@ const DesktopFilters = ({
       <select
         value={sortBy}
         onChange={(e) => setSortBy(e.target.value)}
-        className="px-3 py-2 rounded-md border"
+        className="px-3 py-2 rounded-md border border-gray-300 dark:border-gray-300 bg-white dark:bg-white text-gray-800 dark:text-gray-800"
       >
         <option value="date">Sort By: Date</option>
         <option value="amount">Sort By: Amount</option>
@@ -88,7 +90,7 @@ const DesktopFilters = ({
       <select
         value={sortOrder}
         onChange={(e) => setSortOrder(e.target.value)}
-        className="px-3 py-2 rounded-md border"
+        className="px-3 py-2 rounded-md border border-gray-300 dark:border-gray-300 bg-white dark:bg-white text-gray-800 dark:text-gray-800"
       >
         <option value="desc">Desc</option>
         <option value="asc">Asc</option>

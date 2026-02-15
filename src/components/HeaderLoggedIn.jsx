@@ -1,86 +1,3 @@
-// import React, { useState } from "react";
-// import { useNavigate } from "react-router-dom";
-// import { GoSignOut } from "react-icons/go";
-// import { FaUserCircle } from "react-icons/fa";
-// import { signoutUser } from "../utils/services";
-// import donationMeterLogo from "../assets/images/donation-meter-logo.png";
-// import { getLoggedInIdFromLocalStorage } from "../utils/services";
-// import { useHeader } from "../utils/HeaderContext";
-
-// const HeaderLoggedIn = () => {
-//   const navigate = useNavigate();
-//   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-//   const { headerExtras } = useHeader();
-
-//   const handleSignOut = () => {
-//     signoutUser();
-//     navigate("/login-page");
-//   };
-
-//   const toggleDropdown = () => {
-//     setIsDropdownOpen(!isDropdownOpen);
-//   };
-
-//   return (
-//     <div className="h-[70px] bg-gradient-to-l from-purple-600 to-blue-300 shadow-lg px-6 flex items-center justify-between">
-//       {/* Left: Logo */}
-//       <div
-//         onClick={() => navigate("/")}
-//         className="cursor-pointer flex items-center px-2 py-2
-//              hover:scale-105 transition-transform duration-200"
-//       >
-//         <img
-//           src={donationMeterLogo}
-//           alt="DonationMete₹ Logo"
-//           className="h-32 sm:h-34 w-auto object-contain drop-shadow-md"
-//         />
-//       </div>
-
-//       {/* Center: Page-specific navigation (optional) */}
-//       <div className="flex-1 flex justify-center">
-//         <div className="flex items-center gap-6 text-white font-medium">
-//           {headerExtras}
-//         </div>
-//       </div>
-
-//       {/* Right: Profile */}
-//       <div className="relative">
-//         <button
-//           onClick={toggleDropdown}
-//           className="flex items-center bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2 hover:bg-white/20 transition-all"
-//         >
-//           <FaUserCircle className="h-6 w-6 text-white" />
-//         </button>
-
-//         {isDropdownOpen && (
-//           <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-50">
-//             <button
-//               onClick={() =>
-//                 navigate(`/donor-profile/${getLoggedInIdFromLocalStorage()}`)
-//               }
-//               className="w-full text-left px-4 py-2 text-gray-700 hover:bg-purple-50"
-//             >
-//               Profile
-//             </button>
-
-//             <button
-//               onClick={handleSignOut}
-//               className="w-full text-left px-4 py-2 text-gray-700 hover:bg-purple-50"
-//             >
-//               <div className="flex items-center gap-2">
-//                 <GoSignOut className="h-5 w-5" />
-//                 <span>Sign Out</span>
-//               </div>
-//             </button>
-//           </div>
-//         )}
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default HeaderLoggedIn;
-
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, NavLink } from 'react-router-dom';
 import { FaUserCircle, FaBars, FaTimes } from 'react-icons/fa';
@@ -204,12 +121,14 @@ const HeaderLoggedIn = () => {
             aria-hidden="true"
           />
 
-          {/* Drawer panel */}
-          <div className="relative ml-auto w-80 max-w-[85%] bg-white h-full shadow-xl transform transition-transform duration-300 ease-in-out">
+          {/* Drawer panel - explicit colors for parity in light/dark */}
+          <div className="relative ml-auto w-80 max-w-[85%] bg-white dark:bg-white text-gray-800 dark:text-gray-800 h-full shadow-xl transform transition-transform duration-300 ease-in-out">
             <div className="flex items-center justify-between px-4 py-3 border-b">
               <div className="flex items-center gap-3">
                 <img src={donationMeterLogo} alt="" className="h-8 w-auto" />
-                <span className="font-semibold text-gray-800">Menu</span>
+                <span className="font-semibold text-gray-800 dark:text-gray-800">
+                  Menu
+                </span>
               </div>
               <div className="flex items-center gap-2">
                 <button
@@ -223,57 +142,84 @@ const HeaderLoggedIn = () => {
               </div>
             </div>
 
-            <div className="p-4 overflow-y-auto h-[calc(100%-64px)]">
-              {/* Render the headerExtras (tabs + nav) inside mobile drawer */}
-              <div className="mb-4">{headerExtras}</div>
+            {/* Scoped styles: hide scrollbars + force headerExtras stacking + consistent hover pill color */}
+            <style>{`
+        /* Hide scrollbars but keep scrolling */
+        .drawer-scroll { scrollbar-width: none; -ms-overflow-style: none; }
+        .drawer-scroll::-webkit-scrollbar { display: none; }
 
-              {/* Fallback / explicit nav (in case headerExtras is null) */}
-              <nav className="flex flex-col gap-2">
-                <NavLink
-                  to="/donor-list"
-                  onClick={closeMobile}
-                  className="px-3 py-2 rounded-md text-gray-800 hover:bg-gray-100"
-                >
-                  View All Donors
-                </NavLink>
+        /* Force headerExtras to stack vertically and make inner items full width */
+        .drawer-header-extras { display: flex; flex-direction: column; gap: 0.5rem; }
+        .drawer-header-extras .flex { flex-direction: column !important; gap: 0.5rem !important; align-items: stretch !important; }
+        .drawer-header-extras .ml-8 { margin-left: 0 !important; }
+        .drawer-header-extras button,
+        .drawer-header-extras a { width: 100% !important; text-align: left !important; }
 
-                <NavLink
-                  to="/donor-signup"
-                  onClick={closeMobile}
-                  className="px-3 py-2 rounded-md text-gray-800 hover:bg-gray-100"
-                >
-                  Add Donor
-                </NavLink>
+        /* fallback nav pill hover - use the same color in both light & dark */
+        .drawer-nav-item {
+          transition: background-color 150ms ease;
+          border-radius: 9999px; /* pill */
+        }
+        .drawer-nav-item:hover {
+          background: #f3f4f6; /* Tailwind gray-100 - stable across themes */
+        }
+      `}</style>
 
-                <NavLink
-                  to="/unapproved-donations"
-                  onClick={closeMobile}
-                  className="px-3 py-2 rounded-md text-gray-800 hover:bg-gray-100"
-                >
-                  Unapproved Donations
-                </NavLink>
+            <div className="p-4 drawer-scroll overflow-y-auto h-[calc(100%-64px)]">
+              {headerExtras ? (
+                // headerExtras forced into a single column via the .drawer-header-extras rules above
+                <div className="mb-4 text-gray-800 drawer-header-extras">
+                  {headerExtras}
+                </div>
+              ) : (
+                /* Fallback: show explicit nav only when headerExtras is null */
+                <nav className="flex flex-col gap-2 mb-4">
+                  <NavLink
+                    to="/donor-list"
+                    onClick={closeMobile}
+                    className="drawer-nav-item px-3 py-2 rounded-full text-gray-800 hover:bg-gray-100 w-full text-left"
+                  >
+                    View All Donors
+                  </NavLink>
 
-                <button
-                  onClick={() =>
-                    navigate(
-                      `/donor-profile/${getLoggedInIdFromLocalStorage()}`
-                    )
-                  }
-                  className="text-left px-3 py-2 rounded-md text-gray-800 hover:bg-gray-100"
-                >
-                  Profile
-                </button>
+                  <NavLink
+                    to="/donor-signup"
+                    onClick={closeMobile}
+                    className="drawer-nav-item px-3 py-2 rounded-full text-gray-800 hover:bg-gray-100 w-full text-left"
+                  >
+                    Add Donor
+                  </NavLink>
 
-                <button
-                  onClick={() => {
-                    handleSignOut();
-                    closeMobile();
-                  }}
-                  className="text-left px-3 py-2 rounded-md text-gray-800 hover:bg-gray-100"
-                >
-                  Sign Out
-                </button>
-              </nav>
+                  <NavLink
+                    to="/unapproved-donations"
+                    onClick={closeMobile}
+                    className="drawer-nav-item px-3 py-2 rounded-full text-gray-800 hover:bg-gray-100 w-full text-left"
+                  >
+                    Unapproved Donations
+                  </NavLink>
+
+                  <button
+                    onClick={() =>
+                      navigate(
+                        `/donor-profile/${getLoggedInIdFromLocalStorage()}`
+                      )
+                    }
+                    className="drawer-nav-item text-left px-3 py-2 rounded-full text-gray-800 hover:bg-gray-100 w-full"
+                  >
+                    Profile
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      handleSignOut();
+                      closeMobile();
+                    }}
+                    className="drawer-nav-item text-left px-3 py-2 rounded-full text-gray-800 hover:bg-gray-100 w-full"
+                  >
+                    Sign Out
+                  </button>
+                </nav>
+              )}
             </div>
           </div>
         </div>

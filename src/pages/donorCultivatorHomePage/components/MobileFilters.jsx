@@ -40,14 +40,17 @@ export const MobileFilters = ({
 
       {/* panel */}
       <div
-        className="fixed right-0 w-full max-w-sm bg-white p-4 overflow-auto shadow-xl"
+        className="fixed right-0 w-full max-w-sm bg-white dark:bg-white text-gray-800 dark:text-gray-800 p-4 overflow-auto shadow-xl"
         style={{
           top: topValue,
-          height: `calc(100% - ${topValue})`, // fills the rest of viewport
+          height: `calc(100% - ${topValue})`,
         }}
       >
         <div className="flex items-center justify-between mb-4">
-          <div className="font-semibold text-lg">Filter By</div>
+          <div className="font-semibold text-lg text-gray-800 dark:text-gray-800">
+            Filter By
+          </div>
+
           <button
             onClick={onClose}
             className="px-3 py-1 rounded-md bg-red-500 text-white hover:bg-red-600 transition-colors"
@@ -56,11 +59,12 @@ export const MobileFilters = ({
             Close
           </button>
         </div>
+
         <div className="flex flex-col gap-3">
           <select
             value={selectedDonorId}
             onChange={(e) => setSelectedDonorId(e.target.value)}
-            className="px-3 py-2 rounded-md border w-full"
+            className="px-3 py-2 rounded-md border border-gray-300 dark:border-gray-300 bg-white dark:bg-white text-gray-800 dark:text-gray-800 w-full"
           >
             <option value="">All Donors</option>
             {cultivatorDonors.map((d) => (
@@ -73,7 +77,7 @@ export const MobileFilters = ({
           <select
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
-            className="px-3 py-2 rounded-md border w-full"
+            className="px-3 py-2 rounded-md border border-gray-300 dark:border-gray-300 bg-white dark:bg-white text-gray-800 dark:text-gray-800 w-full"
           >
             <option value="">All Statuses</option>
             {paymentStatuses.map((s) => (
@@ -86,7 +90,7 @@ export const MobileFilters = ({
           <select
             value={selectedPurpose}
             onChange={(e) => setSelectedPurpose(e.target.value)}
-            className="px-3 py-2 rounded-md border w-full"
+            className="px-3 py-2 rounded-md border border-gray-300 dark:border-gray-300 bg-white dark:bg-white text-gray-800 dark:text-gray-800 w-full"
           >
             <option value="">All Purposes</option>
             {donationPurposes.map((p) => (
@@ -99,7 +103,7 @@ export const MobileFilters = ({
           <select
             value={selectedPaymentMode}
             onChange={(e) => setSelectedPaymentMode(e.target.value)}
-            className="px-3 py-2 rounded-md border w-full"
+            className="px-3 py-2 rounded-md border border-gray-300 dark:border-gray-300 bg-white dark:bg-white text-gray-800 dark:text-gray-800 w-full"
           >
             <option value="">All Payment Modes</option>
             {paymentModes.map((m) => (
@@ -112,7 +116,7 @@ export const MobileFilters = ({
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="px-3 py-2 rounded-md border w-full"
+            className="px-3 py-2 rounded-md border border-gray-300 dark:border-gray-300 bg-white dark:bg-white text-gray-800 dark:text-gray-800 w-full"
           >
             <option value="date">Sort By: Date</option>
             <option value="amount">Sort By: Amount</option>
@@ -121,7 +125,7 @@ export const MobileFilters = ({
           <select
             value={sortOrder}
             onChange={(e) => setSortOrder(e.target.value)}
-            className="px-3 py-2 rounded-md border w-full"
+            className="px-3 py-2 rounded-md border border-gray-300 dark:border-gray-300 bg-white dark:bg-white text-gray-800 dark:text-gray-800 w-full"
           >
             <option value="desc">Desc</option>
             <option value="asc">Asc</option>
