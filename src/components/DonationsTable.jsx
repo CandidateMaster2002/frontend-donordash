@@ -1,10 +1,10 @@
-import React from "react";
-import { FaDownload, FaEdit } from "react-icons/fa";
-import { formatDate } from "../utils/services";
-import { getStatusStyles } from "../utils/services";
-import { MdEdit } from "react-icons/md";
-import { getReceiptByDonationId } from "../utils/services";
-import { useNavigate } from "react-router-dom";
+import React from 'react';
+import { FaDownload, FaEdit } from 'react-icons/fa';
+import { formatDate } from '../utils/services';
+import { getStatusStyles } from '../utils/services';
+import { MdEdit } from 'react-icons/md';
+import { getReceiptByDonationId } from '../utils/services';
+import { useNavigate } from 'react-router-dom';
 
 const DonationsTable = ({
   data,
@@ -12,10 +12,10 @@ const DonationsTable = ({
   onEdit,
   showStatus = true,
   showEditDonation = true,
-  showCutivatorName = false,
+  showCultivatorName = false,
 }) => {
   // console.log("Data :", data);
-
+  var headerHeight = '0px';
   const navigate = useNavigate();
   const handleReceiptClick = async (donationId) => {
     try {
@@ -24,29 +24,30 @@ const DonationsTable = ({
       if (
         !pdfData ||
         !pdfData.receiptNumber ||
-        !pdfData.receiptNumber.startsWith("ISK")
+        !pdfData.receiptNumber.startsWith('ISK')
       ) {
-        alert("Receipt number is missing. Cannot generate receipt.");
+        alert('Receipt number is missing. Cannot generate receipt.');
         return;
       }
+      pdfData.purpose = 'General';
       // console.log("PDF Data:", pdfData);
-      navigate("/receipt", { state: { pdfData } });
+      navigate('/receipt', { state: { pdfData } });
     } catch (error) {
-      console.error("Error fetching receipt data:", error);
+      console.error('Error fetching receipt data:', error);
     }
   };
 
   const sortData = (data, sortOption) => {
-    if (sortOption === "cultivator") {
+    if (sortOption === 'cultivator') {
       return [...data].sort((a, b) => {
         if (a.donorCultivatorName === b.donorCultivatorName) {
           return b.amount - a.amount; // Sort by amount within the same cultivator
         }
         return a.donorCultivatorName.localeCompare(b.donorCultivatorName); // Sort by cultivator name
       });
-    } else if (sortOption === "amount") {
+    } else if (sortOption === 'amount') {
       return [...data].sort((a, b) => b.amount - a.amount); // Sort by amount (highest to lowest)
-    } else if (sortOption === "date") {
+    } else if (sortOption === 'date') {
       return [...data].sort(
         (a, b) => new Date(b.paymentDate) - new Date(a.paymentDate)
       ); // Sort by date (latest first)
@@ -54,44 +55,44 @@ const DonationsTable = ({
     return data;
   };
 
-  let sortedData = sortData(data, uiFilter.sortBy || "date");
+  let sortedData = sortData(data, uiFilter.sortBy || 'date');
 
   let result = Array.isArray(sortedData) ? [...sortedData] : [];
 
   const getDonorId = (row) => row?.donorId ?? null;
 
   //apply UI-only filters conditionally
-  if (uiFilter.donorId != null && uiFilter.donorId !== "") {
+  if (uiFilter.donorId != null && uiFilter.donorId !== '') {
     const donorIdStr = String(uiFilter.donorId);
     result = result.filter((row) => String(getDonorId(row)) === donorIdStr);
   }
 
-  if (uiFilter.status != null && uiFilter.status !== "") {
+  if (uiFilter.status != null && uiFilter.status !== '') {
     result = result.filter(
       (row) => String(row.status) === String(uiFilter.status)
     );
   }
 
-  if (uiFilter.purpose != null && uiFilter.purpose !== "") {
+  if (uiFilter.purpose != null && uiFilter.purpose !== '') {
     result = result.filter(
       (row) => String(row.purpose) === String(uiFilter.purpose)
     );
   }
 
-  if (uiFilter.paymentMode != null && uiFilter.paymentMode !== "") {
+  if (uiFilter.paymentMode != null && uiFilter.paymentMode !== '') {
     result = result.filter(
       (row) => String(row.paymentMode) === String(uiFilter.paymentMode)
     );
   }
 
   //handle sort order (DESC is default)
-  if (uiFilter.sortOrder === "asc") {
+  if (uiFilter.sortOrder === 'asc') {
     result.reverse();
   }
   sortedData = result;
   const totalColumns =
     6 +
-    (showCutivatorName ? 1 : 0) +
+    (showCultivatorName ? 1 : 0) +
     (showStatus ? 1 : 0) +
     (showEditDonation ? 1 : 0);
 
@@ -106,7 +107,7 @@ const DonationsTable = ({
                 Payment Date
               </th>
               <th className="py-3 px-4 text-left whitespace-nowrap">Donor</th>
-              {showCutivatorName && (
+              {showCultivatorName && (
                 <th className="py-3 px-4 text-left whitespace-nowrap">
                   Cultivator
                 </th>
@@ -144,7 +145,7 @@ const DonationsTable = ({
                   </td>
                   <td className="py-3 px-4 border-b">{row.donorName}</td>
 
-                  {showCutivatorName && (
+                  {showCultivatorName && (
                     <td className="py-3 px-4 border-b">
                       {row.donorCultivatorName}
                     </td>
@@ -171,12 +172,12 @@ const DonationsTable = ({
                   <td className="py-3 px-4 border-b">
                     <FaDownload
                       className={`${
-                        row.status === "Verified"
-                          ? "cursor-pointer text-purple-600"
-                          : "text-gray-400"
+                        row.status === 'Verified'
+                          ? 'cursor-pointer text-purple-600'
+                          : 'text-gray-400'
                       }`}
                       onClick={
-                        row.status === "Verified"
+                        row.status === 'Verified'
                           ? () => handleReceiptClick(row.id)
                           : undefined
                       }
@@ -187,12 +188,12 @@ const DonationsTable = ({
                     <td className="py-3 px-4 border-b">
                       <FaEdit
                         className={`${
-                          row.status === "Verified" || row.status === "Pending"
-                            ? "cursor-pointer text-purple-600"
-                            : "text-gray-400"
+                          row.status === 'Verified' || row.status === 'Pending'
+                            ? 'cursor-pointer text-purple-600'
+                            : 'text-gray-400'
                         }`}
                         onClick={
-                          row.status === "Verified" || row.status === "Pending"
+                          row.status === 'Verified' || row.status === 'Pending'
                             ? () => onEdit(row)
                             : undefined
                         }
@@ -206,90 +207,196 @@ const DonationsTable = ({
         </table>
       </div>
 
-      {/* Mobile Cards */}
-      <div className="md:hidden space-y-4 p-3">
-        {sortedData.length === 0 ? (
+      {/* Mobile View */}
+      {sortedData.length === 0 ? (
+        <div className="md:hidden p-4">
           <div className="text-center text-gray-500 py-10">
             No donations found for the current filter
           </div>
-        ) : (
-          sortedData.map((row) => (
-            <div
-              key={row.id}
-              className="border rounded-xl shadow-sm p-4 space-y-2"
-            >
-              <div className="text-sm text-gray-500">
-                {formatDate(row.paymentDate)}
-              </div>
+        </div>
+      ) : (
+        <div className="md:hidden p-2">
+          {/* small inline CSS to make scrollbars thin/light on WebKit and Firefox */}
+          <style>{`
+      .mobile-table-scroll::-webkit-scrollbar { height: 6px; width: 6px; }
+      .mobile-table-scroll::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 9999px; }
+      .mobile-table-scroll::-webkit-scrollbar-track { background: transparent; }
+      /* Firefox */
+      .mobile-table-scroll { scrollbar-width: thin; scrollbar-color: rgba(0,0,0,0.12) transparent; }
+    `}</style>
 
-              <div className="font-semibold text-lg">{row.donorName}</div>
-
-              {showCutivatorName && (
-                <div className="text-sm">
-                  <span className="font-medium">Cultivator:</span>{" "}
-                  {row.donorCultivatorName}
-                </div>
-              )}
-
-              <div className="flex justify-between text-sm">
-                <span>Amount</span>
-                <span className="font-semibold">₹ {row.amount}</span>
-              </div>
-
-              <div className="flex justify-between text-sm">
-                <span>Mode</span>
-                <span>{row.paymentMode}</span>
-              </div>
-
-              <div className="text-sm">
-                <span className="font-medium">Purpose:</span> {row.purpose}
-              </div>
-
-              {showStatus && (
-                <div>
-                  <span
-                    className={`inline-block px-3 py-1 rounded-full text-sm ${getStatusStyles(
-                      row.status
-                    )}`}
+          {/* horizontal + vertical scroll area */}
+          <div
+            className="relative overflow-auto rounded-lg border bg-white shadow-sm mobile-table-scroll"
+            style={{ maxHeight: '70vh', msOverflowStyle: 'none' }} // msOverflowStyle helps old IE/Edge; scrollbarWidth handled above
+          >
+            <table className="min-w-max w-full table-fixed text-sm border-collapse">
+              <thead>
+                <tr>
+                  {/* sticky first header cell (donorId) */}
+                  <th
+                    className="sticky left-0 z-40 bg-blue-900 text-white px-2 py-2 text-left w-14"
+                    style={{ top: headerHeight }}
                   >
-                    {row.status}
-                  </span>
-                </div>
-              )}
+                    ID
+                  </th>
 
-              <div className="flex justify-end gap-4 pt-2">
-                <FaDownload
-                  className={`${
-                    row.status === "Verified"
-                      ? "cursor-pointer text-purple-600"
-                      : "text-gray-400"
-                  }`}
-                  onClick={
-                    row.status === "Verified"
-                      ? () => handleReceiptClick(row.id)
-                      : undefined
-                  }
-                />
+                  <th
+                    className="sticky top-0 z-30 bg-blue-900 text-white px-2 py-2 text-left w-14"
+                    style={{ top: headerHeight }}
+                  >
+                    Date
+                  </th>
 
-                {showEditDonation && (
-                  <FaEdit
-                    className={`${
-                      row.status === "Verified" || row.status === "Pending"
-                        ? "cursor-pointer text-purple-600"
-                        : "text-gray-400"
-                    }`}
-                    onClick={
-                      row.status === "Verified" || row.status === "Pending"
-                        ? () => onEdit(row)
-                        : undefined
-                    }
-                  />
-                )}
-              </div>
-            </div>
-          ))
-        )}
-      </div>
+                  <th
+                    className="sticky top-0 z-30 bg-blue-900 text-white px-2 py-2 text-left w-32"
+                    style={{ top: headerHeight }}
+                  >
+                    Donor
+                  </th>
+
+                  <th
+                    className="sticky top-0 z-30 bg-blue-900 text-white px-2 py-2 text-right w-22"
+                    style={{ top: headerHeight }}
+                  >
+                    Amount
+                  </th>
+
+                  <th
+                    className="sticky top-0 z-30 bg-blue-900 text-white px-2 py-2 text-left w-20"
+                    style={{ top: headerHeight }}
+                  >
+                    Mode
+                  </th>
+
+                  <th
+                    className="sticky top-0 z-30 bg-blue-900 text-white px-2 py-2 text-left w-36"
+                    style={{ top: headerHeight }}
+                  >
+                    Purpose
+                  </th>
+
+                  <th
+                    className="sticky top-0 z-30 bg-blue-900 text-white px-2 py-2 text-center w-24"
+                    style={{ top: headerHeight }}
+                  >
+                    Status
+                  </th>
+
+                  <th
+                    className="sticky top-0 z-30 bg-blue-900 text-white px-2 py-2 text-center w-20"
+                    style={{ top: headerHeight }}
+                  >
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+
+              <tbody className="divide-y divide-gray-200">
+                {sortedData.map((row, idx) => (
+                  <tr
+                    key={row.id || `${row.donorId}-${idx}`}
+                    className="bg-white last:border-b"
+                  >
+                    {/* donorId: sticky left; lighter blue background + blue text */}
+                    <td
+                      className="sticky left-0 z-30 bg-blue-50 text-blue-800 px-2 py-3 truncate font-medium text-xs border-l border-gray-200 first:border-l-0"
+                      title={String(row.donorId)}
+                    >
+                      {row.donorId}
+                    </td>
+
+                    <td className="px-2 py-3 text-xs text-gray-600 border-l border-gray-200">
+                      {row.paymentDate
+                        ? new Intl.DateTimeFormat('en-GB', {
+                            day: 'numeric',
+                            month: 'short',
+                          }).format(new Date(row.paymentDate))
+                        : ''}
+                    </td>
+
+                    <td
+                      className="px-2 py-3 text-sm font-semibold truncate border-l border-gray-200"
+                      title={row.donorName}
+                    >
+                      {row.donorName}
+                      {showCultivatorName && row.donorCultivatorName && (
+                        <div
+                          className="text-xs text-gray-500 font-normal truncate"
+                          title={row.donorCultivatorName}
+                        >
+                          {row.donorCultivatorName}
+                        </div>
+                      )}
+                    </td>
+
+                    <td className="px-2 py-3 text-right font-medium border-l border-gray-200">
+                      ₹ {row.amount}
+                    </td>
+
+                    <td className="px-2 py-3 text-sm text-gray-700 truncate border-l border-gray-200">
+                      {row.paymentMode}
+                    </td>
+
+                    <td
+                      className="px-2 py-3 text-sm text-gray-700 truncate border-l border-gray-200"
+                      title={row.purpose}
+                    >
+                      {row.purpose}
+                    </td>
+
+                    <td className="px-2 py-3 text-center border-l border-gray-200">
+                      {showStatus ? (
+                        <span
+                          className={`inline-block px-2 py-1 rounded-full text-xs ${getStatusStyles(
+                            row.status
+                          )}`}
+                          title={row.status}
+                        >
+                          {row.status}
+                        </span>
+                      ) : (
+                        <span className="text-xs text-gray-500">—</span>
+                      )}
+                    </td>
+
+                    <td className="px-2 py-3 text-center border-l border-gray-200">
+                      <div className="inline-flex items-center gap-3">
+                        <FaDownload
+                          className={`text-lg ${
+                            row.status === 'Verified'
+                              ? 'cursor-pointer text-purple-600'
+                              : 'text-gray-300'
+                          }`}
+                          onClick={() =>
+                            row.status === 'Verified' &&
+                            handleReceiptClick(row.id)
+                          }
+                        />
+                        {showEditDonation && (
+                          <FaEdit
+                            className={`text-lg ${
+                              row.status === 'Verified' ||
+                              row.status === 'Pending'
+                                ? 'cursor-pointer text-purple-600'
+                                : 'text-gray-300'
+                            }`}
+                            onClick={() =>
+                              (row.status === 'Verified' ||
+                                row.status === 'Pending') &&
+                              onEdit(row)
+                            }
+                          />
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

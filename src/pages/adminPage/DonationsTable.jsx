@@ -49,7 +49,8 @@ const DonationsTable = ({ data, onEdit }) => {
         alert("Receipt number is missing. Cannot generate receipt.");
         return;
       }
-      console.log("pdf Data:", pdfData);
+      pdfData.purpose = "General";
+      // console.log("pdf Data:", pdfData);
       navigate("/receipt", { state: { pdfData } });
     } catch (error) {
       console.error("Error fetching receipt data:", error);

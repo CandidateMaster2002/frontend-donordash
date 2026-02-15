@@ -81,13 +81,13 @@
 
 // export default HeaderLoggedIn;
 
-import { useState, useEffect, useRef } from "react";
-import { useNavigate, NavLink } from "react-router-dom";
-import { FaUserCircle, FaBars, FaTimes } from "react-icons/fa";
-import { GoSignOut } from "react-icons/go";
-import donationMeterLogo from "../assets/images/donation-meter-logo.png";
-import { useHeader } from "../utils/HeaderContext";
-import { signoutUser, getLoggedInIdFromLocalStorage } from "../utils/services";
+import { useState, useEffect, useRef } from 'react';
+import { useNavigate, NavLink } from 'react-router-dom';
+import { FaUserCircle, FaBars, FaTimes } from 'react-icons/fa';
+import { GoSignOut } from 'react-icons/go';
+import donationMeterLogo from '../assets/images/donation-meter-logo.png';
+import { useHeader } from '../utils/HeaderContext';
+import { signoutUser, getLoggedInIdFromLocalStorage } from '../utils/services';
 
 const HeaderLoggedIn = () => {
   const navigate = useNavigate();
@@ -98,7 +98,7 @@ const HeaderLoggedIn = () => {
 
   const handleSignOut = () => {
     signoutUser();
-    navigate("/login-page");
+    navigate('/login-page');
   };
 
   const toggleDropdown = () => setIsDropdownOpen((s) => !s);
@@ -108,10 +108,10 @@ const HeaderLoggedIn = () => {
   // close mobile on ESC
   useEffect(() => {
     const onKey = (e) => {
-      if (e.key === "Escape") closeMobile();
+      if (e.key === 'Escape') closeMobile();
     };
-    if (isMobileOpen) window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    if (isMobileOpen) window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
   }, [isMobileOpen]);
 
   // focus close button when mobile opens (simple focus-trap hint)
@@ -135,7 +135,7 @@ const HeaderLoggedIn = () => {
           </button>
 
           <div
-            onClick={() => navigate("/")}
+            onClick={() => navigate('/')}
             className="cursor-pointer flex items-center px-2 py-2 hover:scale-105 transition-transform duration-200"
           >
             <img
