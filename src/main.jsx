@@ -1,102 +1,102 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
-import { RouterProvider, createBrowserRouter } from "react-router-dom";
-import App from "./App.jsx";
-import "./index.css";
-import "./styles/tailwind.css";
-import "flowbite";
-import DonorSignupForm from "./pages/donorSignupForm/DonorSignupForm.jsx";
-import LoginPage from "./pages/loginPage/LoginPage.jsx";
-import DonorHomePage from "./pages/donorHomePage/DonorHomePage.jsx";
-import DonorCultivatorHomePage from "./pages/donorCultivatorHomePage/DonorCultivatorHomePage.jsx";
-import DonorListPage from "./pages/DonorData.jsx/DonorListPage.jsx";
-import DonorProfilePage from "./pages/DonorData.jsx/DonorProfilePage.jsx";
-import AdminPage from "./pages/adminPage/AdminPage.jsx";
-import PrivateRoute from "./utils/PrivateRoute.jsx";
-import SupervisorHomePage from "./pages/supervisorPage/SupervisorHomePage.jsx";
-import GlobalLoader from "./utils/GlobalLoader.jsx";
-import { LoadingProvider } from "./utils/LoadingContext.jsx";
-import NityaSevaReport from "./pages/donorCultivatorHomePage/NityaSevaReport.jsx";
-import BankDetails from "./components/BankDetails.jsx";
-import FormAndDownload from "./PDF_Components/FormAndDownload.jsx";
-import UnapprovedDonations from "./pages/donorCultivatorHomePage/UnapprovedDonations.jsx";
-import AxiosInterceptor from "./utils/AxiosInterceptor";
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+import App from './App.jsx';
+import './index.css';
+import './styles/tailwind.css';
+import 'flowbite';
+import DonorSignupForm from './pages/donorSignupForm/DonorSignupForm.jsx';
+import LoginPage from './pages/loginPage/LoginPage.jsx';
+import DonorHomePage from './pages/donorHomePage/DonorHomePage.jsx';
+import DonorCultivatorHomePage from './pages/donorCultivatorHomePage/DonorCultivatorHomePage.jsx';
+import DonorListPage from './pages/DonorData/DonorListPage.jsx';
+import DonorProfilePage from './pages/DonorData/DonorProfilePage.jsx';
+import AdminPage from './pages/adminPage/AdminPage.jsx';
+import PrivateRoute from './utils/PrivateRoute.jsx';
+import SupervisorHomePage from './pages/supervisorPage/SupervisorHomePage.jsx';
+import GlobalLoader from './utils/GlobalLoader.jsx';
+import { LoadingProvider } from './utils/LoadingContext.jsx';
+import NityaSevaReport from './pages/donorCultivatorHomePage/NityaSevaReport.jsx';
+import BankDetails from './components/BankDetails.jsx';
+import FormAndDownload from './PDF_Components/FormAndDownload.jsx';
+import UnapprovedDonations from './pages/donorCultivatorHomePage/UnapprovedDonations.jsx';
+import AxiosInterceptor from './utils/AxiosInterceptor';
 
 const router = createBrowserRouter([
   {
-    path: "/",
+    path: '/',
     element: <App />,
     children: [
       {
-        path: "donor-signup",
+        path: 'donor-signup',
         element: <DonorSignupForm />,
       },
       {
-        path: "bank-details",
+        path: 'bank-details',
         element: <BankDetails />,
       },
       {
-        path: "receipt",
+        path: 'receipt',
         element: <FormAndDownload />,
       },
       {
-        path: "nitya-seva-report",
+        path: 'nitya-seva-report',
         element: <NityaSevaReport />,
       },
 
       {
-        path: "donor-home",
+        path: 'donor-home',
         element: (
-          <PrivateRoute allowedRoles={["donor"]} component={DonorHomePage} />
+          <PrivateRoute allowedRoles={['donor']} component={DonorHomePage} />
         ),
       },
       {
-        path: "unapproved-donations",
+        path: 'unapproved-donations',
         element: (
           <PrivateRoute
-            allowedRoles={["donorCultivator"]}
+            allowedRoles={['donorCultivator']}
             component={UnapprovedDonations}
           />
         ),
       },
       {
-        path: "donor-cultivator-home",
+        path: 'donor-cultivator-home',
         element: (
           <PrivateRoute
-            allowedRoles={["donorCultivator"]}
+            allowedRoles={['donorCultivator']}
             component={DonorCultivatorHomePage}
           />
         ),
       },
       {
-        path: "donor-list",
+        path: 'donor-list',
         element: (
           <PrivateRoute
-            allowedRoles={["donationSupervisor", "donorCultivator", "admin"]}
+            allowedRoles={['donationSupervisor', 'donorCultivator', 'admin']}
             component={DonorListPage}
           />
         ),
       },
       {
-        path: "donor-profile/:id",
+        path: 'donor-profile/:id',
         element: (
           <PrivateRoute
-            allowedRoles={["donor", "donorCultivator"]}
+            allowedRoles={['donor', 'donorCultivator']}
             component={DonorProfilePage}
           />
         ),
       },
       {
-        path: "admin-dashboard",
+        path: 'admin-dashboard',
         element: (
-          <PrivateRoute allowedRoles={["admin"]} component={AdminPage} />
+          <PrivateRoute allowedRoles={['admin']} component={AdminPage} />
         ),
       },
       {
-        path: "supervisor-home",
+        path: 'supervisor-home',
         element: (
           <PrivateRoute
-            allowedRoles={["donationSupervisor"]}
+            allowedRoles={['donationSupervisor']}
             component={SupervisorHomePage}
           />
         ),
@@ -104,12 +104,12 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: "/login-page",
+    path: '/login-page',
     element: <LoginPage />,
   },
 ]);
 
-ReactDOM.createRoot(document.getElementById("root")).render(
+ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <LoadingProvider>
       <AxiosInterceptor />

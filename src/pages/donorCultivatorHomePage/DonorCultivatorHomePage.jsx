@@ -19,6 +19,8 @@ import { useHeader } from '../../utils/HeaderContext';
 import { donationPurposes, paymentModes } from '../../constants/constants';
 import { getDonorsByCultivator } from '../../utils/services';
 import DonorSignupForm from '../donorSignupForm/DonorSignupForm';
+import UnapprovedDonations from './UnapprovedDonations';
+import DonorListPage from '../DonorData/DonorListPage';
 import MobileFilters from './components/MobileFilters';
 import DesktopFilters from './components/DesktopFilters';
 
@@ -80,12 +82,17 @@ const DonorCultivatorHomePage = () => {
 
         {/* Existing Nav Links */}
         <div className="flex gap-4 ml-8">
-          <NavLink
-            to="/donor-list"
-            className="px-4 py-2 rounded-full font-medium transition-all duration-300 hover:bg-gray-100 md:hover:bg-white/20 focus:outline-none"
+          <button
+            onClick={() => setActiveTab('all-donors')}
+            className={`px-3 py-2 rounded-full font-semibold transition-all duration-300
+            focus:outline-none focus:ring-0 ${
+              activeTab === 'all-donors'
+                ? 'bg-white text-purple-700 shadow-md'
+                : 'hover:bg-gray-100 md:hover:bg-white/20'
+            }`}
           >
             View All Donors
-          </NavLink>
+          </button>
 
           <button
             onClick={() => setActiveTab('donor-signup')}
@@ -99,12 +106,17 @@ const DonorCultivatorHomePage = () => {
             Add Donor
           </button>
 
-          <NavLink
-            to="/unapproved-donations"
-            className="px-4 py-2 rounded-full font-medium transition-all duration-300 hover:bg-gray-100 md:hover:bg-white/20 focus:outline-none"
+          <button
+            onClick={() => setActiveTab('unapproved-donations')}
+            className={`px-3 py-2 rounded-full font-semibold transition-all duration-300
+            focus:outline-none focus:ring-0 ${
+              activeTab === 'unapproved-donations'
+                ? 'bg-white text-purple-700 shadow-md'
+                : 'hover:bg-gray-100 md:hover:bg-white/20'
+            }`}
           >
             Unapproved Donations
-          </NavLink>
+          </button>
         </div>
       </div>
     );
@@ -432,6 +444,10 @@ const DonorCultivatorHomePage = () => {
       )}
 
       {activeTab === 'donor-signup' && <DonorSignupForm />}
+
+      {activeTab === 'unapproved-donations' && <UnapprovedDonations />}
+
+      {activeTab === 'all-donors' && <DonorListPage />}
 
       {editingDonation && (
         <EditDonationPopup
