@@ -1,9 +1,9 @@
-import React, { useState } from "react";
-import { donationPurposes } from "../../constants/constants";
-import { paymentModes } from "../../constants/constants";
+import React, { useState } from 'react';
+import { donationPurposes } from '../../constants/constants';
+import { paymentModes } from '../../constants/constants';
 
 const EditDonationPopup = ({ donation, onSave, onClose }) => {
-  const [isVerified, setIsVerified] = useState(donation.status === "Verified");
+  const [isVerified, setIsVerified] = useState(donation.status === 'Verified');
   const [formData, setFormData] = useState(donation);
   const [loading, setLoading] = useState(false);
 
@@ -23,7 +23,7 @@ const EditDonationPopup = ({ donation, onSave, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 w-full flex items-center justify-center bg-black bg-opacity-50">
+    <div className="fixed inset-0 w-full flex items-center justify-center bg-black bg-opacity-50 z-50">
       <div className="bg-white p-6 rounded shadow-lg">
         <h2 className="text-xl font-bold mb-4">Edit Donation</h2>
         <form onSubmit={handleSubmit}>
@@ -61,14 +61,14 @@ const EditDonationPopup = ({ donation, onSave, onClose }) => {
                   name="paymentDate"
                   value={
                     formData.paymentDate
-                      ? formData.paymentDate.split("T")[0]
-                      : ""
+                      ? formData.paymentDate.split('T')[0]
+                      : ''
                   }
                   onChange={handleChange}
                   className="w-full p-2 border rounded"
                 />
               </div>
-              {formData.paymentMode !== "Cash" && (
+              {formData.paymentMode !== 'Cash' && (
                 <div className="mb-4">
                   <label className="block mb-2">Transaction Id</label>
                   <input
@@ -110,14 +110,14 @@ const EditDonationPopup = ({ donation, onSave, onClose }) => {
               type="submit"
               disabled={loading}
               className={`p-2 rounded text-white
-              ${
-                loading
-                  ? "bg-blue-400 cursor-not-allowed opacity-70"
-                  : "bg-blue-500 hover:bg-blue-600"
-              }
-            `}
+            ${
+              loading
+                ? 'bg-blue-400 cursor-not-allowed opacity-70'
+                : 'bg-blue-500 hover:bg-blue-600'
+            }
+          `}
             >
-              {loading ? "Saving..." : "Save"}
+              {loading ? 'Saving...' : 'Save'}
             </button>
           </div>
         </form>

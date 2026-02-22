@@ -18,6 +18,7 @@ import { NavLink } from 'react-router-dom';
 import { useHeader } from '../../utils/HeaderContext';
 import { donationPurposes, paymentModes } from '../../constants/constants';
 import { getDonorsByCultivator } from '../../utils/services';
+import DonorSignupForm from '../donorSignupForm/DonorSignupForm';
 import MobileFilters from './components/MobileFilters';
 import DesktopFilters from './components/DesktopFilters';
 
@@ -86,12 +87,17 @@ const DonorCultivatorHomePage = () => {
             View All Donors
           </NavLink>
 
-          <NavLink
-            to="/donor-signup"
-            className="px-4 py-2 rounded-full font-medium transition-all duration-300 hover:bg-gray-100 md:hover:bg-white/20 focus:outline-none"
+          <button
+            onClick={() => setActiveTab('donor-signup')}
+            className={`px-3 py-2 rounded-full font-semibold transition-all duration-300
+            focus:outline-none focus:ring-0 ${
+              activeTab === 'donor-signup'
+                ? 'bg-white text-purple-700 shadow-md'
+                : 'hover:bg-gray-100 md:hover:bg-white/20'
+            }`}
           >
             Add Donor
-          </NavLink>
+          </button>
 
           <NavLink
             to="/unapproved-donations"
@@ -424,6 +430,8 @@ const DonorCultivatorHomePage = () => {
           </>
         </>
       )}
+
+      {activeTab === 'donor-signup' && <DonorSignupForm />}
 
       {editingDonation && (
         <EditDonationPopup
