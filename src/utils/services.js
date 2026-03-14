@@ -486,11 +486,11 @@ export const getStatusStyles = (status) => {
 
 export const fetchDonationSummaryData = async (
   filter,
-  cultivatorId,
+  collectedById,
   setSummaryData
 ) => {
   const params = {
-    cultivatorId: cultivatorId,
+    collectedById: collectedById,
     dateFrom: filter.startDate,
     dateTo: filter.endDate,
     status: 'Verified',
