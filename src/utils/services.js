@@ -1,4 +1,4 @@
-import axiosInstance from "./myAxios";
+import axiosInstance from './myAxios';
 
 import {
   DONATIONS_BY_DONOR_ID,
@@ -22,96 +22,96 @@ import {
   DONOR_APPROVE_RELEASE,
   GET_PENDING_DONOR_TRANSFERS,
   ALL_DONATIONS,
-} from "../constants/apiEndpoints";
+} from '../constants/apiEndpoints';
 
 export const getRedirectPath = (userType) => {
   switch (userType) {
-    case "donor":
-      return "/donor-home";
-    case "donationSupervisor":
-      return "/supervisor-home";
-    case "donorCultivator":
-      return "/donor-cultivator-home";
-    case "admin":
-      return "/admin-dashboard";
+    case 'donor':
+      return '/donor-home';
+    case 'donationSupervisor':
+      return '/supervisor-home';
+    case 'donorCultivator':
+      return '/donor-cultivator-home';
+    case 'admin':
+      return '/admin-dashboard';
     default:
-      return "/login-page";
+      return '/login-page';
   }
 };
 
 export const signoutUser = () => {
-  localStorage.removeItem("user");
+  localStorage.removeItem('user');
 };
 
 export const getLoggedInIdFromLocalStorage = () => {
-  const user = JSON.parse(localStorage.getItem("user"));
+  const user = JSON.parse(localStorage.getItem('user'));
   return user?.userDetails?.id;
 };
 
 export const getDonorIdFromLocalStorage = () => {
-  const user = JSON.parse(localStorage.getItem("user"));
-  if (user && user.userType === "donor") {
+  const user = JSON.parse(localStorage.getItem('user'));
+  if (user && user.userType === 'donor') {
     return user.userDetails?.id;
   }
   return null;
 };
 
 export const getDonationSupervisorFromLocalStorage = () => {
-  const user = JSON.parse(localStorage.getItem("user"));
-  if (user && user.userType === "donationSupervisor") {
+  const user = JSON.parse(localStorage.getItem('user'));
+  if (user && user.userType === 'donationSupervisor') {
     return user.userDetails;
   }
   return null;
 };
 
 export const getDonationSupervisorIdFromLocalStorage = () => {
-  const user = JSON.parse(localStorage.getItem("user"));
-  if (user && user.userType === "donationSupervisor") {
+  const user = JSON.parse(localStorage.getItem('user'));
+  if (user && user.userType === 'donationSupervisor') {
     return user.userDetails?.id;
   }
   return null;
 };
 
 export const getDonorFromLocalStorage = () => {
-  const user = JSON.parse(localStorage.getItem("user"));
-  if (user && user.userType === "donor") {
+  const user = JSON.parse(localStorage.getItem('user'));
+  if (user && user.userType === 'donor') {
     return user.userDetails;
   }
 };
 
 export const getDonorCultivatorFromLocalStorage = () => {
-  const user = JSON.parse(localStorage.getItem("user"));
-  if (user && user.userType === "donorCultivator") {
+  const user = JSON.parse(localStorage.getItem('user'));
+  if (user && user.userType === 'donorCultivator') {
     return user.userDetails;
   }
 };
 
 export const getDonorCultivatorIdFromLocalStorage = () => {
-  const user = JSON.parse(localStorage.getItem("user"));
-  if (user && user.userType === "donorCultivator") {
+  const user = JSON.parse(localStorage.getItem('user'));
+  if (user && user.userType === 'donorCultivator') {
     return user.userDetails?.id;
   }
   return null;
 };
 
 export const getDonorSupervisorIdForAdminFromLocalStorage = () => {
-  const user = JSON.parse(localStorage.getItem("user"));
-  if (user && user.userType === "admin") {
+  const user = JSON.parse(localStorage.getItem('user'));
+  if (user && user.userType === 'admin') {
     return user.userDetails?.donationSupervisor?.id;
   }
   return null;
 };
 
 export const getAdminIdFromLocalStorage = () => {
-  const user = JSON.parse(localStorage.getItem("user"));
-  if (user && user.userType === "admin") {
+  const user = JSON.parse(localStorage.getItem('user'));
+  if (user && user.userType === 'admin') {
     return user.userDetails?.id;
   }
   return null;
 };
 
 export const getUserTypeFromLocalStorage = () => {
-  const user = JSON.parse(localStorage.getItem("user"));
+  const user = JSON.parse(localStorage.getItem('user'));
   return user ? user.userType : null;
 };
 
@@ -123,11 +123,11 @@ export const changeDonationStatus = async (donationId, newStatus) => {
     return response.data;
   } catch (error) {
     console.error(
-      "Error changing donation status:",
+      'Error changing donation status:',
       error.response?.data?.message || error.message
     );
     throw new Error(
-      error.response?.data?.message || "Failed to change donation status"
+      error.response?.data?.message || 'Failed to change donation status'
     );
   }
 };
@@ -140,11 +140,11 @@ export const getUnApprovedDonationsByCultivator = async (cultivatorId) => {
     return response.data;
   } catch (error) {
     console.error(
-      "Error fetching unapproved donations:",
+      'Error fetching unapproved donations:',
       error.response?.data?.message || error.message
     );
     throw new Error(
-      error.response?.data?.message || "Failed to fetch unapproved donations"
+      error.response?.data?.message || 'Failed to fetch unapproved donations'
     );
   }
 };
@@ -158,19 +158,19 @@ export const getDonorById = async (donorId, axiosConfig = {}) => {
     return response.data;
   } catch (error) {
     console.error(
-      "Error fetching donor by ID:",
+      'Error fetching donor by ID:',
       error.response?.data?.message || error.message
     );
     throw new Error(
-      error.response?.data?.message || "Failed to fetch donor by ID"
+      error.response?.data?.message || 'Failed to fetch donor by ID'
     );
   }
 };
 
 export const requiredTransactionIdForStatusChange = (donation, newStatus) => {
   return (
-    newStatus === "Verified" &&
-    donation.paymentMode !== "Cash" &&
+    newStatus === 'Verified' &&
+    donation.paymentMode !== 'Cash' &&
     !donation.transactionId
   );
 };
@@ -183,11 +183,11 @@ export const getDonationsByDonorId = async (donorId) => {
     return response.data;
   } catch (error) {
     console.error(
-      "Error fetching donations:",
+      'Error fetching donations:',
       error.response?.data?.message || error.message
     );
     throw new Error(
-      error.response?.data?.message || "Failed to fetch donations"
+      error.response?.data?.message || 'Failed to fetch donations'
     );
   }
 };
@@ -201,10 +201,10 @@ export const editDonorById = async (donorId, donorData) => {
     return response.data;
   } catch (error) {
     console.error(
-      "Error editing donor:",
+      'Error editing donor:',
       error.response?.data?.message || error.message
     );
-    throw new Error(error.response?.data?.message || "Failed to edit donor");
+    throw new Error(error.response?.data?.message || 'Failed to edit donor');
   }
 };
 
@@ -216,11 +216,11 @@ export const getDonorsByCultivator = async (donorCultivatorId) => {
     return response.data;
   } catch (error) {
     console.error(
-      "Error fetching donors by cultivator:",
+      'Error fetching donors by cultivator:',
       error.response?.data?.message || error.message
     );
     throw new Error(
-      error.response?.data?.message || "Failed to fetch donors by cultivator"
+      error.response?.data?.message || 'Failed to fetch donors by cultivator'
     );
   }
 };
@@ -229,15 +229,15 @@ export const getDonors = async (params) => {
   try {
     const response = await axiosInstance.get(DONORS_FILTER, {
       params,
-      showLoader: { type: "inline", scope: "donor-list" }, // 👈 loader flag
+      showLoader: { type: 'inline', scope: 'donor-list' }, // 👈 loader flag
     });
     return response.data;
   } catch (error) {
     console.error(
-      "Error fetching donors:",
+      'Error fetching donors:',
       error.response?.data?.message || error.message
     );
-    throw new Error(error.response?.data?.message || "Failed to fetch donors");
+    throw new Error(error.response?.data?.message || 'Failed to fetch donors');
   }
 };
 
@@ -245,11 +245,11 @@ export const handleUserLogin = async (credentials, navigate) => {
   try {
     const response = await axiosInstance.post(USER_LOGIN, credentials);
     const { userType } = response.data;
-    localStorage.setItem("user", JSON.stringify(response.data));
+    localStorage.setItem('user', JSON.stringify(response.data));
     navigate(getRedirectPath(userType));
   } catch (error) {
-    alert("Login failed: " + (error.response?.data?.message || error.message));
-    console.error("Login failed", error);
+    alert('Login failed: ' + (error.response?.data?.message || error.message));
+    console.error('Login failed', error);
   }
 };
 export const getAllDonorCultivators = async () => {
@@ -258,11 +258,11 @@ export const getAllDonorCultivators = async () => {
     return response.data;
   } catch (error) {
     console.error(
-      "Error fetching donor cultivators:",
+      'Error fetching donor cultivators:',
       error.response?.data?.message || error.message
     );
     throw new Error(
-      error.response?.data?.message || "Failed to fetch donor cultivators"
+      error.response?.data?.message || 'Failed to fetch donor cultivators'
     );
   }
 };
@@ -279,7 +279,7 @@ export const requestAcquireDonor = async (donorId, cultivatorId) => {
     return response.data;
   } catch (error) {
     throw new Error(
-      error.response?.data || "Failed to request donor acquisition"
+      error.response?.data || 'Failed to request donor acquisition'
     );
   }
 };
@@ -291,7 +291,7 @@ export const getPendingDonorTransfers = async (cultivatorId) => {
     );
     return response.data;
   } catch (error) {
-    console.error("Error fetching pending donor transfers:", error.message);
+    console.error('Error fetching pending donor transfers:', error.message);
     throw error;
   }
 };
@@ -308,7 +308,7 @@ export const requestDonorRelease = async (donorId, fromId, toId) => {
     );
     return response.data;
   } catch (error) {
-    throw new Error(error.response?.data || "Failed to request donor release");
+    throw new Error(error.response?.data || 'Failed to request donor release');
   }
 };
 
@@ -324,7 +324,7 @@ export const approveDonorAcquire = async (donorId, fromId, toId) => {
     );
     return response.data;
   } catch (error) {
-    throw new Error(error.response?.data || "Failed to approve acquisition");
+    throw new Error(error.response?.data || 'Failed to approve acquisition');
   }
 };
 
@@ -340,7 +340,7 @@ export const approveDonorRelease = async (donorId, fromId, toId) => {
     );
     return response.data;
   } catch (error) {
-    throw new Error(error.response?.data || "Failed to approve release");
+    throw new Error(error.response?.data || 'Failed to approve release');
   }
 };
 
@@ -350,11 +350,11 @@ export const donate = async (donationData) => {
     return response.data;
   } catch (error) {
     console.error(
-      "Donation failed1:",
+      'Donation failed1:',
       error.response?.data?.message || error.message
     );
     throw new Error(
-      error.response?.data?.message || "Failed to process donation"
+      error.response?.data?.message || 'Failed to process donation'
     );
   }
 };
@@ -368,7 +368,7 @@ export const fetchDonations = async (filterDto, axiosConfig = {}) => {
     );
     return response.data;
   } catch (error) {
-    console.error("There was an error fetching the donations!", error);
+    console.error('There was an error fetching the donations!', error);
     throw error;
   }
 };
@@ -378,7 +378,7 @@ export const fetchAllDonations = async () => {
     const response = await axiosInstance.get(ALL_DONATIONS);
     return response.data;
   } catch (error) {
-    console.error("There was an error fetching the donations!", error);
+    console.error('There was an error fetching the donations!', error);
     throw error;
   }
 };
@@ -390,7 +390,7 @@ export const fetchSpecialDaysByDonorId = async (donorId) => {
     );
     return response.data;
   } catch (error) {
-    console.error("There was an error fetching the special days!", error);
+    console.error('There was an error fetching the special days!', error);
     throw error;
   }
 };
@@ -403,20 +403,20 @@ export const checkDonorRegisteredByMobile = async (mobileNumber) => {
 
     return response.data; // This will include donorRegistered: true/false and details if true
   } catch (error) {
-    console.error("Error checking donor registration:", error.message);
+    console.error('Error checking donor registration:', error.message);
     return {
       donorRegistered: false,
-      error: "Unable to verify donor. Please try again later.",
+      error: 'Unable to verify donor. Please try again later.',
     };
   }
 };
 
 export const fetchDonationSummary = async (params) => {
   try {
-    const response = await axiosInstance.get(DONATIONS_FILTER_SUM, { params });
+    const response = await axiosInstance.post(DONATIONS_FILTER_SUM, params);
     return response.data;
   } catch (error) {
-    console.error("There was an error fetching the donation summary!", error);
+    console.error('There was an error fetching the donation summary!', error);
     throw error;
   }
 };
@@ -429,7 +429,7 @@ export const editDonation = async (donationId, donationData) => {
     );
     return response.data;
   } catch (error) {
-    console.error("There was an error editing the donation!", error);
+    console.error('There was an error editing the donation!', error);
     throw error;
   }
 };
@@ -437,14 +437,14 @@ export const editDonation = async (donationId, donationData) => {
 export const getReceiptByDonationId = async (donationId) => {
   try {
     const response = await axiosInstance.get(`${GET_RECEIPT}/${donationId}`);
-    console.log("Receipt response data:", response.data);
+    console.log('Receipt response data:', response.data);
     return response.data;
   } catch (error) {
     console.error(
-      "Error fetching receipt:",
+      'Error fetching receipt:',
       error.response?.data?.message || error.message
     );
-    throw new Error(error.response?.data?.message || "Failed to fetch receipt");
+    throw new Error(error.response?.data?.message || 'Failed to fetch receipt');
   }
 };
 
@@ -452,7 +452,7 @@ export const getReceiptByDonationId = async (donationId) => {
 export const formatDate = (isoString) => {
   const date = new Date(isoString);
   const day = date.getDate();
-  const month = date.toLocaleString("en-US", { month: "short" });
+  const month = date.toLocaleString('en-US', { month: 'short' });
   const year = date.getFullYear().toString();
 
   return `${day} ${month} ${year}`;
@@ -460,8 +460,8 @@ export const formatDate = (isoString) => {
 
 export const formatDateDDMMYYYY = (isoString) => {
   const date = new Date(isoString);
-  const day = String(date.getDate()).padStart(2, "0");
-  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
   const year = date.getFullYear();
 
   return `${day}-${month}-${year}`;
@@ -469,18 +469,18 @@ export const formatDateDDMMYYYY = (isoString) => {
 
 export const getStatusStyles = (status) => {
   switch (status) {
-    case "Pending":
-      return "bg-yellow-100 text-yellow-700";
-    case "Verified":
-      return "bg-green-100 text-green-700";
-    case "Failed":
-      return "bg-red-100 text-red-700";
-    case "Cancelled":
-      return "bg-gray-100 text-gray-700";
-    case "Unapproved":
-      return "bg-blue-100 text-blue-700";
+    case 'Pending':
+      return 'bg-yellow-100 text-yellow-700';
+    case 'Verified':
+      return 'bg-green-100 text-green-700';
+    case 'Failed':
+      return 'bg-red-100 text-red-700';
+    case 'Cancelled':
+      return 'bg-gray-100 text-gray-700';
+    case 'Unapproved':
+      return 'bg-blue-100 text-blue-700';
     default:
-      return "";
+      return '';
   }
 };
 
@@ -493,27 +493,27 @@ export const fetchDonationSummaryData = async (
     cultivatorId: cultivatorId,
     dateFrom: filter.startDate,
     dateTo: filter.endDate,
-    status: "Verified",
+    status: 'Verified',
   };
 
   try {
     const purposeSummary = await fetchDonationSummary({
       ...params,
-      parameter: "purpose",
+      parameter: 'purpose',
     });
     const zoneSummary = await fetchDonationSummary({
       ...params,
-      parameter: "zone",
+      parameter: 'zone',
     });
 
     const paymentModeSummary = await fetchDonationSummary({
       ...params,
-      parameter: "payment_mode",
+      parameter: 'payment_mode',
     });
 
     const cultivatorSummary = await fetchDonationSummary({
       ...params,
-      parameter: "cultivator",
+      parameter: 'cultivator',
     });
 
     const formattedPurposeSummary = Object.entries(purposeSummary).map(
@@ -550,6 +550,6 @@ export const fetchDonationSummaryData = async (
       cultivator: formattedCultivatorSummary,
     });
   } catch (error) {
-    console.error("Error fetching donation summary:", error);
+    console.error('Error fetching donation summary:', error);
   }
 };

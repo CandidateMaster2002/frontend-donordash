@@ -153,7 +153,11 @@ const DonorCultivatorHomePage = () => {
   // Fetch data on component mount (default: all dates)
   useEffect(() => {
     fetchDonationsData(filter);
-    fetchDonationSummaryData(filter);
+    fetchDonationSummaryData(
+      filter,
+      getDonorCultivatorIdFromLocalStorage(),
+      setSummaryData
+    );
     fetchDonors();
   }, []);
 
@@ -167,7 +171,11 @@ const DonorCultivatorHomePage = () => {
       await fetchDonationsData(newFilter);
 
       if (newFilter.startDate && newFilter.endDate) {
-        await fetchDonationSummaryData(newFilter);
+        await fetchDonationSummaryData(
+          newFilter,
+          getDonorCultivatorIdFromLocalStorage(),
+          setSummaryData
+        );
       }
     } finally {
       setLoading(false);
@@ -177,7 +185,7 @@ const DonorCultivatorHomePage = () => {
   const fetchDonationsData = async (filter) => {
     try {
       const filterDto = {
-        donorCultivatorId: getDonorCultivatorIdFromLocalStorage(),
+        collectedById: getDonorCultivatorIdFromLocalStorage(),
         fromDate: filter.startDate,
         toDate: filter.endDate,
       };
@@ -193,14 +201,6 @@ const DonorCultivatorHomePage = () => {
       console.error('Error fetching donations:', error);
     }
   };
-
-  useEffect(() => {
-    fetchDonationSummaryData(
-      filter,
-      getDonorCultivatorIdFromLocalStorage(),
-      setSummaryData
-    );
-  }, [filter]);
 
   const handleAddDonation = () => {
     setShowAddDonationPopup(true);

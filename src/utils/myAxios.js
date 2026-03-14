@@ -1,9 +1,9 @@
-import axios from "axios";
+import axios from 'axios';
 // import { useLoading } from "../LoadingContext";
 
 const axiosInstance = axios.create({
-  baseURL: "https://backend-donordash.onrender.com/",
-  // baseURL: "http://localhost:8080/",
+  // baseURL: "https://backend-donordash.onrender.com/",
+  baseURL: 'http://localhost:8080/',
 });
 
 export const setupInterceptors = (showLoader, hideLoader) => {
@@ -11,12 +11,12 @@ export const setupInterceptors = (showLoader, hideLoader) => {
     const sl = config.showLoader;
     // sl can be: true | "fullscreen" | { type:"inline", scope:"donations" } | { type:"button", scope:"btn1" }
     if (sl) {
-      if (sl === true || sl === "fullscreen") showLoader("fullscreen");
-      else if (typeof sl === "string" && sl === "inline")
-        showLoader("inline", config.loaderScope || "default");
-      else if (sl.type === "inline")
-        showLoader("inline", sl.scope || "default");
-      else if (sl.type === "fullscreen") showLoader("fullscreen");
+      if (sl === true || sl === 'fullscreen') showLoader('fullscreen');
+      else if (typeof sl === 'string' && sl === 'inline')
+        showLoader('inline', config.loaderScope || 'default');
+      else if (sl.type === 'inline')
+        showLoader('inline', sl.scope || 'default');
+      else if (sl.type === 'fullscreen') showLoader('fullscreen');
     }
     return config;
   });
@@ -25,12 +25,12 @@ export const setupInterceptors = (showLoader, hideLoader) => {
     (response) => {
       const sl = response.config?.showLoader;
       if (sl) {
-        if (sl === true || sl === "fullscreen") hideLoader("fullscreen");
-        else if (typeof sl === "string" && sl === "inline")
-          hideLoader("inline", response.config.loaderScope || "default");
-        else if (sl.type === "inline")
-          hideLoader("inline", sl.scope || "default");
-        else if (sl.type === "fullscreen") hideLoader("fullscreen");
+        if (sl === true || sl === 'fullscreen') hideLoader('fullscreen');
+        else if (typeof sl === 'string' && sl === 'inline')
+          hideLoader('inline', response.config.loaderScope || 'default');
+        else if (sl.type === 'inline')
+          hideLoader('inline', sl.scope || 'default');
+        else if (sl.type === 'fullscreen') hideLoader('fullscreen');
       }
       return response;
     },
@@ -38,12 +38,12 @@ export const setupInterceptors = (showLoader, hideLoader) => {
       const cfg = error.config || {};
       const sl = cfg.showLoader;
       if (sl) {
-        if (sl === true || sl === "fullscreen") hideLoader("fullscreen");
-        else if (typeof sl === "string" && sl === "inline")
-          hideLoader("inline", cfg.loaderScope || "default");
-        else if (sl.type === "inline")
-          hideLoader("inline", sl.scope || "default");
-        else if (sl.type === "fullscreen") hideLoader("fullscreen");
+        if (sl === true || sl === 'fullscreen') hideLoader('fullscreen');
+        else if (typeof sl === 'string' && sl === 'inline')
+          hideLoader('inline', cfg.loaderScope || 'default');
+        else if (sl.type === 'inline')
+          hideLoader('inline', sl.scope || 'default');
+        else if (sl.type === 'fullscreen') hideLoader('fullscreen');
       }
       return Promise.reject(error);
     }
