@@ -48,6 +48,7 @@ const DonorCultivatorHomePage = () => {
   const [editingDonation, setEditingDonation] = useState(null);
   const [activeTab, setActiveTab] = useState('home');
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+  const [showSummary, setShowSummary] = useState(false);
 
   useEffect(() => {
     setHeaderExtras(
@@ -346,22 +347,47 @@ const DonorCultivatorHomePage = () => {
 
       {activeTab === 'reports' && (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
-            <DonationSummaryTable
-              data={summaryData.zone}
-              columnName1="Zone"
-              columnName2="Amount"
-            />
-            <DonationSummaryTable
-              data={summaryData.paymentMode}
-              columnName1="Payment Mode"
-              columnName2="Amount"
-            />
-            <DonationSummaryTable
-              data={summaryData.purpose}
-              columnName1="Purpose"
-              columnName2="Amount"
-            />
+          <div className="my-8 border rounded-xl shadow-sm overflow-hidden">
+            {/* Collapsible Header */}
+            <div
+              onClick={() => setShowSummary(!showSummary)}
+              className="cursor-pointer bg-gradient-to-r from-purple-600 to-blue-600 text-white px-5 py-4 flex justify-between items-center hover:from-purple-700 hover:to-blue-700 transition-all"
+            >
+              <span className="font-semibold text-lg">Donation Summary</span>
+
+              <span
+                className={`text-xl transition-transform duration-300 ${
+                  showSummary ? 'rotate-180' : ''
+                }`}
+              >
+                ▼
+              </span>
+            </div>
+
+            {/* Collapsible Content */}
+            {showSummary && (
+              <div className="p-6 bg-gray-50">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <DonationSummaryTable
+                    data={summaryData.zone}
+                    columnName1="Zone"
+                    columnName2="Amount"
+                  />
+
+                  <DonationSummaryTable
+                    data={summaryData.paymentMode}
+                    columnName1="Payment Mode"
+                    columnName2="Amount"
+                  />
+
+                  <DonationSummaryTable
+                    data={summaryData.purpose}
+                    columnName1="Purpose"
+                    columnName2="Amount"
+                  />
+                </div>
+              </div>
+            )}
           </div>
           <>
             <DateFilter
