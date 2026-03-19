@@ -1,60 +1,139 @@
-import React, { useState } from "react";
-import { PDFDownloadLink } from "@react-pdf/renderer";
-import MyPDFDocument from "./MyPDFDocument";
-import { useLocation } from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import { PDFDownloadLink } from '@react-pdf/renderer';
+import MyPDFDocument from './MyPDFDocument';
+import { useLocation } from 'react-router-dom';
+import { getReceiptByDonationId } from '../utils/services';
 
 const FormAndDownload = () => {
   const location = useLocation();
-  const pdfData = location.state?.pdfData || {};
+  const initialPdfData = location.state?.pdfData || {};
+  const [pdfData, setPdfData] = useState(initialPdfData);
+
+  const buildAddress = (data) => {
+    const baseAddress = data?.donorAddress || '';
+    const city = data?.city || data?.donorCity || '';
+    const state = data?.state || data?.donorState || '';
+
+    const suffix = [city, state].filter(Boolean).join(', ');
+    return suffix ? `${baseAddress}${baseAddress ? ', ' : ''}${suffix}` : baseAddress;
+  };
+
   const [formData, setFormData] = useState({
-    receiptNumber: pdfData.receiptNumber,
-    receiptDate: pdfData.paymentDate,
-    amountWords: "dd",
-    amountNumber: pdfData.amount,
-    name: pdfData.donorName,
-    address: pdfData.donorAddress,
-    pincode: pdfData.donorPIN,
-    mobile: pdfData.mobile,
-    email: pdfData.email,
-    pan: pdfData.pan,
-    paymentMode: pdfData.paymentMode,
-    paymentDetails: pdfData.transactionID,
-    donationPurpose: pdfData.purpose,
-    donorCultivatorId: pdfData.donorCultivatorId,
-    donationId: pdfData.donationId || "NA",
+    receiptNumber: initialPdfData.receiptNumber,
+    receiptDate: initialPdfData.paymentDate,
+    amountWords: 'dd',
+    amountNumber: initialPdfData.amount,
+    name: initialPdfData.donorName,
+    address: buildAddress(initialPdfData),
+    pincode: initialPdfData.donorPIN,
+    mobile: initialPdfData.mobile,
+    email: initialPdfData.email,
+    pan: initialPdfData.pan,
+    paymentMode: initialPdfData.paymentMode,
+    paymentDetails: initialPdfData.transactionID,
+    donationPurpose: initialPdfData.purpose,
+    donorCultivatorId: initialPdfData.donorCultivatorId,
+    donationId: initialPdfData.donationId || 'NA',
   });
 
-  console.log("PDF Data in FormAndDownload:", pdfData);
-  console.log("Form Data in FormAndDownload:", formData);
+  console.log('PDF Data in FormAndDownload:', pdfData);
+  console.log('Form Data in FormAndDownload:', formData);
 
-  const [showDownloadLink, setShowDownloadLink] = useState(true);
+  const [showDownloadLink, setShowDownloadLink] = useState(
+    Boolean(initialPdfData?.receiptNumber)
+  );
   const [documentData, setDocumentData] = useState({
-    receiptNumber: pdfData.receiptNumber,
-    receiptDate: pdfData.verifiedDate,
-    amountWords: pdfData.amount,
-    amountNumber: pdfData.amount,
-    name: pdfData.donorName,
-    address: pdfData.donorAddress,
-    pincode: pdfData.donorPIN,
-    mobile: pdfData.mobile,
-    email: pdfData.email,
-    pan: pdfData.pan,
-    paymentMode: pdfData.paymentMode,
-    paymentDetails: pdfData.transactionID,
-    donationPurpose: pdfData.purpose,
-    donorCultivatorId: pdfData.donorCultivatorId,
-    donationId: pdfData.donationId || "NA",
+    receiptNumber: initialPdfData.receiptNumber,
+    receiptDate: initialPdfData.verifiedDate,
+    amountWords: initialPdfData.amount,
+    amountNumber: initialPdfData.amount,
+    name: initialPdfData.donorName,
+    address: buildAddress(initialPdfData),
+    pincode: initialPdfData.donorPIN,
+    mobile: initialPdfData.mobile,
+    email: initialPdfData.email,
+    pan: initialPdfData.pan,
+    paymentMode: initialPdfData.paymentMode,
+    paymentDetails: initialPdfData.transactionID,
+    donationPurpose: initialPdfData.purpose,
+    donorCultivatorId: initialPdfData.donorCultivatorId,
+    donationId: initialPdfData.donationId || 'NA',
   });
 
-  console.log("Document Data in FormAndDownload:", documentData);
+  console.log('Document Data in FormAndDownload:', documentData);
+
+  useEffect(() => {
+    // In new tabs we open `/receipt?donationId=...`,
+    // so `location.state` is empty. Fetch receipt data using the query param.
+    const needsFetch = !pdfData?.receiptNumber;
+    if (!needsFetch) return;
+
+    const params = new URLSearchParams(location.search);
+    const donationId = params.get('donationId');
+    if (!donationId) return;
+
+    const load = async () => {
+      try {
+        const fetched = await getReceiptByDonationId(donationId);
+        if (fetched) fetched.purpose = 'General';
+        setPdfData(fetched);
+      } catch (e) {
+        console.error('Error fetching receipt in FormAndDownload:', e);
+      }
+    };
+
+    load();
+  }, [location.search, pdfData?.receiptNumber]);
+
+  useEffect(() => {
+    if (!pdfData?.receiptNumber) return;
+
+    setFormData({
+      receiptNumber: pdfData.receiptNumber,
+      receiptDate: pdfData.paymentDate,
+      amountWords: 'dd',
+      amountNumber: pdfData.amount,
+      name: pdfData.donorName,
+      address: buildAddress(pdfData),
+      pincode: pdfData.donorPIN,
+      mobile: pdfData.mobile,
+      email: pdfData.email,
+      pan: pdfData.pan,
+      paymentMode: pdfData.paymentMode,
+      paymentDetails: pdfData.transactionID,
+      donationPurpose: pdfData.purpose,
+      donorCultivatorId: pdfData.donorCultivatorId,
+      donationId: pdfData.donationId || 'NA',
+    });
+
+    setDocumentData({
+      receiptNumber: pdfData.receiptNumber,
+      receiptDate: pdfData.verifiedDate,
+      amountWords: pdfData.amount,
+      amountNumber: pdfData.amount,
+      name: pdfData.donorName,
+      address: buildAddress(pdfData),
+      pincode: pdfData.donorPIN,
+      mobile: pdfData.mobile,
+      email: pdfData.email,
+      pan: pdfData.pan,
+      paymentMode: pdfData.paymentMode,
+      paymentDetails: pdfData.transactionID,
+      donationPurpose: pdfData.purpose,
+      donorCultivatorId: pdfData.donorCultivatorId,
+      donationId: pdfData.donationId || 'NA',
+    });
+
+    setShowDownloadLink(true);
+  }, [pdfData]);
   // Format date to display nicely
   const formatDate = (dateString) => {
-    if (!dateString) return "";
+    if (!dateString) return '';
     const date = new Date(dateString);
-    return date.toLocaleDateString("en-IN", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
+    return date.toLocaleDateString('en-IN', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
     });
   };
 
@@ -67,7 +146,7 @@ const FormAndDownload = () => {
           <h2 className="text-2xl font-bold text-gray-800">ISKCON Dhanbad</h2>
           <p className="text-lg text-gray-600 mt-1">Donation Receipt</p>
           <div className="mt-4 text-gray-700">
-            Receipt No:{" "}
+            Receipt No:{' '}
             <span className="font-semibold">{formData.receiptNumber}</span>
           </div>
         </div>
@@ -117,7 +196,7 @@ const FormAndDownload = () => {
           <div className="flex">
             <div className="w-1/3 font-medium text-gray-700">Amount:</div>
             <div className="w-2/3 text-gray-800">
-              ₹{(formData.amountNumber || 0).toLocaleString("en-IN")} (
+              ₹{(formData.amountNumber || 0).toLocaleString('en-IN')} (
               {formData.paymentMode})
             </div>
           </div>
@@ -156,7 +235,7 @@ const FormAndDownload = () => {
           </p>
           <PDFDownloadLink
             document={<MyPDFDocument formData={documentData} />}
-            fileName={`${pdfData.donorName || "Receipt"}_${
+            fileName={`${pdfData.donorName || 'Receipt'}_${
               pdfData.receiptNumber
             }_${pdfData.amount}.pdf`}
             className="inline-block"
@@ -164,11 +243,11 @@ const FormAndDownload = () => {
             {({ loading }) => (
               <button
                 className={`px-6 py-3 rounded-md font-medium text-white ${
-                  loading ? "bg-gray-400" : "bg-red-500 hover:bg-red-600"
+                  loading ? 'bg-gray-400' : 'bg-red-500 hover:bg-red-600'
                 } transition-colors shadow-md`}
                 disabled={loading}
               >
-                {loading ? "Generating PDF..." : "Download Receipt"}
+                {loading ? 'Generating PDF...' : 'Download Receipt'}
               </button>
             )}
           </PDFDownloadLink>

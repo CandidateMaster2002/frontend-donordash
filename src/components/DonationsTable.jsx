@@ -19,19 +19,38 @@ const DonationsTable = ({
   const navigate = useNavigate();
   const handleReceiptClick = async (donationId) => {
     try {
-      const pdfData = await getReceiptByDonationId(donationId);
-      // console.log("PDF Data:", pdfData);
-      if (
-        !pdfData ||
-        !pdfData.receiptNumber ||
-        !pdfData.receiptNumber.startsWith('ISK')
-      ) {
-        alert('Receipt number is missing. Cannot generate receipt.');
+      // Open receipt in a new tab. We pass `donationId` via query param,
+      // because router `location.state` won't be available in a new tab.
+      const url = `/receipt?donationId=${encodeURIComponent(donationId)}`;
+
+      // Some browsers may return `null` when using certain feature strings
+      // even though the tab opens. So we avoid passing extra features and
+      // clear opener manually for safety.
+      const newTab = window.open(url, '_blank');
+
+      // Fallback: if popup is blocked, open in same tab using react-router state.
+      if (newTab) {
+        try {
+          newTab.opener = null;
+        } catch (e) {
+          // ignore
+        }
         return;
       }
-      pdfData.purpose = 'General';
-      // console.log("PDF Data:", pdfData);
-      navigate('/receipt', { state: { pdfData } });
+
+      {
+        const pdfData = await getReceiptByDonationId(donationId);
+        if (
+          !pdfData ||
+          !pdfData.receiptNumber ||
+          !pdfData.receiptNumber.startsWith('ISK')
+        ) {
+          alert('Receipt number is missing. Cannot generate receipt.');
+          return;
+        }
+        pdfData.purpose = 'General';
+        navigate('/receipt', { state: { pdfData } });
+      }
     } catch (error) {
       console.error('Error fetching receipt data:', error);
     }
