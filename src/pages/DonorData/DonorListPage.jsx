@@ -176,43 +176,47 @@ const DonorListPage = () => {
               ) : (
                 <>
                   <section className="mb-8 ">
-                    <div className="flex items-center justify-between mb-4">
-                      <h2 className="text-xl font-semibold text-gray-800">
-                        My Donors
-                      </h2>
-
-                      <div className="flex items-center gap-4">
+                    <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-4">
+                      <div className="flex items-center gap-3">
+                        <h2 className="text-xl font-semibold text-gray-800">
+                          My Donors
+                        </h2>
                         <span className="bg-purple-100 text-purple-800 text-sm font-medium px-3 py-1 rounded-full">
-                          {filteredMyDonors.length} Donors
+                          {showWithoutPAN
+                            ? filteredMyDonors.filter(
+                                (donor) => donor?.panNumber == null
+                              ).length
+                            : filteredMyDonors.length}{" "}
+                          Donors
+                        </span>
+                      </div>
+
+                      {/* Toggle */}
+                      <label className="flex items-center gap-3 cursor-pointer select-none">
+                        <span className="bg-purple-100 text-purple-800 text-sm font-medium px-3 py-1 rounded-full">
+                          Show donors without PAN
                         </span>
 
-                        {/* Toggle */}
-                        <label className="flex items-center gap-3 cursor-pointer select-none">
-                          <span className="bg-purple-100 text-purple-800 text-sm font-medium px-3 py-1 rounded-full">
-                            Show donors without PAN
-                          </span>
-
-                          <button
-                            type="button"
-                            role="switch"
-                            aria-checked={showWithoutPAN}
-                            onClick={() => setShowWithoutPAN((s) => !s)}
-                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 ${
+                        <button
+                          type="button"
+                          role="switch"
+                          aria-checked={showWithoutPAN}
+                          onClick={() => setShowWithoutPAN((s) => !s)}
+                          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 ${
+                            showWithoutPAN
+                              ? "bg-green-500 focus:ring-green-300"
+                              : "bg-gray-300 focus:ring-gray-200"
+                          }`}
+                        >
+                          <span
+                            className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform ${
                               showWithoutPAN
-                                ? "bg-green-500 focus:ring-green-300"
-                                : "bg-gray-300 focus:ring-gray-200"
+                                ? "translate-x-5"
+                                : "translate-x-1"
                             }`}
-                          >
-                            <span
-                              className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform ${
-                                showWithoutPAN
-                                  ? "translate-x-5"
-                                  : "translate-x-1"
-                              }`}
-                            />
-                          </button>
-                        </label>
-                      </div>
+                          />
+                        </button>
+                      </label>
                     </div>
 
                     {filteredMyDonors.length === 0 ? (
