@@ -31,7 +31,7 @@ const DonorCultivatorHomePage = () => {
   lastMonth.setMonth(today.getMonth() - 1);
 
   const [filter, setFilter] = useState({
-    type: 'all',
+    type: 'lastMonth',
     month: '',
     startDate: lastMonth.toISOString().split('T')[0],
     endDate: today.toISOString().split('T')[0],
@@ -41,7 +41,9 @@ const DonorCultivatorHomePage = () => {
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const navigate = useNavigate();
-  const [donationsData, setDonationsData] = useState([]);
+  // Separate data sets for Home and Reports so they are loosely coupled
+  const [homeDonationsData, setHomeDonationsData] = useState([]);
+  const [reportDonationsData, setReportDonationsData] = useState([]);
   const [donations, setDonations] = useState([]);
   const [summaryData, setSummaryData] = useState({ purpose: [], zone: [] });
   const [showAddDonationPopup, setShowAddDonationPopup] = useState(false);
@@ -151,15 +153,26 @@ const DonorCultivatorHomePage = () => {
     setShowAddDonationPopup(false);
   };
 
-  // Fetch data on component mount (default: all dates)
   useEffect(() => {
-    fetchDonationsData(filter);
-    fetchDonationSummaryData(
-      filter,
-      getDonorCultivatorIdFromLocalStorage(),
-      setSummaryData
-    );
-    fetchDonors();
+    const loadData = async () => {
+      // Initial load: show fullscreen loader once
+      const donations = await fetchDonationsData(
+        filter,
+        setHomeDonationsData,
+        true
+      );
+      setReportDonationsData(donations);
+
+      await fetchDonationSummaryData(
+        filter,
+        getDonorCultivatorIdFromLocalStorage(),
+        setSummaryData
+      );
+
+      fetchDonors();
+    };
+
+    loadData();
   }, []);
 
   const [loading, setLoading] = useState(false);
@@ -168,8 +181,9 @@ const DonorCultivatorHomePage = () => {
     setLoading(true);
     try {
       setFilter(newFilter);
-
-      await fetchDonationsData(newFilter);
+      // Only update the Reports data when the DateFilter changes.
+      // Do NOT show fullscreen loader here; just fetch quietly.
+      await fetchDonationsData(newFilter, setReportDonationsData, false);
 
       if (newFilter.startDate && newFilter.endDate) {
         await fetchDonationSummaryData(
@@ -183,7 +197,7 @@ const DonorCultivatorHomePage = () => {
     }
   };
 
-  const fetchDonationsData = async (filter) => {
+  const fetchDonationsData = async (filter, setTargetDonations, showFullscreen) => {
     try {
       const filterDto = {
         collectedById: getDonorCultivatorIdFromLocalStorage(),
@@ -191,13 +205,13 @@ const DonorCultivatorHomePage = () => {
         toDate: filter.endDate,
       };
 
-      const showLoader = filter?.type === 'all';
-      const axiosConfig = showLoader
+      const axiosConfig = showFullscreen
         ? { showLoader: 'fullscreen' }
         : { showLoader: false };
 
       const donations = await fetchDonations(filterDto, axiosConfig);
-      setDonationsData(donations);
+      setTargetDonations(donations);
+      return donations;
     } catch (error) {
       console.error('Error fetching donations:', error);
     }
@@ -338,7 +352,7 @@ const DonorCultivatorHomePage = () => {
           </div>
 
           <DonationsTable
-            data={donationsData}
+            data={homeDonationsData}
             uiFilter={uiFilter}
             onEdit={handleEdit}
           />
@@ -461,7 +475,7 @@ const DonorCultivatorHomePage = () => {
             </div>
 
             <DonationsTable
-              data={donationsData}
+              data={reportDonationsData}
               uiFilter={uiFilter}
               onEdit={handleEdit}
             />

@@ -5,7 +5,7 @@ const DateFilter = ({ filter, onFilterChange, loading }) => {
   const [draft, setDraft] = useState(filter);
 
   const handleFilterChange = (newType) => {
-    if (newType === 'all') {
+    if (newType === 'lastMonth') {
       const today = new Date();
       today.setDate(today.getDate() + 1);
       const lastMonth = new Date();
@@ -18,7 +18,7 @@ const DateFilter = ({ filter, onFilterChange, loading }) => {
         endDate: '',
       });
       onFilterChange({
-        type: 'all',
+        type: 'lastMonth',
         month: '',
         startDate: lastMonth.toISOString().split('T')[0],
         endDate: today.toISOString().split('T')[0],
@@ -78,14 +78,15 @@ const DateFilter = ({ filter, onFilterChange, loading }) => {
 
         <button
           type="button"
+          disabled={loading && draft.type === 'lastMonth'}
           className={`px-4 py-2 rounded-full font-medium transition-all whitespace-nowrap ${
-            draft.type === 'all'
+            draft.type === 'lastMonth'
               ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-md'
               : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-          }`}
-          onClick={() => handleFilterChange('all')}
+          } ${loading && draft.type === 'lastMonth' ? 'cursor-not-allowed opacity-70' : ''}`}
+          onClick={() => handleFilterChange('lastMonth')}
         >
-          Last Month
+          {loading && draft.type === 'lastMonth' ? 'Loading...' : 'Last Month'}
         </button>
 
         <button
