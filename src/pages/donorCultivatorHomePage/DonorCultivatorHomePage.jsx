@@ -23,6 +23,7 @@ import UnapprovedDonations from './UnapprovedDonations';
 import DonorListPage from '../DonorData/DonorListPage';
 import MobileFilters from './components/MobileFilters';
 import DesktopFilters from './components/DesktopFilters';
+import PendingTransferRequests from '../DonorData/PendingTransferRequests';
 
 const DonorCultivatorHomePage = () => {
   const today = new Date();
@@ -69,7 +70,6 @@ const DonorCultivatorHomePage = () => {
           >
             Home
           </button>
-
           <button
             onClick={() => setActiveTab('reports')}
             className={`px-3 py-2 rounded-full font-semibold transition-all duration-300
@@ -81,10 +81,6 @@ const DonorCultivatorHomePage = () => {
           >
             Reports
           </button>
-        </div>
-
-        {/* Existing Nav Links */}
-        <div className="flex gap-4 ml-8">
           <button
             onClick={() => setActiveTab('all-donors')}
             className={`px-3 py-2 rounded-full font-semibold transition-all duration-300
@@ -96,7 +92,6 @@ const DonorCultivatorHomePage = () => {
           >
             View All Donors
           </button>
-
           <button
             onClick={() => setActiveTab('donor-signup')}
             className={`px-3 py-2 rounded-full font-semibold transition-all duration-300
@@ -108,7 +103,6 @@ const DonorCultivatorHomePage = () => {
           >
             Add Donor
           </button>
-
           <button
             onClick={() => setActiveTab('unapproved-donations')}
             className={`px-3 py-2 rounded-full font-semibold transition-all duration-300
@@ -119,6 +113,18 @@ const DonorCultivatorHomePage = () => {
             }`}
           >
             Unapproved Donations
+          </button>
+
+          <button
+            onClick={() => setActiveTab('pending-transfer-requests')}
+            className={`px-3 py-2 rounded-full font-semibold transition-all duration-300
+            focus:outline-none focus:ring-0 ${
+              activeTab === 'pending-transfer-requests'
+                ? 'bg-white text-purple-700 shadow-md'
+                : 'hover:bg-gray-100 md:hover:bg-white/20'
+            }`}
+          >
+            Donor Transfer Requests
           </button>
         </div>
       </div>
@@ -197,7 +203,11 @@ const DonorCultivatorHomePage = () => {
     }
   };
 
-  const fetchDonationsData = async (filter, setTargetDonations, showFullscreen) => {
+  const fetchDonationsData = async (
+    filter,
+    setTargetDonations,
+    showFullscreen
+  ) => {
     try {
       const filterDto = {
         collectedById: getDonorCultivatorIdFromLocalStorage(),
@@ -488,6 +498,8 @@ const DonorCultivatorHomePage = () => {
       {activeTab === 'unapproved-donations' && <UnapprovedDonations />}
 
       {activeTab === 'all-donors' && <DonorListPage />}
+
+      {activeTab === 'pending-transfer-requests' && <PendingTransferRequests />}
 
       {editingDonation && (
         <EditDonationPopup

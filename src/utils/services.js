@@ -279,7 +279,7 @@ export const requestAcquireDonor = async (donorId, cultivatorId) => {
     return response.data;
   } catch (error) {
     throw new Error(
-      error.response?.data || 'Failed to request donor acquisition'
+      error.response?.data?.message || 'Failed to request donor acquisition'
     );
   }
 };
@@ -308,7 +308,9 @@ export const requestDonorRelease = async (donorId, fromId, toId) => {
     );
     return response.data;
   } catch (error) {
-    throw new Error(error.response?.data || 'Failed to request donor release');
+    throw new Error(
+      error.response?.data?.message || 'Failed to request donor release'
+    );
   }
 };
 

@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   getDonors,
   getAllDonorCultivators,
@@ -7,21 +7,28 @@ import {
   getDonorCultivatorFromLocalStorage,
   requestDonorRelease,
   requestAcquireDonor,
-} from "../../utils/services";
-import PendingTransferRequests from "./PendingTransferRequests";
-import InlineLoader from "../../utils/InlineLoader";
+} from '../../utils/services';
+import PendingTransferRequests from './PendingTransferRequests';
+import InlineLoader from '../../utils/InlineLoader';
+import SuccessPopup from '../../components/SuccessPopup';
+import { toast } from 'react-toastify';
 
 const DonorListPage = () => {
   const [myDonors, setMyDonors] = useState([]);
   const [otherDonors, setOtherDonors] = useState([]);
   const [cultivators, setCultivators] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
   const [showRequestsTab, setShowRequestsTab] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [showWithoutPAN, setShowWithoutPAN] = useState(false);
+  const [releasingDonorId, setReleasingDonorId] = useState(null);
+  const [acquiringDonorId, setAcquiringDonorId] = useState(null);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [confirmAction, setConfirmAction] = useState(null);
   const navigate = useNavigate();
   const myCultivatorId = getDonorCultivatorIdFromLocalStorage();
-  const cultivatorName = getDonorCultivatorFromLocalStorage()?.name || "";
+  const cultivatorName = getDonorCultivatorFromLocalStorage()?.name || '';
 
   useEffect(() => {
     fetchData();
@@ -53,33 +60,79 @@ const DonorListPage = () => {
     navigate(`/donor-profile/${donorId}`);
   };
 
-  const handleReleaseRequest = async (donorId, targetCultivatorId) => {
-    if (!targetCultivatorId) return;
-
+  const submitReleaseRequest = async (donorId, targetCultivatorId) => {
+    setReleasingDonorId(donorId);
     try {
       await requestDonorRelease(donorId, myCultivatorId, targetCultivatorId);
-      alert("Release request submitted successfully");
+      setSuccessMessage('Release request submitted successfully');
+      setShowSuccessPopup(true);
       fetchData();
     } catch (err) {
-      alert(err.message);
+      toast.error(err?.message || 'Failed to submit release request');
+    } finally {
+      setReleasingDonorId(null);
     }
   };
 
-  const handleAcquireRequest = async (donorId) => {
+  const submitAcquireRequest = async (donorId) => {
+    setAcquiringDonorId(donorId);
     try {
       await requestAcquireDonor(donorId, myCultivatorId);
-      alert("Acquire request submitted successfully");
+      setSuccessMessage('Acquire request submitted successfully');
+      setShowSuccessPopup(true);
       fetchData();
     } catch (err) {
-      alert(err.message);
+      const message = err?.message || 'Failed to submit acquire request';
+      toast.error(message);
+    } finally {
+      setAcquiringDonorId(null);
     }
+  };
+
+  const handleReleaseRequest = (donorId, targetCultivatorId) => {
+    if (!targetCultivatorId) return;
+    const donor = myDonors.find((d) => d.donorId === donorId);
+    const targetCultivator = cultivators.find(
+      (c) => String(c.id) === String(targetCultivatorId)
+    );
+    setConfirmAction({
+      type: 'release',
+      donorId,
+      targetCultivatorId,
+      title: 'Confirm Release Request',
+      message: `Do you want to request release for "${donor?.donorName || 'this donor'}" to "${targetCultivator?.name || 'selected cultivator'}"?`,
+      confirmLabel: 'Yes, Request Release',
+    });
+  };
+
+  const handleAcquireRequest = (donorId) => {
+    const donor = otherDonors.find((d) => d.donorId === donorId);
+    setConfirmAction({
+      type: 'acquire',
+      donorId,
+      title: 'Confirm Acquire Request',
+      message: `Do you want to request acquire for "${donor?.donorName || 'this donor'}"?`,
+      confirmLabel: 'Yes, Request Acquire',
+    });
+  };
+
+  const handleConfirmAction = async () => {
+    if (!confirmAction) return;
+    const action = confirmAction;
+    setConfirmAction(null);
+
+    if (action.type === 'release') {
+      await submitReleaseRequest(action.donorId, action.targetCultivatorId);
+      return;
+    }
+    await submitAcquireRequest(action.donorId);
   };
 
   const filteredMyDonors = myDonors.filter((d) =>
     d?.donorName?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  console.log("Filtered My Donors:", filteredMyDonors);
+  console.log('Filtered My Donors:', filteredMyDonors);
 
   const filteredOtherDonors = otherDonors.filter((d) =>
     d?.donorName?.toLowerCase().includes(searchTerm.toLowerCase())
@@ -123,7 +176,7 @@ const DonorListPage = () => {
                   </svg>
                 </div>
               </div>
-              <button
+              {/* <button
                 className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                   showRequestsTab
                     ? "bg-gray-200 text-gray-800 hover:bg-gray-300"
@@ -168,7 +221,7 @@ const DonorListPage = () => {
                     View Pending Requests
                   </span>
                 )}
-              </button>
+              </button> */}
             </div>
             <InlineLoader scope="donor-list">
               {showRequestsTab ? (
@@ -186,7 +239,7 @@ const DonorListPage = () => {
                             ? filteredMyDonors.filter(
                                 (donor) => donor?.panNumber == null
                               ).length
-                            : filteredMyDonors.length}{" "}
+                            : filteredMyDonors.length}{' '}
                           Donors
                         </span>
                       </div>
@@ -204,15 +257,13 @@ const DonorListPage = () => {
                           onClick={() => setShowWithoutPAN((s) => !s)}
                           className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 ${
                             showWithoutPAN
-                              ? "bg-green-500 focus:ring-green-300"
-                              : "bg-gray-300 focus:ring-gray-200"
+                              ? 'bg-green-500 focus:ring-green-300'
+                              : 'bg-gray-300 focus:ring-gray-200'
                           }`}
                         >
                           <span
                             className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform ${
-                              showWithoutPAN
-                                ? "translate-x-5"
-                                : "translate-x-1"
+                              showWithoutPAN ? 'translate-x-5' : 'translate-x-1'
                             }`}
                           />
                         </button>
@@ -223,7 +274,7 @@ const DonorListPage = () => {
                       <div className="bg-gray-50 rounded-lg p-8 text-center">
                         <p className="text-gray-500">
                           {searchTerm
-                            ? "No matching donors found"
+                            ? 'No matching donors found'
                             : "You don't have any donors assigned yet"}
                         </p>
                       </div>
@@ -250,13 +301,13 @@ const DonorListPage = () => {
                               </div>
 
                               <p className="text-gray-600 mb-3">
-                                <span className="font-medium">Phone:</span>{" "}
-                                {donor?.mobileNumber || "N/A"}
+                                <span className="font-medium">Phone:</span>{' '}
+                                {donor?.mobileNumber || 'N/A'}
                               </p>
 
                               <p className="text-gray-600 mb-3">
-                                <span className="font-medium">PAN:</span>{" "}
-                                {donor?.panNumber || "N/A"}
+                                <span className="font-medium">PAN:</span>{' '}
+                                {donor?.panNumber || 'N/A'}
                               </p>
 
                               <div className="mt-4">
@@ -270,6 +321,7 @@ const DonorListPage = () => {
                                       e.target.value
                                     )
                                   }
+                                  disabled={releasingDonorId === donor.donorId}
                                   className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                                 >
                                   <option value="">Select cultivator...</option>
@@ -281,6 +333,12 @@ const DonorListPage = () => {
                                       </option>
                                     ))}
                                 </select>
+                                {releasingDonorId === donor.donorId && (
+                                  <div className="mt-2 inline-flex items-center gap-2 text-xs text-purple-700">
+                                    <span className="h-3 w-3 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
+                                    Submitting release request...
+                                  </div>
+                                )}
                               </div>
                             </div>
                           ))}
@@ -302,8 +360,8 @@ const DonorListPage = () => {
                       <div className="bg-gray-50 rounded-lg p-8 text-center">
                         <p className="text-gray-500">
                           {searchTerm
-                            ? "No matching donors found"
-                            : "No other donors available"}
+                            ? 'No matching donors found'
+                            : 'No other donors available'}
                         </p>
                       </div>
                     ) : (
@@ -357,9 +415,17 @@ const DonorListPage = () => {
                                       onClick={() =>
                                         handleAcquireRequest(donor.donorId)
                                       }
-                                      className="text-green-600 hover:text-green-900 bg-green-50 hover:bg-green-100 px-3 py-1 rounded-md text-sm font-medium transition-colors"
+                                      disabled={
+                                        acquiringDonorId === donor.donorId
+                                      }
+                                      className="text-green-600 hover:text-green-900 bg-green-50 hover:bg-green-100 px-3 py-1 rounded-md text-sm font-medium transition-colors disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center gap-2"
                                     >
-                                      Request Acquire
+                                      {acquiringDonorId === donor.donorId && (
+                                        <span className="h-3 w-3 border-2 border-green-600 border-t-transparent rounded-full animate-spin" />
+                                      )}
+                                      {acquiringDonorId === donor.donorId
+                                        ? 'Requesting...'
+                                        : 'Request Acquire'}
                                     </button>
                                   </td>
                                 </tr>
@@ -391,25 +457,31 @@ const DonorListPage = () => {
 
                               <div className="space-y-2">
                                 <p className="text-gray-600">
-                                  <span className="font-medium">Phone:</span>{" "}
-                                  {donor.mobileNumber || "N/A"}
+                                  <span className="font-medium">Phone:</span>{' '}
+                                  {donor.mobileNumber || 'N/A'}
                                 </p>
                                 <p className="text-gray-600">
                                   <span className="font-medium">
                                     Cultivator:
-                                  </span>{" "}
+                                  </span>{' '}
                                   {donor.cultivatorName}
                                 </p>
                               </div>
 
                               <div className="mt-4 flex justify-end">
                                 <button
-                                  className="text-green-600 hover:text-green-900 bg-green-50 hover:bg-green-100 px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                                  className="text-green-600 hover:text-green-900 bg-green-50 hover:bg-green-100 px-4 py-2 rounded-md text-sm font-medium transition-colors disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center gap-2"
+                                  disabled={acquiringDonorId === donor.donorId}
                                   onClick={() =>
                                     handleAcquireRequest(donor.donorId)
                                   }
                                 >
-                                  Request Acquire
+                                  {acquiringDonorId === donor.donorId && (
+                                    <span className="h-3 w-3 border-2 border-green-600 border-t-transparent rounded-full animate-spin" />
+                                  )}
+                                  {acquiringDonorId === donor.donorId
+                                    ? 'Requesting...'
+                                    : 'Request Acquire'}
                                 </button>
                               </div>
                             </div>
@@ -424,6 +496,42 @@ const DonorListPage = () => {
           </div>
         </div>
       </div>
+      {confirmAction && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-md rounded-xl bg-white shadow-2xl border border-gray-100">
+            <div className="px-6 pt-6 pb-3">
+              <h3 className="text-lg font-semibold text-gray-900">
+                {confirmAction.title}
+              </h3>
+              <p className="mt-2 text-sm text-gray-600">
+                {confirmAction.message}
+              </p>
+            </div>
+            <div className="px-6 pb-6 pt-2 flex items-center justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setConfirmAction(null)}
+                className="px-4 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmAction}
+                className="px-4 py-2 rounded-md bg-purple-600 text-white hover:bg-purple-700"
+              >
+                {confirmAction.confirmLabel}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {showSuccessPopup && (
+        <SuccessPopup
+          message={successMessage}
+          onClose={() => setShowSuccessPopup(false)}
+        />
+      )}
     </div>
   );
 };
