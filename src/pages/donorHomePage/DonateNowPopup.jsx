@@ -221,6 +221,9 @@ const DonateNowPopup = ({
               .includes(searchTerm.toLowerCase()) ||
             (donor.donorName || '')
               .toLowerCase()
+              .includes(searchTerm.toLowerCase()) ||
+            (donor.mobileNumber || '')
+              .toLowerCase()
               .includes(searchTerm.toLowerCase())
         );
 
@@ -399,6 +402,8 @@ const DonateNowPopup = ({
                           className="px-3 py-2 hover:bg-blue-50"
                         >
                           {donor.username}
+                          {'-'}
+                          {donor.mobileNumber}
                         </option>
                       ))}
                     </select>
