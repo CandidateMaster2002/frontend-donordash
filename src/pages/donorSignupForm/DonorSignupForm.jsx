@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { useForm, FormProvider, useWatch } from "react-hook-form";
+import React, { useState, useEffect } from 'react';
+import { useForm, FormProvider, useWatch } from 'react-hook-form';
 import {
   FiUser,
   FiPhone,
@@ -7,22 +7,22 @@ import {
   FiHome,
   FiMapPin,
   FiLock,
-} from "react-icons/fi";
-import { FaIdCard, FaHandshake, FaWhatsapp } from "react-icons/fa";
-import { validations } from "../../utils/validations";
-import useFetchCityAndState from "../../hooks/useFetchCityAndState";
-import { handleDonorSignup } from "./handleDonorSignup";
-import { useNavigate } from "react-router-dom";
-import { zones } from "../../constants/constants";
-import { useLocation } from "react-router-dom";
+} from 'react-icons/fi';
+import { FaIdCard, FaHandshake, FaWhatsapp } from 'react-icons/fa';
+import { validations } from '../../utils/validations';
+import useFetchCityAndState from '../../hooks/useFetchCityAndState';
+import { handleDonorSignup } from './handleDonorSignup';
+import { useNavigate } from 'react-router-dom';
+import { zones } from '../../constants/constants';
+import { useLocation } from 'react-router-dom';
 import {
   getRedirectPath,
   getAllDonorCultivators,
   checkDonorRegisteredByMobile,
-} from "../../utils/services";
-import SuccessPopup from "../../components/SuccessPopup";
-import { toast } from "react-toastify";
-import { set } from "date-fns";
+  getDonorCultivatorFromLocalStorage,
+} from '../../utils/services';
+import SuccessPopup from '../../components/SuccessPopup';
+import { toast } from 'react-toastify';
 
 const DonorSignupForm = ({ onSubmit }) => {
   const navigate = useNavigate();
@@ -31,15 +31,14 @@ const DonorSignupForm = ({ onSubmit }) => {
 
   const [checkResult, setCheckResult] = useState(null);
   const [checkLoading, setCheckLoading] = useState(false);
-
-  const location = useLocation();
-  const preselectedCultivatorId =
-    location.state?.preselectedCultivatorId || null;
+  const [isCultivatorLocked, setIsCultivatorLocked] = useState(false);
+  const [lockedCultivatorId, setLockedCultivatorId] = useState(null);
+  const [currentCultivator, setCurrentCultivator] = useState(null);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
   const handleCheckMobile = async () => {
     setCheckLoading(true);
-    const mobile = methods.getValues("mobileNumber");
+    const mobile = methods.getValues('mobileNumber');
     if (mobile) {
       const result = await checkDonorRegisteredByMobile(mobile);
       setCheckResult(result);
@@ -47,13 +46,22 @@ const DonorSignupForm = ({ onSubmit }) => {
     setCheckLoading(false);
   };
 
+  // Check if a cultivator is logged in on mount
+  useEffect(() => {
+    const loggedInCultivator = getDonorCultivatorFromLocalStorage();
+    if (loggedInCultivator) {
+      setIsCultivatorLocked(true);
+      setLockedCultivatorId(loggedInCultivator.id);
+    }
+  }, []);
+
   useEffect(() => {
     const fetchDonorCultivators = async () => {
       try {
         const cultivators = await getAllDonorCultivators();
         setDonorCultivators(cultivators);
       } catch (error) {
-        console.error("Error fetching donor cultivators:", error);
+        console.error('Error fetching donor cultivators:', error);
       }
     };
     fetchDonorCultivators();
@@ -61,30 +69,51 @@ const DonorSignupForm = ({ onSubmit }) => {
 
   const methods = useForm({
     defaultValues: {
-      name: "",
-      mobileNumber: "",
-      email: "",
-      address: "",
-      city: "",
-      state: "",
-      pincode: "",
-      password: "",
-      remark: "Not Mentioned",
-      zone: "Other",
-      donorCultivatorId: preselectedCultivatorId || "",
+      name: '',
+      mobileNumber: '',
+      email: '',
+      address: '',
+      city: '',
+      state: '',
+      pincode: '',
+      password: '',
+      remark: 'Not Mentioned',
+      zone: 'Other',
+      donorCultivatorId: '',
     },
   });
 
-  const pincode = useWatch({ control: methods.control, name: "pincode" });
+  const pincode = useWatch({ control: methods.control, name: 'pincode' });
 
   useEffect(() => {
-    methods.register("confirmPassword", {
+    methods.register('confirmPassword', {
       validate: (value) =>
-        value === methods.getValues("password") || "Passwords do not match",
+        value === methods.getValues('password') || 'Passwords do not match',
     });
   }, [methods]);
 
   useFetchCityAndState(pincode, methods.setValue);
+
+  useEffect(() => {
+    if (!donorCultivators?.length) return;
+    const currentValue = methods.getValues('donorCultivatorId');
+    if (currentValue) return; 
+
+    let selectedCultivator = null;
+
+    if (isCultivatorLocked) {
+      selectedCultivator = donorCultivators.find(
+        (c) => String(c.id) === String(lockedCultivatorId)
+      );
+    } else {
+      selectedCultivator = donorCultivators.find((c) => c.name === 'General');
+    }
+
+    if (selectedCultivator) {
+      setCurrentCultivator(selectedCultivator);
+      methods.setValue('donorCultivatorId', selectedCultivator.id);
+    }
+  }, [donorCultivators, isCultivatorLocked, lockedCultivatorId, methods]);
 
   const onFormSubmit = async (data) => {
     setIsSubmitting(true);
@@ -102,13 +131,13 @@ const DonorSignupForm = ({ onSubmit }) => {
       if (success) {
         methods.reset();
         setShowSuccessPopup(true);
-        setTimeout(() => navigate("/"), 3000);
+        setTimeout(() => navigate('/'), 3000);
       } else {
-        toast.error("Donor signup failed. Please try again.");
+        toast.error('Donor signup failed. Please try again.');
       }
     } catch (error) {
       toast.error(
-        "Could not register donor. Ensure email id, mobile number & pan no are not registered already."
+        'Could not register donor. Ensure email id, mobile number & pan no are not registered already.'
       );
     } finally {
       setIsSubmitting(false);
@@ -126,10 +155,10 @@ const DonorSignupForm = ({ onSubmit }) => {
 
   return (
     <FormProvider {...methods}>
-      <div className="min-h-screen bg-gray-50 py-8 px-4">
-        <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-md overflow-hidden">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-50 py-8 px-4 text-gray-800 dark:text-gray-800">
+        <div className="max-w-2xl mx-auto bg-white dark:bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 dark:border-gray-200">
           <div className="p-8">
-            <h1 className="text-3xl font-bold text-center text-gray-800 mb-8">
+            <h1 className="text-3xl font-bold text-center text-gray-800 dark:text-gray-800 mb-8">
               Donor Registration
             </h1>
 
@@ -139,57 +168,57 @@ const DonorSignupForm = ({ onSubmit }) => {
             >
               {/* Personal Information */}
               <div className="space-y-4">
-                <h2 className="text-xl font-semibold text-gray-700 border-b pb-2">
+                <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-700 border-b border-gray-300 dark:border-gray-300 pb-2">
                   Personal Information
                 </h2>
 
                 <div className="relative">
-                  <FiUser className="absolute left-3 top-3 text-gray-400" />
+                  <FiUser className="absolute left-3 top-3 text-gray-400 dark:text-gray-400" />
                   <input
                     type="text"
-                    {...methods.register("name", validations.name.validation)}
+                    {...methods.register('name', validations.name.validation)}
                     placeholder="Legal Name / वैध नाम"
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-300 rounded-md bg-white dark:bg-white text-gray-800 dark:text-gray-800 placeholder-gray-400 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
-                  {renderError("name")}
+                  {renderError('name')}
                 </div>
 
                 <div className="relative flex items-center gap-2">
                   <div className="relative flex-1">
                     <FaWhatsapp
-                      className="absolute left-3 top-3 text-green-500"
+                      className="absolute left-3 top-3 text-green-500 dark:text-green-500"
                       aria-hidden="true"
                     />
                     <input
                       type="text"
                       maxLength={10}
                       {...methods.register(
-                        "mobileNumber",
+                        'mobileNumber',
                         validations.mobileNumber.validation
                       )}
                       placeholder="WhatsApp Number / मोबाइल नंबर"
-                      className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-300 rounded-md bg-white dark:bg-white text-gray-800 dark:text-gray-800 placeholder-gray-400 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
-                    {renderError("mobileNumber")}
+                    {renderError('mobileNumber')}
                   </div>
                   <button
                     type="button"
                     onClick={handleCheckMobile}
                     disabled={checkLoading}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                    className="px-4 py-2 bg-blue-600 dark:bg-blue-600 text-white rounded-md hover:bg-blue-700 dark:hover:bg-blue-700"
                   >
-                    {checkLoading ? "Checking..." : "Check"}
+                    {checkLoading ? 'Checking...' : 'Check'}
                   </button>
                 </div>
 
                 {checkResult && !checkResult.donorRegistered && (
-                  <p className="text-sm text-red-600 mt-1">
+                  <p className="text-sm text-red-600 dark:text-red-600 mt-1">
                     Donor not registered.
                   </p>
                 )}
 
                 {checkResult && checkResult.donorRegistered && (
-                  <div className="mt-3 p-3 border rounded bg-yellow-50 text-sm text-gray-800">
+                  <div className="mt-3 p-3 border border-gray-300 dark:border-gray-300 rounded bg-yellow-50 dark:bg-yellow-50 text-sm text-gray-800 dark:text-gray-800">
                     <p>
                       <strong>Donor Id:</strong>
                       {checkResult.id}
@@ -201,70 +230,70 @@ const DonorSignupForm = ({ onSubmit }) => {
                       <strong>Mobile:</strong> {checkResult.mobileNumber}
                     </p>
                     <p>
-                      <strong>Address:</strong> {checkResult.address},{" "}
-                      {checkResult.city}, {checkResult.state},{" "}
+                      <strong>Address:</strong> {checkResult.address},{' '}
+                      {checkResult.city}, {checkResult.state},{' '}
                       {checkResult.pincode}
                     </p>
                     <p>
-                      <strong>Connected To:</strong>{" "}
+                      <strong>Connected To:</strong>{' '}
                       {checkResult?.donorCultivatorName}
                     </p>
                   </div>
                 )}
 
                 <div className="relative">
-                  <FiMail className="absolute left-3 top-3 text-gray-400" />
+                  <FiMail className="absolute left-3 top-3 text-gray-400 dark:text-gray-400" />
                   <input
                     type="email"
-                    {...methods.register("email", validations.email.validation)}
+                    {...methods.register('email', validations.email.validation)}
                     placeholder="Email / ईमेल (optional)"
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-300 rounded-md bg-white dark:bg-white text-gray-800 dark:text-gray-800 placeholder-gray-400 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
-                  {renderError("email")}
+                  {renderError('email')}
                 </div>
               </div>
 
               {/* Address Information */}
               <div className="space-y-4">
-                <h2 className="text-xl font-semibold text-gray-700 border-b pb-2">
+                <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-700 border-b border-gray-300 dark:border-gray-300 pb-2">
                   Address Information
                 </h2>
 
                 <div className="relative">
-                  <FiHome className="absolute left-3 top-3 text-gray-400" />
+                  <FiHome className="absolute left-3 top-3 text-gray-400 dark:text-gray-400" />
                   <textarea
                     {...methods.register(
-                      "address",
+                      'address',
                       validations.address.validation
                     )}
                     placeholder="Full Address / पूरा पता"
                     rows="3"
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-300 rounded-md bg-white dark:bg-white text-gray-800 dark:text-gray-800 placeholder-gray-400 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
-                  {renderError("address")}
+                  {renderError('address')}
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="relative">
-                    <FiMapPin className="absolute left-3 top-3 text-gray-400" />
+                    <FiMapPin className="absolute left-3 top-3 text-gray-400 dark:text-gray-400" />
                     <input
                       type="text"
                       {...methods.register(
-                        "pincode",
+                        'pincode',
                         validations.pincode.validation
                       )}
                       placeholder="Pincode / पिनकोड"
-                      className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-300 rounded-md bg-white dark:bg-white text-gray-800 dark:text-gray-800 placeholder-gray-400 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
-                    {renderError("pincode")}
+                    {renderError('pincode')}
                   </div>
 
                   <div>
                     <input
                       type="text"
-                      {...methods.register("city", validations.city.validation)}
+                      {...methods.register('city', validations.city.validation)}
                       placeholder="City / शहर"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-300 rounded-md bg-gray-50 dark:bg-gray-50 text-gray-800 dark:text-gray-800 placeholder-gray-400 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       disabled
                     />
                   </div>
@@ -273,11 +302,11 @@ const DonorSignupForm = ({ onSubmit }) => {
                     <input
                       type="text"
                       {...methods.register(
-                        "state",
+                        'state',
                         validations.state.validation
                       )}
                       placeholder="State / राज्य"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-300 rounded-md bg-gray-50 dark:bg-gray-50 text-gray-800 dark:text-gray-800 placeholder-gray-400 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       disabled
                     />
                   </div>
@@ -285,46 +314,69 @@ const DonorSignupForm = ({ onSubmit }) => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="relative">
-                    <FaIdCard className="absolute left-3 top-3 text-gray-400" />
+                    <FaIdCard className="absolute left-3 top-3 text-gray-400 dark:text-gray-400" />
                     <input
                       type="text"
                       {...methods.register(
-                        "panNumber",
+                        'panNumber',
                         validations.panNumber.validation
                       )}
                       placeholder="PAN Number / पैन नंबर (optional)"
-                      className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-300 rounded-md bg-white dark:bg-white text-gray-800 dark:text-gray-800 placeholder-gray-400 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
-                    {renderError("panNumber")}
-                    <p className="text-xs text-gray-500 mt-1">
+                    {renderError('panNumber')}
+                    <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
                       For 80G tax benefit PAN is compulsory
                     </p>
                   </div>
 
                   <div className="relative">
-                    <FaHandshake className="absolute left-3 top-3 text-gray-400" />
+                    <FaHandshake className="absolute left-3 top-3 text-gray-400 dark:text-gray-400" />
                     <select
                       {...methods.register(
-                        "donorCultivatorId",
+                        'donorCultivatorId',
                         validations.donorCultivatorId.validation
                       )}
-                      className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      disabled={isCultivatorLocked}
+                      className={`w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-300 rounded-md text-gray-800 dark:text-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                        isCultivatorLocked
+                          ? 'bg-gray-50 dark:bg-gray-50 cursor-not-allowed'
+                          : 'bg-white dark:bg-white'
+                      }`}
                     >
-                      <option value="">Connected To / किससे जुड़े हैं?</option>
-                      {donorCultivators.map((cultivator) => (
-                        <option key={cultivator.id} value={cultivator.id}>
-                          {cultivator.name}
-                        </option>
-                      ))}
+                      <option
+                        key={currentCultivator?.id}
+                        value={currentCultivator?.id}
+                      >
+                        {currentCultivator?.name}
+                      </option>
+
+                      {donorCultivators.map((cultivator) => {
+                        if (cultivator.id === currentCultivator?.id)
+                          return null;
+                        const isDisabled =
+                          cultivator.name === 'HG Naam Prem Prabhu' ||
+                          cultivator.name === 'Nibedita Mataji';
+
+                        return (
+                          <option
+                            key={cultivator.id}
+                            value={cultivator.id}
+                            disabled={isDisabled}
+                          >
+                            {cultivator.name}
+                          </option>
+                        );
+                      })}
                     </select>
-                    {renderError("donorCultivatorId")}
+                    {renderError('donorCultivatorId')}
                   </div>
                 </div>
 
                 <div>
                   <select
-                    {...methods.register("zone", validations.zone.validation)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    {...methods.register('zone', validations.zone.validation)}
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-300 rounded-md bg-white dark:bg-white text-gray-800 dark:text-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
                     <option value="">Select Zone / क्षेत्र चुनें</option>
                     {zones.map((zone) => (
@@ -338,33 +390,33 @@ const DonorSignupForm = ({ onSubmit }) => {
 
               {/* Account Security */}
               <div className="space-y-4">
-                <h2 className="text-xl font-semibold text-gray-700 border-b pb-2">
+                <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-700 border-b border-gray-300 dark:border-gray-300 pb-2">
                   Account Security
                 </h2>
 
                 <div className="relative">
-                  <FiLock className="absolute left-3 top-3 text-gray-400" />
+                  <FiLock className="absolute left-3 top-3 text-gray-400 dark:text-gray-400" />
                   <input
                     type="text"
                     {...methods.register(
-                      "password",
+                      'password',
                       validations.password.validation
                     )}
                     placeholder="Password / पासवर्ड"
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-300 rounded-md bg-white dark:bg-white text-gray-800 dark:text-gray-800 placeholder-gray-400 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
-                  {renderError("password")}
+                  {renderError('password')}
                 </div>
 
                 <div className="relative">
-                  <FiLock className="absolute left-3 top-3 text-gray-400" />
+                  <FiLock className="absolute left-3 top-3 text-gray-400 dark:text-gray-400" />
                   <input
                     type="text"
-                    {...methods.register("confirmPassword")}
+                    {...methods.register('confirmPassword')}
                     placeholder="Confirm Password / पासवर्ड की पुष्टि"
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-300 rounded-md bg-white dark:bg-white text-gray-800 dark:text-gray-800 placeholder-gray-400 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
-                  {renderError("confirmPassword")}
+                  {renderError('confirmPassword')}
                 </div>
               </div>
 
@@ -373,15 +425,16 @@ const DonorSignupForm = ({ onSubmit }) => {
                 disabled={isSubmitting || checkResult?.donorRegistered === true}
                 className={`w-full py-3 rounded-md text-white font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
                   isSubmitting || checkResult?.donorRegistered === true
-                    ? "bg-blue-400"
-                    : "bg-blue-600 hover:bg-blue-700"
+                    ? 'bg-blue-400 dark:bg-blue-400'
+                    : 'bg-blue-600 dark:bg-blue-600 hover:bg-blue-700 dark:hover:bg-blue-700'
                 }`}
               >
-                {isSubmitting ? "Submitting..." : "Register"}
+                {isSubmitting ? 'Submitting...' : 'Register'}
               </button>
             </form>
           </div>
         </div>
+
         {showSuccessPopup && (
           <SuccessPopup
             message="Signup successful. Please login to continue."

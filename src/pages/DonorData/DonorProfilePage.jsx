@@ -1,20 +1,20 @@
-import React, { useState, useEffect } from "react";
-import { useForm, useFieldArray } from "react-hook-form";
-import { FaEdit, FaSave, FaTimes } from "react-icons/fa"; // Icons for buttons
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+import { useForm, useFieldArray } from 'react-hook-form';
+import { FaEdit, FaSave, FaTimes } from 'react-icons/fa'; // Icons for buttons
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import {
   getDonorById,
   fetchSpecialDaysByDonorId,
   editDonorById,
   getUserTypeFromLocalStorage,
-} from "../../utils/services";
-import useFetchCityAndState from "../../hooks/useFetchCityAndState";
-import { validations } from "../../utils/validations";
-import { zones } from "../../constants/constants";
-import SuccessPopup from "../../components/SuccessPopup";
-import HareKrishnaLoader from "../../components/HareKrishnaLoader";
-import { toast } from "react-toastify";
-import { set } from "date-fns";
+} from '../../utils/services';
+import useFetchCityAndState from '../../hooks/useFetchCityAndState';
+import { validations } from '../../utils/validations';
+import { zones } from '../../constants/constants';
+import SuccessPopup from '../../components/SuccessPopup';
+import HareKrishnaLoader from '../../components/HareKrishnaLoader';
+import { toast } from 'react-toastify';
+import { set } from 'date-fns';
 
 const DonorProfilePage = () => {
   const [isEditing, setIsEditing] = useState(false);
@@ -28,7 +28,7 @@ const DonorProfilePage = () => {
   useEffect(() => {
     const fetchDonor = async () => {
       try {
-        const axiosConfig = { showLoader: "fullscreen" };
+        const axiosConfig = { showLoader: 'fullscreen' };
         const donorData = await getDonorById(id, axiosConfig);
         setDonor(donorData);
         if (donorData.wantPrasadam) {
@@ -36,7 +36,7 @@ const DonorProfilePage = () => {
           setSpecialDays(specialDaysData);
         }
       } catch (error) {
-        console.error("Error fetching donor data:", error);
+        console.error('Error fetching donor data:', error);
       }
     };
 
@@ -44,23 +44,23 @@ const DonorProfilePage = () => {
   }, [id]);
 
   const getDefaultValues = () => ({
-    legalName: donor?.donorName ?? "",
+    legalName: donor?.donorName ?? '',
     wantPrasadam: donor?.wantPrasadam ?? false,
-    category: donor?.category ?? "",
-    mobileNumber: donor?.mobileNumber ?? "",
-    email: donor?.email ?? "",
-    fullPostalAddress: donor?.address ?? "",
-    city: donor?.city ?? "",
-    state: donor?.state ?? "",
-    pincode: donor?.pincode ?? "",
-    panNumber: donor?.panNumber ?? "",
-    connectedTo: donor?.cultivatorName ?? "",
-    zone: donor?.zone ?? "",
-    remark: donor?.remark ?? "",
-    supervisor: donor?.supervisorName ?? "",
+    category: donor?.category ?? '',
+    mobileNumber: donor?.mobileNumber ?? '',
+    email: donor?.email ?? '',
+    fullPostalAddress: donor?.address ?? '',
+    city: donor?.city ?? '',
+    state: donor?.state ?? '',
+    pincode: donor?.pincode ?? '',
+    panNumber: donor?.panNumber ?? '',
+    connectedTo: donor?.cultivatorName ?? '',
+    zone: donor?.zone ?? '',
+    remark: donor?.remark ?? '',
+    supervisor: donor?.supervisorName ?? '',
     specialDays: (specialDays ?? []).map((day) => ({
       ...day,
-      date: new Date(day.date).toISOString().split("T")[0],
+      date: new Date(day.date).toISOString().split('T')[0],
     })),
   });
 
@@ -76,7 +76,7 @@ const DonorProfilePage = () => {
 
   const { fields, append, remove } = useFieldArray({
     control,
-    name: "specialDays",
+    name: 'specialDays',
   });
 
   useEffect(() => {
@@ -85,7 +85,7 @@ const DonorProfilePage = () => {
     }
   }, [donor, specialDays, reset]);
 
-  const pincode = watch("pincode");
+  const pincode = watch('pincode');
   useFetchCityAndState(pincode, setValue);
 
   const onSubmit = async (data) => {
@@ -110,8 +110,8 @@ const DonorProfilePage = () => {
       await editDonorById(id, donorData);
       setShowSuccessPopup(true);
     } catch (error) {
-      console.error("Error updating donor data:", error);
-      toast.error(error.message || "Failed to edit donor");
+      console.error('Error updating donor data:', error);
+      toast.error(error.message || 'Failed to edit donor');
       reset(getDefaultValues());
     } finally {
       setLoading(false);
@@ -120,51 +120,54 @@ const DonorProfilePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-6">
-      <div className="bg-white rounded-lg shadow-lg w-full max-w-4xl p-8">
-        <h1 className="text-3xl font-bold text-gray-800 mb-6">Donor Profile</h1>
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-100 flex items-center justify-center p-6 text-gray-800 dark:text-gray-800">
+      <div className="bg-white dark:bg-white rounded-lg shadow-lg w-full max-w-4xl p-8 border border-gray-200 dark:border-gray-200">
+        <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-800 mb-6">
+          Donor Profile
+        </h1>
+
         <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 ">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Legal Name */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-700 mb-1">
                 Legal Name
               </label>
               <input
                 type="text"
-                {...register("legalName", validations.name.validation)}
-                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                {...register('legalName', validations.name.validation)}
+                className={`w-full px-4 py-2 border rounded-lg bg-white dark:bg-white text-gray-800 dark:text-gray-800 focus:outline-none focus:ring-2 ${
                   isEditing
-                    ? "focus:ring-blue-500"
-                    : "focus:ring-gray-300 cursor-default caret-transparent"
-                } ${errors.legalName ? "border-red-500" : "border-gray-300"}`}
+                    ? 'focus:ring-blue-500 dark:focus:ring-blue-500'
+                    : 'focus:ring-gray-300 dark:focus:ring-gray-300 cursor-default caret-transparent'
+                } ${errors.legalName ? 'border-red-500' : 'border-gray-300 dark:border-gray-300'}`}
                 readOnly={!isEditing}
               />
 
               {errors.legalName && (
-                <span className="text-sm text-red-500">
+                <span className="text-sm text-red-500 dark:text-red-500">
                   {validations.name.validation.errorMessages.required}
                 </span>
               )}
             </div>
 
-            {getUserTypeFromLocalStorage() !== "donor" ? (
+            {getUserTypeFromLocalStorage() !== 'donor' ? (
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-700 mb-1">
                   Category
                 </label>
                 <input
                   type="text"
-                  {...register("category", validations.category?.validation)}
-                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                  {...register('category', validations.category?.validation)}
+                  className={`w-full px-4 py-2 border rounded-lg bg-white dark:bg-white text-gray-800 dark:text-gray-800 focus:outline-none focus:ring-2 ${
                     isEditing
-                      ? "focus:ring-blue-500"
-                      : "focus:ring-gray-300 cursor-default caret-transparent"
-                  } ${errors.category ? "border-red-500" : "border-gray-300"}`}
+                      ? 'focus:ring-blue-500 dark:focus:ring-blue-500'
+                      : 'focus:ring-gray-300 dark:focus:ring-gray-300 cursor-default caret-transparent'
+                  } ${errors.category ? 'border-red-500' : 'border-gray-300 dark:border-gray-300'}`}
                   readOnly={!isEditing}
                 />
                 {errors.category && (
-                  <span className="text-sm text-red-500">
+                  <span className="text-sm text-red-500 dark:text-red-500">
                     {validations.category?.validation.errorMessages.required}
                   </span>
                 )}
@@ -172,28 +175,27 @@ const DonorProfilePage = () => {
             ) : (
               <></>
             )}
+
             {/* Mobile Number */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-700 mb-1">
                 Mobile Number
               </label>
               <input
                 type="text"
                 {...register(
-                  "mobileNumber",
+                  'mobileNumber',
                   validations.mobileNumber.validation
                 )}
-                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                className={`w-full px-4 py-2 border rounded-lg bg-white dark:bg-white text-gray-800 dark:text-gray-800 focus:outline-none focus:ring-2 ${
                   isEditing
-                    ? "focus:ring-blue-500"
-                    : "focus:ring-gray-300 cursor-default caret-transparent"
-                } ${
-                  errors.mobileNumber ? "border-red-500" : "border-gray-300"
-                }`}
+                    ? 'focus:ring-blue-500 dark:focus:ring-blue-500'
+                    : 'focus:ring-gray-300 dark:focus:ring-gray-300 cursor-default caret-transparent'
+                } ${errors.mobileNumber ? 'border-red-500' : 'border-gray-300 dark:border-gray-300'}`}
                 readOnly={!isEditing}
               />
               {errors.mobileNumber && (
-                <span className="text-sm text-red-500">
+                <span className="text-sm text-red-500 dark:text-red-500">
                   {
                     validations.mobileNumber.validation.errorMessages[
                       errors.mobileNumber.type
@@ -205,21 +207,21 @@ const DonorProfilePage = () => {
 
             {/* Email */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-700 mb-1">
                 Email
               </label>
               <input
                 type="email"
-                {...register("email", validations.email.validation)}
-                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                {...register('email', validations.email.validation)}
+                className={`w-full px-4 py-2 border rounded-lg bg-white dark:bg-white text-gray-800 dark:text-gray-800 focus:outline-none focus:ring-2 ${
                   isEditing
-                    ? "focus:ring-blue-500"
-                    : "focus:ring-gray-300 cursor-default caret-transparent"
-                } ${errors.email ? "border-red-500" : "border-gray-300 "}`}
+                    ? 'focus:ring-blue-500 dark:focus:ring-blue-500'
+                    : 'focus:ring-gray-300 dark:focus:ring-gray-300 cursor-default caret-transparent'
+                } ${errors.email ? 'border-red-500' : 'border-gray-300 dark:border-gray-300'}`}
                 readOnly={!isEditing}
               />
               {errors.email && (
-                <span className="text-sm text-red-500">
+                <span className="text-sm text-red-500 dark:text-red-500">
                   {
                     validations.email.validation.errorMessages[
                       errors.email.type
@@ -231,28 +233,24 @@ const DonorProfilePage = () => {
 
             {/* Full Postal Address */}
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-700 mb-1">
                 Full Postal Address
               </label>
               <textarea
                 {...register(
-                  "fullPostalAddress",
+                  'fullPostalAddress',
                   validations.address.validation
                 )}
-                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                className={`w-full px-4 py-2 border rounded-lg bg-white dark:bg-white text-gray-800 dark:text-gray-800 focus:outline-none focus:ring-2 ${
                   isEditing
-                    ? "focus:ring-blue-500"
-                    : "focus:ring-gray-300 cursor-default caret-transparent"
-                } ${
-                  errors.fullPostalAddress
-                    ? "border-red-500"
-                    : "border-gray-300"
-                }`}
+                    ? 'focus:ring-blue-500 dark:focus:ring-blue-500'
+                    : 'focus:ring-gray-300 dark:focus:ring-gray-300 cursor-default caret-transparent'
+                } ${errors.fullPostalAddress ? 'border-red-500' : 'border-gray-300 dark:border-gray-300'}`}
                 readOnly={!isEditing}
                 rows={3}
               />
               {errors.fullPostalAddress && (
-                <span className="text-sm text-red-500">
+                <span className="text-sm text-red-500 dark:text-red-500">
                   {validations.address.validation.errorMessages.required}
                 </span>
               )}
@@ -260,21 +258,21 @@ const DonorProfilePage = () => {
 
             {/* City */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-700 mb-1">
                 City
               </label>
               <input
                 type="text"
-                {...register("city", validations.city.validation)}
-                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                {...register('city', validations.city.validation)}
+                className={`w-full px-4 py-2 border rounded-lg bg-white dark:bg-white text-gray-800 dark:text-gray-800 focus:outline-none focus:ring-2 ${
                   isEditing
-                    ? "focus:ring-blue-500"
-                    : "focus:ring-gray-300 cursor-default caret-transparent"
-                } ${errors.city ? "border-red-500" : "border-gray-300"}`}
+                    ? 'focus:ring-blue-500 dark:focus:ring-blue-500'
+                    : 'focus:ring-gray-300 dark:focus:ring-gray-300 cursor-default caret-transparent'
+                } ${errors.city ? 'border-red-500' : 'border-gray-300 dark:border-gray-300'}`}
                 readOnly
               />
               {errors.city && (
-                <span className="text-sm text-red-500">
+                <span className="text-sm text-red-500 dark:text-red-500">
                   {validations.city.validation.errorMessages.required}
                 </span>
               )}
@@ -282,21 +280,21 @@ const DonorProfilePage = () => {
 
             {/* State */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-700 mb-1">
                 State
               </label>
               <input
                 type="text"
-                {...register("state", validations.state.validation)}
-                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                {...register('state', validations.state.validation)}
+                className={`w-full px-4 py-2 border rounded-lg bg-white dark:bg-white text-gray-800 dark:text-gray-800 focus:outline-none focus:ring-2 ${
                   isEditing
-                    ? "focus:ring-blue-500"
-                    : "focus:ring-gray-300 cursor-default caret-transparent"
-                } ${errors.state ? "border-red-500" : "border-gray-300 "}`}
+                    ? 'focus:ring-blue-500 dark:focus:ring-blue-500'
+                    : 'focus:ring-gray-300 dark:focus:ring-gray-300 cursor-default caret-transparent'
+                } ${errors.state ? 'border-red-500' : 'border-gray-300 dark:border-gray-300'}`}
                 readOnly
               />
               {errors.state && (
-                <span className="text-sm text-red-500">
+                <span className="text-sm text-red-500 dark:text-red-500">
                   {validations.state.validation.errorMessages.required}
                 </span>
               )}
@@ -304,21 +302,21 @@ const DonorProfilePage = () => {
 
             {/* Pincode */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-700 mb-1">
                 Pincode
               </label>
               <input
                 type="text"
-                {...register("pincode", validations.pincode.validation)}
-                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                {...register('pincode', validations.pincode.validation)}
+                className={`w-full px-4 py-2 border rounded-lg bg-white dark:bg-white text-gray-800 dark:text-gray-800 focus:outline-none focus:ring-2 ${
                   isEditing
-                    ? "focus:ring-blue-500"
-                    : "focus:ring-gray-300 cursor-default caret-transparent"
-                } ${errors.pincode ? "border-red-500" : "border-gray-300"}`}
+                    ? 'focus:ring-blue-500 dark:focus:ring-blue-500'
+                    : 'focus:ring-gray-300 dark:focus:ring-gray-300 cursor-default caret-transparent'
+                } ${errors.pincode ? 'border-red-500' : 'border-gray-300 dark:border-gray-300'}`}
                 readOnly={!isEditing}
               />
               {errors.pincode && (
-                <span className="text-sm text-red-500">
+                <span className="text-sm text-red-500 dark:text-red-500">
                   {
                     validations.pincode.validation.errorMessages[
                       errors.pincode.type
@@ -330,21 +328,21 @@ const DonorProfilePage = () => {
 
             {/* PAN Number */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-700 mb-1">
                 PAN Number (optional)
               </label>
               <input
                 type="text"
-                {...register("panNumber", validations.panNumber.validation)}
-                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                {...register('panNumber', validations.panNumber.validation)}
+                className={`w-full px-4 py-2 border rounded-lg bg-white dark:bg-white text-gray-800 dark:text-gray-800 focus:outline-none focus:ring-2 ${
                   isEditing
-                    ? "focus:ring-blue-500"
-                    : "focus:ring-gray-300 cursor-default caret-transparent"
-                } ${errors.panNumber ? "border-red-500" : "border-gray-300"}`}
+                    ? 'focus:ring-blue-500 dark:focus:ring-blue-500'
+                    : 'focus:ring-gray-300 dark:focus:ring-gray-300 cursor-default caret-transparent'
+                } ${errors.panNumber ? 'border-red-500' : 'border-gray-300 dark:border-gray-300'}`}
                 readOnly={!isEditing}
               />
               {errors.panNumber && (
-                <span className="text-sm text-red-500">
+                <span className="text-sm text-red-500 dark:text-red-500">
                   {
                     validations.panNumber.validation.errorMessages[
                       errors.panNumber.type
@@ -356,21 +354,21 @@ const DonorProfilePage = () => {
 
             {/* Connected To */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-700 mb-1">
                 Connected To
               </label>
               <input
                 type="text"
-                {...register("connectedTo", validations.connectedTo.validation)}
-                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                {...register('connectedTo', validations.connectedTo.validation)}
+                className={`w-full px-4 py-2 border rounded-lg bg-white dark:bg-white text-gray-800 dark:text-gray-800 focus:outline-none focus:ring-2 ${
                   isEditing
-                    ? "focus:ring-blue-500"
-                    : "focus:ring-gray-300 cursor-default caret-transparent"
-                } ${errors.connectedTo ? "border-red-500" : "border-gray-300"}`}
+                    ? 'focus:ring-blue-500 dark:focus:ring-blue-500'
+                    : 'focus:ring-gray-300 dark:focus:ring-gray-300 cursor-default caret-transparent'
+                } ${errors.connectedTo ? 'border-red-500' : 'border-gray-300 dark:border-gray-300'}`}
                 readOnly
               />
               {errors.connectedTo && (
-                <span className="text-sm text-red-500">
+                <span className="text-sm text-red-500 dark:text-red-500">
                   {validations.connectedTo.validation.errorMessages.required}
                 </span>
               )}
@@ -378,16 +376,16 @@ const DonorProfilePage = () => {
 
             {/* Zone */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-700 mb-1">
                 Zone (optional)
               </label>
               <select
-                {...register("zone", validations.zone.validation)}
-                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                {...register('zone', validations.zone.validation)}
+                className={`w-full px-4 py-2 border rounded-lg bg-white dark:bg-white text-gray-800 dark:text-gray-800 focus:outline-none focus:ring-2 ${
                   isEditing
-                    ? "focus:ring-blue-500"
-                    : "focus:ring-gray-300 cursor-default caret-transparent"
-                } ${errors.zone ? "border-red-500" : "border-gray-300"}`}
+                    ? 'focus:ring-blue-500 dark:focus:ring-blue-500'
+                    : 'focus:ring-gray-300 dark:focus:ring-gray-300 cursor-default caret-transparent'
+                } ${errors.zone ? 'border-red-500' : 'border-gray-300 dark:border-gray-300'}`}
                 disabled={!isEditing}
               >
                 {zones.map((zone) => (
@@ -400,21 +398,21 @@ const DonorProfilePage = () => {
 
             {/* Remark */}
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-700 mb-1">
                 Remark
               </label>
               <textarea
-                {...register("remark", validations.remark?.validation)}
-                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                {...register('remark', validations.remark?.validation)}
+                className={`w-full px-4 py-2 border rounded-lg bg-white dark:bg-white text-gray-800 dark:text-gray-800 focus:outline-none focus:ring-2 ${
                   isEditing
-                    ? "focus:ring-blue-500"
-                    : "focus:ring-gray-300 cursor-default caret-transparent"
-                } ${errors.remark ? "border-red-500" : "border-gray-300"}`}
+                    ? 'focus:ring-blue-500 dark:focus:ring-blue-500'
+                    : 'focus:ring-gray-300 dark:focus:ring-gray-300 cursor-default caret-transparent'
+                } ${errors.remark ? 'border-red-500' : 'border-gray-300 dark:border-gray-300'}`}
                 readOnly={!isEditing}
                 rows={3}
               />
               {errors.remark && (
-                <span className="text-sm text-red-500">
+                <span className="text-sm text-red-500 dark:text-red-500">
                   {validations.remark?.validation.errorMessages.required}
                 </span>
               )}
@@ -422,21 +420,21 @@ const DonorProfilePage = () => {
 
             {/* Want Prasadam */}
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-700 mb-1">
                 Want Prasadam
               </label>
               <input
                 type="checkbox"
-                {...register("wantPrasadam")}
-                className="focus:outline-none focus:ring-2 focus:ring-blue-500"
+                {...register('wantPrasadam')}
+                className="focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500"
                 disabled={!isEditing}
               />
             </div>
 
             {/* Special Days */}
-            {watch("wantPrasadam") && (
+            {watch('wantPrasadam') && (
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-700 mb-1">
                   Special Days
                 </label>
                 {fields.map((field, index) => (
@@ -449,14 +447,14 @@ const DonorProfilePage = () => {
                       {...register(`specialDays.${index}.date`, {
                         required: true,
                       })}
-                      className={`w-full md:w-1/3 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                      className={`w-full md:w-1/3 px-4 py-2 border rounded-lg bg-white dark:bg-white text-gray-800 dark:text-gray-800 focus:outline-none focus:ring-2 ${
                         isEditing
-                          ? "focus:ring-blue-500"
-                          : "focus:ring-gray-300 cursor-default caret-transparent"
+                          ? 'focus:ring-blue-500 dark:focus:ring-blue-500'
+                          : 'focus:ring-gray-300 dark:focus:ring-gray-300 cursor-default caret-transparent'
                       } ${
                         errors.specialDays?.[index]?.date
-                          ? "border-red-500"
-                          : "border-gray-300"
+                          ? 'border-red-500'
+                          : 'border-gray-300 dark:border-gray-300'
                       }`}
                       readOnly={!isEditing}
                     />
@@ -464,14 +462,14 @@ const DonorProfilePage = () => {
                       {...register(`specialDays.${index}.purpose`, {
                         required: true,
                       })}
-                      className={`w-full md:w-1/3 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                      className={`w-full md:w-1/3 px-4 py-2 border rounded-lg bg-white dark:bg-white text-gray-800 dark:text-gray-800 focus:outline-none focus:ring-2 ${
                         isEditing
-                          ? "focus:ring-blue-500"
-                          : "focus:ring-gray-300 cursor-default caret-transparent"
+                          ? 'focus:ring-blue-500 dark:focus:ring-blue-500'
+                          : 'focus:ring-gray-300 dark:focus:ring-gray-300 cursor-default caret-transparent'
                       } ${
                         errors.specialDays?.[index]?.purpose
-                          ? "border-red-500"
-                          : "border-gray-300"
+                          ? 'border-red-500'
+                          : 'border-gray-300 dark:border-gray-300'
                       }`}
                       disabled={!isEditing}
                     >
@@ -479,18 +477,18 @@ const DonorProfilePage = () => {
                       <option value="Birthday">Birthday</option>
                       <option value="Others">Others</option>
                     </select>
-                    {watch(`specialDays.${index}.purpose`) === "Others" && (
+                    {watch(`specialDays.${index}.purpose`) === 'Others' && (
                       <input
                         type="text"
                         {...register(`specialDays.${index}.otherPurpose`)}
-                        className={`w-full md:w-1/3 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                        className={`w-full md:w-1/3 px-4 py-2 border rounded-lg bg-white dark:bg-white text-gray-800 dark:text-gray-800 focus:outline-none focus:ring-2 ${
                           isEditing
-                            ? "focus:ring-blue-500"
-                            : "focus:ring-gray-300 cursor-default caret-transparent"
+                            ? 'focus:ring-blue-500 dark:focus:ring-blue-500'
+                            : 'focus:ring-gray-300 dark:focus:ring-gray-300 cursor-default caret-transparent'
                         } ${
                           errors.specialDays?.[index]?.otherPurpose
-                            ? "border-red-500"
-                            : "border-gray-300"
+                            ? 'border-red-500'
+                            : 'border-gray-300 dark:border-gray-300'
                         }`}
                         readOnly={!isEditing}
                       />
@@ -499,7 +497,7 @@ const DonorProfilePage = () => {
                       <button
                         type="button"
                         onClick={() => remove(index)}
-                        className="text-red-500 hover:text-red-700"
+                        className="text-red-500 dark:text-red-500 hover:text-red-700 dark:hover:text-red-700"
                       >
                         Remove
                       </button>
@@ -511,12 +509,12 @@ const DonorProfilePage = () => {
                     type="button"
                     onClick={() =>
                       append({
-                        date: "",
-                        purpose: "Anniversary",
-                        otherPurpose: "",
+                        date: '',
+                        purpose: 'Anniversary',
+                        otherPurpose: '',
                       })
                     }
-                    className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+                    className="bg-blue-500 dark:bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 dark:hover:bg-blue-600"
                   >
                     Add Special Day
                   </button>
@@ -532,30 +530,28 @@ const DonorProfilePage = () => {
                 <button
                   type="button"
                   onClick={() => setIsEditing(false)}
-                  className="flex items-center bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 mr-2"
+                  className="flex items-center bg-gray-500 dark:bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 dark:hover:bg-gray-600 mr-2"
                 >
                   <FaTimes className="mr-2" /> Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className={`flex items-center px-4 py-2 rounded-lg text-white 
-                    ${
-                      loading
-                        ? "bg-blue-400 cursor-not-allowed opacity-70"
-                        : "bg-blue-500 hover:bg-blue-600"
-                    }
-                  `}
+                  className={`flex items-center px-4 py-2 rounded-lg text-white ${
+                    loading
+                      ? 'bg-blue-400 dark:bg-blue-400 cursor-not-allowed opacity-70'
+                      : 'bg-blue-500 dark:bg-blue-500 hover:bg-blue-600 dark:hover:bg-blue-600'
+                  }`}
                 >
                   <FaSave className="mr-2" />
-                  {loading ? "Saving..." : "Save Changes"}
+                  {loading ? 'Saving...' : 'Save Changes'}
                 </button>
               </>
             ) : (
               <button
                 type="button"
                 onClick={() => setIsEditing(true)}
-                className="flex items-center bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+                className="flex items-center bg-blue-500 dark:bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 dark:hover:bg-blue-600"
               >
                 <FaEdit className="mr-2" /> Edit
               </button>
@@ -563,6 +559,7 @@ const DonorProfilePage = () => {
           </div>
         </form>
       </div>
+
       {showSuccessPopup && (
         <SuccessPopup
           message="Successfully updated donor data!"

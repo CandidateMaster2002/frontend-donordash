@@ -139,14 +139,14 @@ const DonorListPage = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-50 p-4 md:p-8 text-gray-800 dark:text-gray-800">
       <div className="max-w-6xl mx-auto">
-        <div className="bg-white rounded-xl shadow-md overflow-hidden mb-6">
+        <div className="bg-white dark:bg-white rounded-xl shadow-md overflow-hidden mb-6 border border-gray-200 dark:border-gray-200">
           <div className="p-6 md:p-8">
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-800 mb-2">
               Donor Management
             </h1>
-            <p className="text-gray-600 mb-6">
+            <p className="text-gray-600 dark:text-gray-600 mb-6">
               Manage your donors and transfer requests
             </p>
 
@@ -156,12 +156,12 @@ const DonorListPage = () => {
                   <input
                     type="text"
                     placeholder="Search donors by name..."
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-300 rounded-lg bg-white dark:bg-white text-gray-800 dark:text-gray-800 placeholder-gray-400 dark:placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
                   <svg
-                    className="absolute right-3 top-3 h-5 w-5 text-gray-400"
+                    className="absolute right-3 top-3 h-5 w-5 text-gray-400 dark:text-gray-400"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -223,18 +223,19 @@ const DonorListPage = () => {
                 )}
               </button> */}
             </div>
+
             <InlineLoader scope="donor-list">
               {showRequestsTab ? (
                 <PendingTransferRequests />
               ) : (
                 <>
-                  <section className="mb-8 ">
+                  <section className="mb-8">
                     <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-4">
                       <div className="flex items-center gap-3">
-                        <h2 className="text-xl font-semibold text-gray-800">
+                        <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-800">
                           My Donors
                         </h2>
-                        <span className="bg-purple-100 text-purple-800 text-sm font-medium px-3 py-1 rounded-full">
+                        <span className="bg-purple-100 dark:bg-purple-100 text-purple-800 dark:text-purple-800 text-sm font-medium px-3 py-1 rounded-full">
                           {showWithoutPAN
                             ? filteredMyDonors.filter(
                                 (donor) => donor?.panNumber == null
@@ -244,9 +245,8 @@ const DonorListPage = () => {
                         </span>
                       </div>
 
-                      {/* Toggle */}
                       <label className="flex items-center gap-3 cursor-pointer select-none">
-                        <span className="bg-purple-100 text-purple-800 text-sm font-medium px-3 py-1 rounded-full">
+                        <span className="bg-purple-100 dark:bg-purple-100 text-purple-800 dark:text-purple-800 text-sm font-medium px-3 py-1 rounded-full">
                           Show donors without PAN
                         </span>
 
@@ -257,12 +257,12 @@ const DonorListPage = () => {
                           onClick={() => setShowWithoutPAN((s) => !s)}
                           className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 ${
                             showWithoutPAN
-                              ? 'bg-green-500 focus:ring-green-300'
-                              : 'bg-gray-300 focus:ring-gray-200'
+                              ? 'bg-green-500 dark:bg-green-500 focus:ring-green-300 dark:focus:ring-green-300'
+                              : 'bg-gray-300 dark:bg-gray-300 focus:ring-gray-200 dark:focus:ring-gray-200'
                           }`}
                         >
                           <span
-                            className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform ${
+                            className={`inline-block h-4 w-4 transform rounded-full bg-white dark:bg-white shadow-sm transition-transform ${
                               showWithoutPAN ? 'translate-x-5' : 'translate-x-1'
                             }`}
                           />
@@ -271,8 +271,8 @@ const DonorListPage = () => {
                     </div>
 
                     {filteredMyDonors.length === 0 ? (
-                      <div className="bg-gray-50 rounded-lg p-8 text-center">
-                        <p className="text-gray-500">
+                      <div className="bg-gray-50 dark:bg-gray-50 rounded-lg p-8 text-center">
+                        <p className="text-gray-500 dark:text-gray-500">
                           {searchTerm
                             ? 'No matching donors found'
                             : "You don't have any donors assigned yet"}
@@ -287,11 +287,11 @@ const DonorListPage = () => {
                           .map((donor) => (
                             <div
                               key={donor.donorId}
-                              className="border rounded-lg p-4 hover:shadow-md transition-shadow bg-white"
+                              className="border border-gray-200 dark:border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow bg-white dark:bg-white"
                             >
                               <div className="flex justify-between items-start mb-2">
                                 <h3
-                                  className="text-lg font-semibold text-purple-700 cursor-pointer hover:underline"
+                                  className="text-lg font-semibold text-purple-700 dark:text-purple-700 cursor-pointer hover:underline"
                                   onClick={() =>
                                     handleShowDonorProfile(donor.donorId)
                                   }
@@ -300,18 +300,18 @@ const DonorListPage = () => {
                                 </h3>
                               </div>
 
-                              <p className="text-gray-600 mb-3">
+                              <p className="text-gray-600 dark:text-gray-600 mb-3">
                                 <span className="font-medium">Phone:</span>{' '}
                                 {donor?.mobileNumber || 'N/A'}
                               </p>
 
-                              <p className="text-gray-600 mb-3">
+                              <p className="text-gray-600 dark:text-gray-600 mb-3">
                                 <span className="font-medium">PAN:</span>{' '}
                                 {donor?.panNumber || 'N/A'}
                               </p>
 
                               <div className="mt-4">
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-700 mb-1">
                                   Request Release To:
                                 </label>
                                 <select
@@ -322,7 +322,7 @@ const DonorListPage = () => {
                                     )
                                   }
                                   disabled={releasingDonorId === donor.donorId}
-                                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                  className="w-full border border-gray-300 dark:border-gray-300 rounded-md px-3 py-2 bg-white dark:bg-white text-gray-800 dark:text-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-500 focus:border-transparent"
                                 >
                                   <option value="">Select cultivator...</option>
                                   {cultivators
@@ -334,8 +334,8 @@ const DonorListPage = () => {
                                     ))}
                                 </select>
                                 {releasingDonorId === donor.donorId && (
-                                  <div className="mt-2 inline-flex items-center gap-2 text-xs text-purple-700">
-                                    <span className="h-3 w-3 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
+                                  <div className="mt-2 inline-flex items-center gap-2 text-xs text-purple-700 dark:text-purple-700">
+                                    <span className="h-3 w-3 border-2 border-purple-500 dark:border-purple-500 border-t-transparent rounded-full animate-spin" />
                                     Submitting release request...
                                   </div>
                                 )}
@@ -348,17 +348,17 @@ const DonorListPage = () => {
 
                   <section>
                     <div className="flex items-center justify-between mb-4">
-                      <h2 className="text-xl font-semibold text-gray-800">
+                      <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-800">
                         Other Donors
                       </h2>
-                      <span className="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full">
+                      <span className="bg-blue-100 dark:bg-blue-100 text-blue-800 dark:text-blue-800 text-sm font-medium px-3 py-1 rounded-full">
                         {filteredOtherDonors.length} Donors
                       </span>
                     </div>
 
                     {filteredOtherDonors.length === 0 ? (
-                      <div className="bg-gray-50 rounded-lg p-8 text-center">
-                        <p className="text-gray-500">
+                      <div className="bg-gray-50 dark:bg-gray-50 rounded-lg p-8 text-center">
+                        <p className="text-gray-500 dark:text-gray-500">
                           {searchTerm
                             ? 'No matching donors found'
                             : 'No other donors available'}
@@ -366,32 +366,31 @@ const DonorListPage = () => {
                       </div>
                     ) : (
                       <>
-                        {/* Desktop Table View (hidden on mobile) */}
                         <div className="hidden md:block overflow-x-auto">
-                          <table className="min-w-full divide-y divide-gray-200">
-                            <thead className="bg-gray-50">
+                          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-200">
+                            <thead className="bg-gray-50 dark:bg-gray-50">
                               <tr>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-500 uppercase tracking-wider">
                                   Donor Name
                                 </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-500 uppercase tracking-wider">
                                   Contact
                                 </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-500 uppercase tracking-wider">
                                   Current Cultivator
                                 </th>
-                                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-500 uppercase tracking-wider">
                                   Actions
                                 </th>
                               </tr>
                             </thead>
-                            <tbody className="bg-white divide-y divide-gray-200">
+                            <tbody className="bg-white dark:bg-white divide-y divide-gray-200 dark:divide-gray-200">
                               {filteredOtherDonors.map((donor) => (
                                 <tr key={donor.donorId}>
                                   <td className="px-6 py-4 whitespace-nowrap">
                                     <div className="flex items-center">
                                       <div
-                                        className="text-sm font-medium text-purple-600 hover:text-purple-800 cursor-pointer"
+                                        className="text-sm font-medium text-purple-600 dark:text-purple-600 hover:text-purple-800 dark:hover:text-purple-800 cursor-pointer"
                                         onClick={() =>
                                           handleShowDonorProfile(donor.donorId)
                                         }
@@ -401,12 +400,12 @@ const DonorListPage = () => {
                                     </div>
                                   </td>
                                   <td className="px-6 py-4 whitespace-nowrap">
-                                    <div className="text-sm text-gray-900">
+                                    <div className="text-sm text-gray-900 dark:text-gray-900">
                                       {donor.mobileNumber}
                                     </div>
                                   </td>
                                   <td className="px-6 py-4 whitespace-nowrap">
-                                    <div className="text-sm text-gray-500">
+                                    <div className="text-sm text-gray-500 dark:text-gray-500">
                                       {donor.cultivatorName}
                                     </div>
                                   </td>
@@ -418,10 +417,10 @@ const DonorListPage = () => {
                                       disabled={
                                         acquiringDonorId === donor.donorId
                                       }
-                                      className="text-green-600 hover:text-green-900 bg-green-50 hover:bg-green-100 px-3 py-1 rounded-md text-sm font-medium transition-colors disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center gap-2"
+                                      className="text-green-600 dark:text-green-600 hover:text-green-900 dark:hover:text-green-900 bg-green-50 dark:bg-green-50 hover:bg-green-100 dark:hover:bg-green-100 px-3 py-1 rounded-md text-sm font-medium transition-colors disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center gap-2"
                                     >
                                       {acquiringDonorId === donor.donorId && (
-                                        <span className="h-3 w-3 border-2 border-green-600 border-t-transparent rounded-full animate-spin" />
+                                        <span className="h-3 w-3 border-2 border-green-600 dark:border-green-600 border-t-transparent rounded-full animate-spin" />
                                       )}
                                       {acquiringDonorId === donor.donorId
                                         ? 'Requesting...'
@@ -434,33 +433,29 @@ const DonorListPage = () => {
                           </table>
                         </div>
 
-                        {/* Mobile Card View (shown on mobile) */}
                         <div className="md:hidden grid gap-4">
                           {filteredOtherDonors.map((donor) => (
                             <div
                               key={donor.donorId}
-                              className="border rounded-lg p-4 hover:shadow-md transition-shadow bg-white"
+                              className="border border-gray-200 dark:border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow bg-white dark:bg-white"
                             >
                               <div className="flex justify-between items-start mb-2">
                                 <h3
-                                  className="text-lg font-semibold text-purple-700 cursor-pointer hover:underline"
+                                  className="text-lg font-semibold text-purple-700 dark:text-purple-700 cursor-pointer hover:underline"
                                   onClick={() =>
                                     handleShowDonorProfile(donor.donorId)
                                   }
                                 >
                                   {donor.donorName}
                                 </h3>
-                                {/* <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
-                Available
-              </span> */}
                               </div>
 
                               <div className="space-y-2">
-                                <p className="text-gray-600">
+                                <p className="text-gray-600 dark:text-gray-600">
                                   <span className="font-medium">Phone:</span>{' '}
                                   {donor.mobileNumber || 'N/A'}
                                 </p>
-                                <p className="text-gray-600">
+                                <p className="text-gray-600 dark:text-gray-600">
                                   <span className="font-medium">
                                     Cultivator:
                                   </span>{' '}
@@ -470,14 +465,14 @@ const DonorListPage = () => {
 
                               <div className="mt-4 flex justify-end">
                                 <button
-                                  className="text-green-600 hover:text-green-900 bg-green-50 hover:bg-green-100 px-4 py-2 rounded-md text-sm font-medium transition-colors disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center gap-2"
+                                  className="text-green-600 dark:text-green-600 hover:text-green-900 dark:hover:text-green-900 bg-green-50 dark:bg-green-50 hover:bg-green-100 dark:hover:bg-green-100 px-4 py-2 rounded-md text-sm font-medium transition-colors disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center gap-2"
                                   disabled={acquiringDonorId === donor.donorId}
                                   onClick={() =>
                                     handleAcquireRequest(donor.donorId)
                                   }
                                 >
                                   {acquiringDonorId === donor.donorId && (
-                                    <span className="h-3 w-3 border-2 border-green-600 border-t-transparent rounded-full animate-spin" />
+                                    <span className="h-3 w-3 border-2 border-green-600 dark:border-green-600 border-t-transparent rounded-full animate-spin" />
                                   )}
                                   {acquiringDonorId === donor.donorId
                                     ? 'Requesting...'
@@ -496,14 +491,15 @@ const DonorListPage = () => {
           </div>
         </div>
       </div>
+
       {confirmAction && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-md rounded-xl bg-white shadow-2xl border border-gray-100">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 dark:bg-black/50 p-4">
+          <div className="w-full max-w-md rounded-xl bg-white dark:bg-white shadow-2xl border border-gray-100 dark:border-gray-100">
             <div className="px-6 pt-6 pb-3">
-              <h3 className="text-lg font-semibold text-gray-900">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-900">
                 {confirmAction.title}
               </h3>
-              <p className="mt-2 text-sm text-gray-600">
+              <p className="mt-2 text-sm text-gray-600 dark:text-gray-600">
                 {confirmAction.message}
               </p>
             </div>
@@ -511,14 +507,14 @@ const DonorListPage = () => {
               <button
                 type="button"
                 onClick={() => setConfirmAction(null)}
-                className="px-4 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50"
+                className="px-4 py-2 rounded-md border border-gray-300 dark:border-gray-300 text-gray-700 dark:text-gray-700 hover:bg-gray-50 dark:hover:bg-gray-50"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={handleConfirmAction}
-                className="px-4 py-2 rounded-md bg-purple-600 text-white hover:bg-purple-700"
+                className="px-4 py-2 rounded-md bg-purple-600 dark:bg-purple-600 text-white dark:text-white hover:bg-purple-700 dark:hover:bg-purple-700"
               >
                 {confirmAction.confirmLabel}
               </button>
@@ -526,6 +522,7 @@ const DonorListPage = () => {
           </div>
         </div>
       )}
+
       {showSuccessPopup && (
         <SuccessPopup
           message={successMessage}

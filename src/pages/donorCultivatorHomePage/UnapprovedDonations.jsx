@@ -66,52 +66,76 @@ const UnapprovedDonations = () => {
   };
 
   return (
-    <div className="p-6 max-w-6xl mx-auto">
-      <h1 className="text-3xl font-semibold mb-6 text-purple-800 text-center">
+    <div className="p-6 max-w-6xl mx-auto text-gray-800 dark:text-gray-800">
+      <h1 className="text-3xl font-semibold mb-6 text-purple-800 dark:text-purple-800 text-center">
         Unapproved Donations
       </h1>
 
       {/* Donations to be approved */}
       <div className="mb-10">
-        <h2 className="text-xl font-bold mb-4 text-green-700">
+        <h2 className="text-xl font-bold mb-4 text-green-700 dark:text-green-700">
           Donations to be Approved
         </h2>
         {donationsToApprove.length === 0 ? (
-          <p>No donations to approve.</p>
+          <p className="text-gray-800 dark:text-gray-800">
+            No donations to approve.
+          </p>
         ) : (
           <>
             {/* Desktop / tablet table */}
             <div className="hidden md:block overflow-x-auto">
-              <table className="min-w-full border text-center">
-                <thead className="bg-blue-900 text-white">
+              <table className="min-w-full border text-center border-gray-300 dark:border-gray-300">
+                <thead className="bg-blue-900 dark:bg-blue-900 text-white">
                   <tr>
-                    <th className="py-2 px-4 border">#</th>
-                    <th className="py-2 px-4 border">Donor</th>
-                    <th className="py-2 px-4 border">Collected By</th>
-                    <th className="py-2 px-4 border">Amount</th>
-                    <th className="py-2 px-4 border">Purpose</th>
-                    <th className="py-2 px-4 border">Mode</th>
-                    <th className="py-2 px-4 border">Action</th>
+                    <th className="py-2 px-4 border border-gray-300 dark:border-gray-300">
+                      #
+                    </th>
+                    <th className="py-2 px-4 border border-gray-300 dark:border-gray-300">
+                      Donor
+                    </th>
+                    <th className="py-2 px-4 border border-gray-300 dark:border-gray-300">
+                      Collected By
+                    </th>
+                    <th className="py-2 px-4 border border-gray-300 dark:border-gray-300">
+                      Amount
+                    </th>
+                    <th className="py-2 px-4 border border-gray-300 dark:border-gray-300">
+                      Purpose
+                    </th>
+                    <th className="py-2 px-4 border border-gray-300 dark:border-gray-300">
+                      Mode
+                    </th>
+                    <th className="py-2 px-4 border border-gray-300 dark:border-gray-300">
+                      Action
+                    </th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="bg-white dark:bg-white text-gray-800 dark:text-gray-800">
                   {donationsToApprove.map((donation, index) => (
                     <tr key={donation.id}>
-                      <td className="py-2 px-4 border">{index + 1}</td>
-                      <td className="py-2 px-4 border">{donation.donorName}</td>
-                      <td className="py-2 px-4 border">
+                      <td className="py-2 px-4 border border-gray-300 dark:border-gray-300">
+                        {index + 1}
+                      </td>
+                      <td className="py-2 px-4 border border-gray-300 dark:border-gray-300">
+                        {donation.donorName}
+                      </td>
+                      <td className="py-2 px-4 border border-gray-300 dark:border-gray-300">
                         {donation.collectedByName}
                       </td>
-                      <td className="py-2 px-4 border">₹{donation.amount}</td>
-                      <td className="py-2 px-4 border">{donation.purpose}</td>
-                      <td className="py-2 px-4 border">
+                      <td className="py-2 px-4 border border-gray-300 dark:border-gray-300">
+                        ₹{donation.amount}
+                      </td>
+                      <td className="py-2 px-4 border border-gray-300 dark:border-gray-300">
+                        {donation.purpose}
+                      </td>
+                      <td className="py-2 px-4 border border-gray-300 dark:border-gray-300">
                         {donation.paymentMode}
                       </td>
-                      <td className="py-2 px-4 border">
+                      <td className="py-2 px-4 border border-gray-300 dark:border-gray-300">
                         <button
                           onClick={() => handleStatusUpdate(donation.id)}
                           disabled={updatingId === donation.id}
-                          className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 disabled:opacity-50"
+                          className="bg-green-600 dark:bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 dark:hover:bg-green-700 disabled:opacity-50"
                         >
                           {updatingId === donation.id
                             ? 'Approving...'
@@ -137,61 +161,64 @@ const UnapprovedDonations = () => {
                 }
               `}</style>
               <div
-                className="relative overflow-auto border bg-white shadow-sm unapproved-mobile-scroll"
+                className="relative overflow-auto border border-gray-300 dark:border-gray-300 bg-white dark:bg-white shadow-sm unapproved-mobile-scroll"
                 style={{ maxHeight: '70vh' }}
               >
-                <table className="min-w-max w-full table-fixed text-sm border-collapse">
+                <table className="min-w-max w-full table-fixed text-sm border-collapse text-gray-800 dark:text-gray-800">
                   <thead>
                     <tr>
-                      <th className="sticky left-0 z-40 bg-blue-900 text-white px-2 py-2 text-left w-6">
+                      <th className="sticky left-0 z-40 bg-blue-900 dark:bg-blue-900 text-white px-2 py-2 text-left w-6">
                         #
                       </th>
-                      <th className="sticky left-6 z-40 bg-blue-900 text-white px-2 py-2 text-left w-32">
+                      <th className="sticky left-6 z-40 bg-blue-900 dark:bg-blue-900 text-white px-2 py-2 text-left w-32">
                         Donor
                       </th>
-                      <th className="sticky top-0 z-30 bg-blue-900 text-white px-2 py-2 text-left w-32">
+                      <th className="sticky top-0 z-30 bg-blue-900 dark:bg-blue-900 text-white px-2 py-2 text-left w-32">
                         Collected By
                       </th>
-                      <th className="sticky top-0 z-30 bg-blue-900 text-white px-2 py-2 text-right w-18">
+                      <th className="sticky top-0 z-30 bg-blue-900 dark:bg-blue-900 text-white px-2 py-2 text-right w-18">
                         Amount
                       </th>
-                      <th className="sticky top-0 z-30 bg-blue-900 text-white px-2 py-2 text-left w-32">
+                      <th className="sticky top-0 z-30 bg-blue-900 dark:bg-blue-900 text-white px-2 py-2 text-left w-32">
                         Purpose
                       </th>
-                      <th className="sticky top-0 z-30 bg-blue-900 text-white px-2 py-2 text-left w-24">
+                      <th className="sticky top-0 z-30 bg-blue-900 dark:bg-blue-900 text-white px-2 py-2 text-left w-24">
                         Mode
                       </th>
-                      <th className="sticky top-0 z-30 bg-blue-900 text-white px-2 py-2 text-center w-24">
+                      <th className="sticky top-0 z-30 bg-blue-900 dark:bg-blue-900 text-white px-2 py-2 text-center w-24">
                         Action
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-200">
+                  <tbody className="divide-y divide-gray-200 dark:divide-gray-200">
                     {donationsToApprove.map((donation, index) => (
-                      <tr key={donation.id} className="bg-white last:border-b">
-                        <td className="sticky left-0 z-30 bg-blue-50 text-blue-800 px-2 py-3 text-xs font-semibold border-r border-gray-200">
+                      <tr
+                        key={donation.id}
+                        className="bg-white dark:bg-white last:border-b"
+                      >
+                        <td className="sticky left-0 z-30 bg-blue-50 dark:bg-blue-50 text-blue-800 dark:text-blue-800 px-2 py-3 text-xs font-semibold border-r border-gray-200 dark:border-gray-200">
                           {index + 1}
                         </td>
-                        <td className="sticky left-6 z-30 bg-blue-50 text-blue-800 px-2 py-3 text-sm font-semibold truncate border-r border-gray-200">
+                        <td className="sticky left-6 z-30 bg-blue-50 dark:bg-blue-50 text-blue-800 dark:text-blue-800 px-2 py-3 text-sm font-semibold truncate border-r border-gray-200 dark:border-gray-200">
                           {donation.donorName}
                         </td>
-                        <td className="px-2 py-3 text-xs text-gray-600 truncate border-l border-gray-200">
+                        <td className="px-2 py-3 text-xs text-gray-600 dark:text-gray-600 truncate border-l border-gray-200 dark:border-gray-200">
                           {donation.collectedByName}
                         </td>
-                        <td className="px-2 py-3 text-right font-medium border-l border-gray-200">
+                        <td className="px-2 py-3 text-right font-medium border-l border-gray-200 dark:border-gray-200">
                           ₹{donation.amount}
                         </td>
-                        <td className="px-2 py-3 text-xs text-gray-700 truncate border-l border-gray-200">
+                        <td className="px-2 py-3 text-xs text-gray-700 dark:text-gray-700 truncate border-l border-gray-200 dark:border-gray-200">
                           {donation.purpose}
                         </td>
-                        <td className="px-2 py-3 text-xs text-gray-700 truncate border-l border-gray-200">
+                        <td className="px-2 py-3 text-xs text-gray-700 dark:text-gray-700 truncate border-l border-gray-200 dark:border-gray-200">
                           {donation.paymentMode}
                         </td>
-                        <td className="px-2 py-3 text-center border-l border-gray-200">
+                        <td className="px-2 py-3 text-center border-l border-gray-200 dark:border-gray-200">
                           <button
                             onClick={() => handleStatusUpdate(donation.id)}
                             disabled={updatingId === donation.id}
-                            className="bg-green-600 text-white px-3 py-1 rounded text-xs hover:bg-green-700 disabled:opacity-50"
+                            className="bg-green-600 dark:bg-green-600 text-white px-3 py-1 rounded text-xs hover:bg-green-700 dark:hover:bg-green-700 disabled:opacity-50"
                           >
                             {updatingId === donation.id
                               ? 'Approving...'
@@ -210,37 +237,59 @@ const UnapprovedDonations = () => {
 
       {/* Unapproved donations submitted by current cultivator for others */}
       <div>
-        <h2 className="text-xl font-bold mb-4 text-red-700">
+        <h2 className="text-xl font-bold mb-4 text-red-700 dark:text-red-700">
           Unapproved Donations (Submitted by You for Other Cultivators)
         </h2>
         {unapprovedSubmissions.length === 0 ? (
-          <p>No unapproved external submissions.</p>
+          <p className="text-gray-800 dark:text-gray-800">
+            No unapproved external submissions.
+          </p>
         ) : (
           <>
             {/* Desktop / tablet table */}
             <div className="hidden md:block overflow-x-auto">
-              <table className="min-w-full border text-center">
-                <thead className="bg-blue-900 text-white">
+              <table className="min-w-full border text-center border-gray-300 dark:border-gray-300">
+                <thead className="bg-blue-900 dark:bg-blue-900 text-white">
                   <tr>
-                    <th className="py-2 px-4 border">#</th>
-                    <th className="py-2 px-4 border">Donor</th>
-                    <th className="py-2 px-4 border">Cultivator Name</th>
-                    <th className="py-2 px-4 border">Amount</th>
-                    <th className="py-2 px-4 border">Purpose</th>
-                    <th className="py-2 px-4 border">Mode</th>
+                    <th className="py-2 px-4 border border-gray-300 dark:border-gray-300">
+                      #
+                    </th>
+                    <th className="py-2 px-4 border border-gray-300 dark:border-gray-300">
+                      Donor
+                    </th>
+                    <th className="py-2 px-4 border border-gray-300 dark:border-gray-300">
+                      Cultivator Name
+                    </th>
+                    <th className="py-2 px-4 border border-gray-300 dark:border-gray-300">
+                      Amount
+                    </th>
+                    <th className="py-2 px-4 border border-gray-300 dark:border-gray-300">
+                      Purpose
+                    </th>
+                    <th className="py-2 px-4 border border-gray-300 dark:border-gray-300">
+                      Mode
+                    </th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="bg-white dark:bg-white text-gray-800 dark:text-gray-800">
                   {unapprovedSubmissions.map((donation, index) => (
                     <tr key={donation.id}>
-                      <td className="py-2 px-4 border">{index + 1}</td>
-                      <td className="py-2 px-4 border">{donation.donorName}</td>
-                      <td className="py-2 px-4 border">
+                      <td className="py-2 px-4 border border-gray-300 dark:border-gray-300">
+                        {index + 1}
+                      </td>
+                      <td className="py-2 px-4 border border-gray-300 dark:border-gray-300">
+                        {donation.donorName}
+                      </td>
+                      <td className="py-2 px-4 border border-gray-300 dark:border-gray-300">
                         {donation.donorCultivatorName}
                       </td>
-                      <td className="py-2 px-4 border">₹{donation.amount}</td>
-                      <td className="py-2 px-4 border">{donation.purpose}</td>
-                      <td className="py-2 px-4 border">
+                      <td className="py-2 px-4 border border-gray-300 dark:border-gray-300">
+                        ₹{donation.amount}
+                      </td>
+                      <td className="py-2 px-4 border border-gray-300 dark:border-gray-300">
+                        {donation.purpose}
+                      </td>
+                      <td className="py-2 px-4 border border-gray-300 dark:border-gray-300">
                         {donation.paymentMode}
                       </td>
                     </tr>
@@ -262,51 +311,54 @@ const UnapprovedDonations = () => {
                 }
               `}</style>
               <div
-                className="relative overflow-auto border bg-white shadow-sm unapproved-mobile-scroll-2"
+                className="relative overflow-auto border border-gray-300 dark:border-gray-300 bg-white dark:bg-white shadow-sm unapproved-mobile-scroll-2"
                 style={{ maxHeight: '70vh' }}
               >
-                <table className="min-w-max w-full table-fixed text-sm border-collapse">
+                <table className="min-w-max w-full table-fixed text-sm border-collapse text-gray-800 dark:text-gray-800">
                   <thead>
                     <tr>
-                      <th className="sticky left-0 z-40 bg-blue-900 text-white px-2 py-2 text-left w-6">
+                      <th className="sticky left-0 z-40 bg-blue-900 dark:bg-blue-900 text-white px-2 py-2 text-left w-6">
                         #
                       </th>
-                      <th className="sticky left-6 z-40 bg-blue-900 text-white px-2 py-2 text-left w-32">
+                      <th className="sticky left-6 z-40 bg-blue-900 dark:bg-blue-900 text-white px-2 py-2 text-left w-32">
                         Donor
                       </th>
-                      <th className="sticky top-0 z-30 bg-blue-900 text-white px-2 py-2 text-left w-32">
+                      <th className="sticky top-0 z-30 bg-blue-900 dark:bg-blue-900 text-white px-2 py-2 text-left w-32">
                         Cultivator Name
                       </th>
-                      <th className="sticky top-0 z-30 bg-blue-900 text-white px-2 py-2 text-right w-18">
+                      <th className="sticky top-0 z-30 bg-blue-900 dark:bg-blue-900 text-white px-2 py-2 text-right w-18">
                         Amount
                       </th>
-                      <th className="sticky top-0 z-30 bg-blue-900 text-white px-2 py-2 text-left w-32">
+                      <th className="sticky top-0 z-30 bg-blue-900 dark:bg-blue-900 text-white px-2 py-2 text-left w-32">
                         Purpose
                       </th>
-                      <th className="sticky top-0 z-30 bg-blue-900 text-white px-2 py-2 text-left w-24">
+                      <th className="sticky top-0 z-30 bg-blue-900 dark:bg-blue-900 text-white px-2 py-2 text-left w-24">
                         Mode
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-200">
+                  <tbody className="divide-y divide-gray-200 dark:divide-gray-200">
                     {unapprovedSubmissions.map((donation, index) => (
-                      <tr key={donation.id} className="bg-white last:border-b">
-                        <td className="sticky left-0 z-30 bg-blue-50 text-blue-800 px-2 py-3 text-xs font-semibold border-r border-gray-200">
+                      <tr
+                        key={donation.id}
+                        className="bg-white dark:bg-white last:border-b"
+                      >
+                        <td className="sticky left-0 z-30 bg-blue-50 dark:bg-blue-50 text-blue-800 dark:text-blue-800 px-2 py-3 text-xs font-semibold border-r border-gray-200 dark:border-gray-200">
                           {index + 1}
                         </td>
-                        <td className="sticky left-6 z-30 bg-blue-50 text-blue-800 px-2 py-3 text-sm font-semibold truncate border-r border-gray-200">
+                        <td className="sticky left-6 z-30 bg-blue-50 dark:bg-blue-50 text-blue-800 dark:text-blue-800 px-2 py-3 text-sm font-semibold truncate border-r border-gray-200 dark:border-gray-200">
                           {donation.donorName}
                         </td>
-                        <td className="px-2 py-3 text-xs text-gray-600 truncate border-l border-gray-200">
+                        <td className="px-2 py-3 text-xs text-gray-600 dark:text-gray-600 truncate border-l border-gray-200 dark:border-gray-200">
                           {donation.donorCultivatorName}
                         </td>
-                        <td className="px-2 py-3 text-right font-medium border-l border-gray-200">
+                        <td className="px-2 py-3 text-right font-medium border-l border-gray-200 dark:border-gray-200">
                           ₹{donation.amount}
                         </td>
-                        <td className="px-2 py-3 text-xs text-gray-700 truncate border-l border-gray-200">
+                        <td className="px-2 py-3 text-xs text-gray-700 dark:text-gray-700 truncate border-l border-gray-200 dark:border-gray-200">
                           {donation.purpose}
                         </td>
-                        <td className="px-2 py-3 text-xs text-gray-700 truncate border-l border-gray-200">
+                        <td className="px-2 py-3 text-xs text-gray-700 dark:text-gray-700 truncate border-l border-gray-200 dark:border-gray-200">
                           {donation.paymentMode}
                         </td>
                       </tr>

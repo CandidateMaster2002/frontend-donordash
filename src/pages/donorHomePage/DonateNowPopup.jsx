@@ -227,28 +227,29 @@ const DonateNowPopup = ({
   return (
     <div
       className="fixed inset-0 z-[9999] flex items-center justify-center"
-      style={{ backgroundColor: 'rgba(0,0,0,0.6)' }}
+      style={{ backgroundColor: 'rgba(0,0,0,0.6)', colorScheme: 'light' }}
     >
       <div
-        className="relative w-full max-w-md rounded-xl shadow-2xl bg-white no-scrollbar"
+        className="relative w-full max-w-md rounded-xl shadow-2xl bg-white text-gray-800 no-scrollbar"
         style={{
           maxHeight: '80vh',
           overflowY: 'auto',
           WebkitOverflowScrolling: 'touch',
+          colorScheme: 'light',
         }}
       >
         <button
           onClick={closePopup}
           type="button"
           className="absolute top-3 right-3 z-50 w-9 h-9 flex items-center justify-center
-             rounded-full bg-red-500 text-white shadow
-             hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400"
+           rounded-full bg-red-500 text-white shadow
+           hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400"
         >
           &times;
         </button>
 
         <div className="p-6">
-          <h3 className="text-2xl font-semibold mb-6 text-center">
+          <h3 className="text-2xl font-semibold mb-6 text-center text-gray-800">
             Donate Now
           </h3>
 
@@ -298,14 +299,17 @@ const DonateNowPopup = ({
                 onChange={(e) => setHasOfflineReceipt(e.target.checked)}
                 disabled={loading}
               />
-              <label htmlFor="hasOfflineReceipt" className="text-xl">
+              <label
+                htmlFor="hasOfflineReceipt"
+                className="text-xl text-gray-800"
+              >
                 Have you generated an offline receipt?
               </label>
             </div>
 
             {hasOfflineReceipt && (
               <div>
-                <label className="block mb-2 font-medium">
+                <label className="block mb-2 font-medium text-gray-800">
                   Offline Receipt Number:
                 </label>
                 <input
@@ -315,7 +319,7 @@ const DonateNowPopup = ({
                       ? 'Please enter the offline receipt number'
                       : false,
                   })}
-                  className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border border-gray-300 rounded px-3 py-2 bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 {errors.offlineReceiptNumber && (
                   <span className="text-red-500 text-sm">
@@ -339,7 +343,7 @@ const DonateNowPopup = ({
                     />
                     <label
                       htmlFor="allowOtherCultivatorDonors"
-                      className="text-sm"
+                      className="text-sm text-gray-800"
                     >
                       Do you want to add donation for other cultivator's donor?
                     </label>
@@ -347,7 +351,9 @@ const DonateNowPopup = ({
                 )}
 
                 <div ref={wrapperRef}>
-                  <label className="block mb-2 font-medium">Donor:</label>
+                  <label className="block mb-2 font-medium text-gray-800">
+                    Donor:
+                  </label>
 
                   <input
                     type="text"
@@ -355,16 +361,16 @@ const DonateNowPopup = ({
                     value={searchTerm}
                     onChange={(e) => {
                       setSearchTerm(e.target.value);
-                      setShowOptions(true); // open options while typing
+                      setShowOptions(true);
                     }}
                     onFocus={() => setShowOptions(true)}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
                   />
 
                   {showOptions && (
                     <select
                       size={6}
-                      className="w-full mt-2 bg-white border border-gray-200 rounded-lg overflow-auto shadow-md focus:outline-none text-sm custom-scroll"
+                      className="w-full mt-2 bg-white text-gray-800 border border-gray-200 rounded-lg overflow-auto shadow-md focus:outline-none text-sm custom-scroll"
                       onChange={(e) => {
                         const donorId = e.target.value;
 
@@ -406,7 +412,7 @@ const DonateNowPopup = ({
                 </div>
 
                 {selectedDonorDetails && (
-                  <div className="mt-4 p-4 border border-gray-300 rounded bg-gray-50 text-sm">
+                  <div className="mt-4 p-4 border border-gray-300 rounded bg-gray-50 text-sm text-gray-800">
                     <p>
                       <strong>Name:</strong> {selectedDonorDetails?.donorName}
                     </p>
@@ -432,14 +438,16 @@ const DonateNowPopup = ({
             )}
 
             <div>
-              <label className="block mb-2 font-medium">Amount:</label>
+              <label className="block mb-2 font-medium text-gray-800">
+                Amount:
+              </label>
               <input
                 type="number"
                 {...register('amount', {
                   required: 'Please enter the amount',
                   valueAsNumber: true,
                 })}
-                className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-gray-300 rounded px-3 py-2 bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               {errors.amount && (
                 <span className="text-red-500 text-sm">
@@ -449,12 +457,14 @@ const DonateNowPopup = ({
             </div>
 
             <div>
-              <label className="block mb-2 font-medium">Purpose:</label>
+              <label className="block mb-2 font-medium text-gray-800">
+                Purpose:
+              </label>
               <select
                 {...register('purpose', {
                   required: 'Please select a purpose',
                 })}
-                className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-gray-300 rounded px-3 py-2 bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">Select Purpose</option>
                 {donationPurposes.map((purpose, index) => (
@@ -471,12 +481,14 @@ const DonateNowPopup = ({
             </div>
 
             <div>
-              <label className="block mb-2 font-medium">Payment Method:</label>
+              <label className="block mb-2 font-medium text-gray-800">
+                Payment Method:
+              </label>
               <select
                 {...register('paymentMode', {
                   required: validations.paymentMode.validation.required,
                 })}
-                className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-gray-300 rounded px-3 py-2 bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 onChange={handlePaymentModeChange}
               >
                 <option value="">Select Payment Method</option>
@@ -516,7 +528,7 @@ const DonateNowPopup = ({
             {showTransactionId &&
               (userType === 'admin' || userType === 'donorCultivator') && (
                 <div>
-                  <label className="block mb-2 font-medium">
+                  <label className="block mb-2 font-medium text-gray-800">
                     {FieldNameUTR}
                   </label>
                   <input
@@ -528,7 +540,7 @@ const DonateNowPopup = ({
                         value.trim() !== '' ||
                         'Please enter a UTR no.',
                     })}
-                    className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full border border-gray-300 rounded px-3 py-2 bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                   {errors.transactionId && (
                     <p className="text-red-500 text-sm mt-1">
@@ -540,27 +552,31 @@ const DonateNowPopup = ({
 
             {showPaymentDate && (
               <div>
-                <label className="block mb-2 font-medium">Payment Date:</label>
+                <label className="block mb-2 font-medium text-gray-800">
+                  Payment Date:
+                </label>
                 <input
                   type="date"
                   {...register('paymentDate')}
-                  className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border border-gray-300 rounded px-3 py-2 bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             )}
 
             <div>
-              <label className="block mb-2 font-medium">Remark:</label>
+              <label className="block mb-2 font-medium text-gray-800">
+                Remark:
+              </label>
               <textarea
                 {...register('remark')}
-                className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-gray-300 rounded px-3 py-2 bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 rows="1"
               />
             </div>
+
             <div className="p-0">
               <button
                 type="submit"
-                // className="bg-blue-500 text-white py-3 px-6 rounded w-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
                 className="px-4 py-2 bg-red-500 text-white rounded"
                 disabled={loading}
               >
@@ -570,10 +586,11 @@ const DonateNowPopup = ({
           </form>
         </div>
       </div>
+
       <style>{`
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { scrollbar-width: none; }
-  `}</style>
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { scrollbar-width: none; }
+    `}</style>
     </div>
   );
 };

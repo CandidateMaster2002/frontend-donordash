@@ -67,23 +67,29 @@ const PendingTransferRequests = () => {
   };
 
   return (
-    <div className="mt-6 max-w-4xl mx-auto">
+    <div className="mt-6 max-w-4xl mx-auto text-gray-800 dark:text-gray-800">
       {/* Section 1: Requests You Need to Approve */}
       <div className="mb-10">
-        <h2 className="text-2xl font-bold mb-4 text-purple-800">
+        <h2 className="text-2xl font-bold mb-4 text-purple-800 dark:text-purple-800">
           Requests That Require Your Approval
         </h2>
+
         {isFetching ? (
-          <div className="inline-flex items-center gap-2 text-sm text-gray-600">
-            <span className="h-4 w-4 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
+          <div className="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-600">
+            <span className="h-4 w-4 border-2 border-purple-500 dark:border-purple-500 border-t-transparent rounded-full animate-spin" />
             Fetching incoming requests...
           </div>
         ) : pendingRequests.length === 0 ? (
-          <p className="text-gray-500">No incoming requests for approval.</p>
+          <p className="text-gray-500 dark:text-gray-500">
+            No incoming requests for approval.
+          </p>
         ) : (
           <ul className="space-y-4">
             {pendingRequests.map((req) => (
-              <li key={req.id} className="p-4 bg-white rounded shadow border">
+              <li
+                key={req.id}
+                className="p-4 bg-white dark:bg-white rounded shadow border border-gray-200 dark:border-gray-200 text-gray-800 dark:text-gray-800"
+              >
                 <div>
                   <strong>Donor:</strong> {req.donorName}
                 </div>
@@ -99,7 +105,7 @@ const PendingTransferRequests = () => {
                 <button
                   onClick={() => handleApprove(req)}
                   disabled={approvingId === req.id}
-                  className="mt-3 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center gap-2"
+                  className="mt-3 px-4 py-2 bg-green-600 dark:bg-green-600 text-white rounded hover:bg-green-700 dark:hover:bg-green-700 disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center gap-2"
                 >
                   {approvingId === req.id && (
                     <span className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -114,22 +120,26 @@ const PendingTransferRequests = () => {
 
       {/* Section 2: Requests You Have Made */}
       <div>
-        <h2 className="text-2xl font-bold mb-4 text-blue-800">
+        <h2 className="text-2xl font-bold mb-4 text-blue-800 dark:text-blue-800">
           Requests You Have Made to Other Cultivators
         </h2>
+
         {isFetching ? (
-          <div className="inline-flex items-center gap-2 text-sm text-gray-600">
-            <span className="h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+          <div className="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-600">
+            <span className="h-4 w-4 border-2 border-blue-500 dark:border-blue-500 border-t-transparent rounded-full animate-spin" />
             Fetching outgoing requests...
           </div>
         ) : outgoingRequests.length === 0 ? (
-          <p className="text-gray-500">
+          <p className="text-gray-500 dark:text-gray-500">
             You have not made any transfer requests.
           </p>
         ) : (
           <ul className="space-y-4">
             {outgoingRequests.map((req) => (
-              <li key={req.id} className="p-4 bg-white rounded shadow border">
+              <li
+                key={req.id}
+                className="p-4 bg-white dark:bg-white rounded shadow border border-gray-200 dark:border-gray-200 text-gray-800 dark:text-gray-800"
+              >
                 <div>
                   <strong>Donor:</strong> {req.donorName}
                 </div>
