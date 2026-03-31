@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
+import { toast } from 'react-toastify';
 import { donationPurposes, paymentModes } from '../../constants/constants';
 import { validations } from '../../utils/validations';
 import axiosInstance from '../../utils/myAxios';
@@ -103,7 +104,6 @@ const DonateNowPopup = ({
     if (donorId) {
       try {
         const donorData = await getDonorById(donorId);
-        // console.log("Selected Donor Data:", donorData);
         setSelectedDonorDetails(donorData);
       } catch (error) {
         console.error('Failed to fetch donor details:', error);
@@ -122,7 +122,6 @@ const DonateNowPopup = ({
         const cultivatorResponse = await getDonorsByCultivator(
           getDonorCultivatorIdFromLocalStorage()
         );
-        // console.log("Cultivddator Donors from api", cultivatorResponse);
         setCultivatorDonors(cultivatorResponse);
       }
     } catch (error) {
@@ -174,8 +173,9 @@ const DonateNowPopup = ({
       closePopup();
       handleSuccess();
     } catch (error) {
-      console.error('Donation failed:', error.message);
-      alert('Donation failed: ' + error.message);
+      const errorMessage =
+        error?.response?.data?.message || error?.message || 'Donation failed';
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
