@@ -3,6 +3,7 @@ import { PDFDownloadLink } from '@react-pdf/renderer';
 import MyPDFDocument from './MyPDFDocument';
 import { useLocation } from 'react-router-dom';
 import { getReceiptByDonationId } from '../utils/services';
+import { whiteListedDonationPurposes } from '../constants/constants';
 
 const FormAndDownload = () => {
   const location = useLocation();
@@ -77,7 +78,15 @@ const FormAndDownload = () => {
     const load = async () => {
       try {
         const fetched = await getReceiptByDonationId(donationId);
-        if (fetched) fetched.purpose = 'General';
+        const isWhitelisted = whiteListedDonationPurposes.some(
+          (purpose) =>
+            purpose.value?.trim().toLowerCase() ===
+            fetched.purpose?.trim().toLowerCase()
+        );
+
+        if (!isWhitelisted) {
+          fetched.purpose = 'General';
+        }
         setPdfData(fetched);
       } catch (e) {
         console.error('Error fetching receipt in FormAndDownload:', e);
