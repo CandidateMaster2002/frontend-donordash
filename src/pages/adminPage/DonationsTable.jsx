@@ -1,18 +1,19 @@
-import { useState } from "react";
-import { FaDownload, FaEdit } from "react-icons/fa";
-import { formatDate } from "../../utils/services";
-import { getReceiptByDonationId } from "../../utils/services";
-import { useNavigate } from "react-router-dom";
-import StatusChangeConfirmationBox from "../../components/StatusChangeConfirmationBox";
-import React from "react";
-import SuccessPopup from "../../components/SuccessPopup";
+import { useState } from 'react';
+import { FaDownload, FaEdit } from 'react-icons/fa';
+import { formatDate } from '../../utils/services';
+import { getReceiptByDonationId } from '../../utils/services';
+import { useNavigate } from 'react-router-dom';
+import StatusChangeConfirmationBox from '../../components/StatusChangeConfirmationBox';
+import React from 'react';
+import SuccessPopup from '../../components/SuccessPopup';
+import { whiteListedDonationPurposes } from '../../constants/constants';
 
 const DonationsTable = ({ data, onEdit }) => {
   const navigate = useNavigate();
   const [showConfirmation, setShowConfirmation] = useState(false);
-  const [newStatus, setNewStatus] = useState("");
+  const [newStatus, setNewStatus] = useState('');
   const [selectedDonation, setSelectedDonation] = useState(null);
-  const [successMessage, setSuccessMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState('');
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
   const handleStatusChange = (donation, e) => {
@@ -23,7 +24,7 @@ const DonationsTable = ({ data, onEdit }) => {
 
   const handleCancel = () => {
     setShowConfirmation(false);
-    setNewStatus("");
+    setNewStatus('');
     setSelectedDonation(null);
   };
 
@@ -44,16 +45,22 @@ const DonationsTable = ({ data, onEdit }) => {
       if (
         !pdfData ||
         !pdfData.receiptNumber ||
-        !pdfData.receiptNumber.startsWith("ISK")
+        !pdfData.receiptNumber.startsWith('ISK')
       ) {
-        alert("Receipt number is missing. Cannot generate receipt.");
+        alert('Receipt number is missing. Cannot generate receipt.');
         return;
       }
-      pdfData.purpose = "General";
+      if (
+        !whiteListedDonationPurposes.map(
+          (purpose) => purpose.value === pdfData.purpose
+        )
+      ) {
+        pdfData.purpose = 'General';
+      }
       // console.log("pdf Data:", pdfData);
-      navigate("/receipt", { state: { pdfData } });
+      navigate('/receipt', { state: { pdfData } });
     } catch (error) {
-      console.error("Error fetching receipt data:", error);
+      console.error('Error fetching receipt data:', error);
     }
   };
 
@@ -214,7 +221,7 @@ const DonationsTable = ({ data, onEdit }) => {
                 {row.purpose}
               </td>
               <td className="py-2 px-4 border-b border-gray-200 dark:border-gray-200">
-                {row.status === "Pending" ? (
+                {row.status === 'Pending' ? (
                   <select
                     value={row.status}
                     onChange={(e) => handleStatusChange(row, e)}
@@ -224,7 +231,7 @@ const DonationsTable = ({ data, onEdit }) => {
                     <option value="Verified">Verified</option>
                     <option value="Cancelled">Cancelled</option>
                   </select>
-                ) : row.status === "Verified" ? (
+                ) : row.status === 'Verified' ? (
                   <select
                     value={row.status}
                     onChange={(e) => handleStatusChange(row, e)}
@@ -245,12 +252,12 @@ const DonationsTable = ({ data, onEdit }) => {
               <td className="py-2 px-4 border-b border-gray-200 dark:border-gray-200">
                 <FaDownload
                   className={`inline-block mr-2 ${
-                    row.status === "Verified"
-                      ? "cursor-pointer text-purple-600 dark:text-purple-600"
-                      : "text-gray-400 dark:text-gray-400"
+                    row.status === 'Verified'
+                      ? 'cursor-pointer text-purple-600 dark:text-purple-600'
+                      : 'text-gray-400 dark:text-gray-400'
                   }`}
                   onClick={
-                    row.status === "Verified"
+                    row.status === 'Verified'
                       ? () => handleReceiptClick(row.id)
                       : undefined
                   }
@@ -259,12 +266,12 @@ const DonationsTable = ({ data, onEdit }) => {
               <td className="py-2 px-4 border-b border-gray-200 dark:border-gray-200">
                 <FaEdit
                   className={`inline-block mr-2 ${
-                    row.status === "Verified" || row.status === "Pending"
-                      ? "cursor-pointer text-purple-600 dark:text-purple-600"
-                      : "text-gray-400 dark:text-gray-400"
+                    row.status === 'Verified' || row.status === 'Pending'
+                      ? 'cursor-pointer text-purple-600 dark:text-purple-600'
+                      : 'text-gray-400 dark:text-gray-400'
                   }`}
                   onClick={
-                    row.status === "Verified" || row.status === "Pending"
+                    row.status === 'Verified' || row.status === 'Pending'
                       ? () => onEdit(row)
                       : undefined
                   }

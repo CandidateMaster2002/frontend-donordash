@@ -15,7 +15,9 @@ const FormAndDownload = () => {
     const state = data?.state || data?.donorState || '';
 
     const suffix = [city, state].filter(Boolean).join(', ');
-    return suffix ? `${baseAddress}${baseAddress ? ', ' : ''}${suffix}` : baseAddress;
+    return suffix
+      ? `${baseAddress}${baseAddress ? ', ' : ''}${suffix}`
+      : baseAddress;
   };
 
   const [formData, setFormData] = useState({
@@ -44,7 +46,7 @@ const FormAndDownload = () => {
   );
   const [documentData, setDocumentData] = useState({
     receiptNumber: initialPdfData.receiptNumber,
-    receiptDate: initialPdfData.verifiedDate,
+    receiptDate: initialPdfData.paymentDate,
     amountWords: initialPdfData.amount,
     amountNumber: initialPdfData.amount,
     name: initialPdfData.donorName,
@@ -108,7 +110,7 @@ const FormAndDownload = () => {
 
     setDocumentData({
       receiptNumber: pdfData.receiptNumber,
-      receiptDate: pdfData.verifiedDate,
+      receiptDate: pdfData.paymentDate,
       amountWords: pdfData.amount,
       amountNumber: pdfData.amount,
       name: pdfData.donorName,

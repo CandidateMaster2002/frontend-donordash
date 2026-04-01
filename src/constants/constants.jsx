@@ -57,7 +57,12 @@ export const donationPurposes = [
   { id: 11, value: 'RathYatra', imgAddress: rathYtra },
   { id: 12, value: 'Girls Voice', imgAddress: easy },
   { id: 13, value: 'Tribal Care', imgAddress: fruitSeller },
-  { id: 14, value: 'Other', imgAddress: fruitSeller },
+  { id: 14, value: 'CSR Donation', imgAddress: fruitSeller },
+  { id: 15, value: 'Other', imgAddress: fruitSeller },
+];
+
+export const whiteListedDonationPurposes = [
+  { id: 14, value: 'CSR Donation', imgAddress: fruitSeller },
 ];
 
 export const bankDetails = {
