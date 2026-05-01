@@ -45,20 +45,85 @@ export const paymentStatuses = [
 ];
 
 export const donationPurposes = [
-  { id: 2, value: 'Easy Donation ISM Voice', imgAddress: easy },
-  { id: 3, value: 'Easy Donation BIT Sindri Voice', imgAddress: easy },
-  { id: 4, value: 'Sunday Feast', imgAddress: sunday_feast },
-  { id: 5, value: 'Nitya Seva', imgAddress: nitya_seva },
-  { id: 6, value: 'Mahaprasad (Sponsorship)', imgAddress: mahaprasad },
-  { id: 7, value: 'Spiritual Books (Sponsorship)', imgAddress: bbt },
-  { id: 8, value: 'House Program', imgAddress: houseProgram },
-  { id: 9, value: 'Temple Construction', imgAddress: mandir },
-  { id: 10, value: 'Janmashtami', imgAddress: janmashtami },
-  { id: 11, value: 'RathYatra', imgAddress: rathYtra },
-  { id: 12, value: 'Girls Voice', imgAddress: easy },
-  { id: 13, value: 'Tribal Care', imgAddress: fruitSeller },
-  { id: 14, value: 'CSR Donation', imgAddress: fruitSeller },
-  { id: 15, value: 'Other', imgAddress: fruitSeller },
+  {
+    id: 2,
+    value: 'Easy Donation ISM Voice',
+    imgAddress: easy,
+    costCenter: 'ISM Voice',
+  },
+  {
+    id: 3,
+    value: 'Easy Donation BIT Sindri Voice',
+    imgAddress: easy,
+    costCenter: 'BIT Sindri Voice',
+  },
+  {
+    id: 4,
+    value: 'Sunday Feast',
+    imgAddress: sunday_feast,
+    costCenter: 'ISKCON Dhanbad',
+  },
+  {
+    id: 5,
+    value: 'Nitya Seva',
+    imgAddress: nitya_seva,
+    costCenter: 'Nitya Seva',
+  },
+  {
+    id: 6,
+    value: 'Mahaprasad (Sponsorship)',
+    imgAddress: mahaprasad,
+    costCenter: 'Kitchen',
+  },
+  {
+    id: 7,
+    value: 'Spiritual Books (Sponsorship)',
+    imgAddress: bbt,
+    costCenter: 'BBT',
+  },
+  {
+    id: 8,
+    value: 'House Program',
+    imgAddress: houseProgram,
+    costCenter: 'ISKCON Dhanbad',
+  },
+  {
+    id: 9,
+    value: 'Temple Construction',
+    imgAddress: mandir,
+    costCenter: 'JJN Development',
+  },
+  {
+    id: 10,
+    value: 'Janmashtami',
+    imgAddress: janmashtami,
+    costCenter: 'ISKCON Dhanbad',
+  },
+  {
+    id: 11,
+    value: 'RathYatra',
+    imgAddress: rathYtra,
+    costCenter: 'ISKCON Dhanbad',
+  },
+  { id: 12, value: 'Girls Voice', imgAddress: easy, costCenter: 'Girls Voice' },
+  {
+    id: 13,
+    value: 'Tribal Care',
+    imgAddress: fruitSeller,
+    costCenter: 'Tribal Care',
+  },
+  {
+    id: 14,
+    value: 'CSR Donation',
+    imgAddress: fruitSeller,
+    costCenter: 'ISKCON Dhanbad',
+  },
+  {
+    id: 15,
+    value: 'Other',
+    imgAddress: fruitSeller,
+    costCenter: 'ISKCON Dhanbad',
+  },
 ];
 
 export const whiteListedDonationPurposes = [

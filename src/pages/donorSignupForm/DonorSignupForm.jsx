@@ -24,6 +24,11 @@ import {
 import SuccessPopup from '../../components/SuccessPopup';
 import { toast } from 'react-toastify';
 
+const EXCLUDED_CULTIVATOR_NAMES = new Set([
+  'hg naam prem prabhu',
+  'nibedita mataji',
+]);
+
 const DonorSignupForm = ({ onSubmit }) => {
   const navigate = useNavigate();
   const [donorCultivators, setDonorCultivators] = useState([]);
@@ -59,7 +64,14 @@ const DonorSignupForm = ({ onSubmit }) => {
     const fetchDonorCultivators = async () => {
       try {
         const cultivators = await getAllDonorCultivators();
-        setDonorCultivators(cultivators);
+        setDonorCultivators(
+          cultivators.filter(
+            (cultivator) =>
+              !EXCLUDED_CULTIVATOR_NAMES.has(
+                (cultivator?.name || '').trim().toLowerCase()
+              )
+          )
+        );
       } catch (error) {
         console.error('Error fetching donor cultivators:', error);
       }
@@ -97,7 +109,7 @@ const DonorSignupForm = ({ onSubmit }) => {
   useEffect(() => {
     if (!donorCultivators?.length) return;
     const currentValue = methods.getValues('donorCultivatorId');
-    if (currentValue) return; 
+    if (currentValue) return;
 
     let selectedCultivator = null;
 
@@ -354,16 +366,9 @@ const DonorSignupForm = ({ onSubmit }) => {
                       {donorCultivators.map((cultivator) => {
                         if (cultivator.id === currentCultivator?.id)
                           return null;
-                        const isDisabled =
-                          cultivator.name === 'HG Naam Prem Prabhu' ||
-                          cultivator.name === 'Nibedita Mataji';
 
                         return (
-                          <option
-                            key={cultivator.id}
-                            value={cultivator.id}
-                            disabled={isDisabled}
-                          >
+                          <option key={cultivator.id} value={cultivator.id}>
                             {cultivator.name}
                           </option>
                         );

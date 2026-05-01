@@ -1,16 +1,48 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import {
   getUserTypeFromLocalStorage,
   getDonorCultivatorIdFromLocalStorage,
+  getDonors,
+  getDonorsByCultivator,
+  getDonorCultivatorById,
 } from '../../utils/services';
-import { fetchDonations, changeDonationStatus } from '../../utils/services';
+import {
+  fetchDonations,
+  changeDonationStatus,
+  fetchRazorpayDonations,
+} from '../../utils/services';
+import RazorpayDonationsTable from './components/RazorpayDonationsTable';
+import DonationsToApproveTable from './components/DonationsToApproveTable';
+import SubmittedUnapprovedDonationsTable from './components/SubmittedUnapprovedDonationsTable';
+
+const formatToInputDate = (date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
 
 const UnapprovedDonations = () => {
   const navigate = useNavigate();
   const [donationsToApprove, setDonationsToApprove] = useState([]);
   const [unapprovedSubmissions, setUnapprovedSubmissions] = useState([]);
+  const [loadingUnapprovedTables, setLoadingUnapprovedTables] = useState(false);
   const [updatingId, setUpdatingId] = useState(null);
+  const [razorpayDonations, setRazorpayDonations] = useState([]);
+  const [loadingRazorpayDonations, setLoadingRazorpayDonations] =
+    useState(false);
+  const [razorpayError, setRazorpayError] = useState('');
+  const [allDonors, setAllDonors] = useState([]);
+  const [cultivatorDonors, setCultivatorDonors] = useState([]);
+  const [donorCultivator, setDonorCultivator] = useState(null);
+  const [toDate, setToDate] = useState(formatToInputDate(new Date()));
+  const [fromDate, setFromDate] = useState(() => {
+    const date = new Date();
+    date.setDate(date.getDate() - 30);
+    return formatToInputDate(date);
+  });
 
   const userType = getUserTypeFromLocalStorage();
   const cultivatorId = getDonorCultivatorIdFromLocalStorage();
@@ -21,10 +53,39 @@ const UnapprovedDonations = () => {
       return;
     }
     loadDonations();
+    loadRazorpayDonations(fromDate, toDate);
+    loadDonorOptions();
+    loadDonorCultivatorDetails();
   }, []);
+
+  const loadDonorOptions = async () => {
+    try {
+      const [allDonorsResponse, cultivatorDonorsResponse] = await Promise.all([
+        getDonors(),
+        getDonorsByCultivator(cultivatorId),
+      ]);
+      setAllDonors(Array.isArray(allDonorsResponse) ? allDonorsResponse : []);
+      setCultivatorDonors(
+        Array.isArray(cultivatorDonorsResponse) ? cultivatorDonorsResponse : []
+      );
+    } catch (error) {
+      console.error('Error fetching donor options:', error);
+    }
+  };
+
+  const loadDonorCultivatorDetails = async () => {
+    try {
+      const cultivator = await getDonorCultivatorById(cultivatorId);
+      setDonorCultivator(cultivator || null);
+    } catch (error) {
+      console.error('Error fetching donor cultivator:', error);
+      setDonorCultivator(null);
+    }
+  };
 
   const loadDonations = async () => {
     try {
+      setLoadingUnapprovedTables(true);
       const toApproveFilter = {
         donorCultivatorId: cultivatorId,
         status: 'Unapproved',
@@ -48,21 +109,50 @@ const UnapprovedDonations = () => {
       setUnapprovedSubmissions(filteredSubmissions);
     } catch (error) {
       console.error('Error fetching donations:', error);
+    } finally {
+      setLoadingUnapprovedTables(false);
     }
   };
 
   const handleStatusUpdate = async (donationId) => {
     try {
       setUpdatingId(donationId);
-      const response = await changeDonationStatus(donationId, 'Pending');
-      alert(`Doantion approved successfully`);
+      await changeDonationStatus(donationId, 'Pending');
+      toast.success('Donation approved successfully');
       loadDonations(); // Reload after update
     } catch (error) {
       console.error('Error updating donation status:', error);
-      alert('Failed to update status.');
+      toast.error('Failed to update status.');
     } finally {
       setUpdatingId(null);
     }
+  };
+
+  const loadRazorpayDonations = async (startDate, endDate) => {
+    try {
+      setLoadingRazorpayDonations(true);
+      setRazorpayError('');
+      const data = await fetchRazorpayDonations(startDate, endDate);
+      setRazorpayDonations(Array.isArray(data) ? data : []);
+    } catch (error) {
+      setRazorpayDonations([]);
+      setRazorpayError(error.message || 'Failed to fetch Razorpay donations.');
+    } finally {
+      setLoadingRazorpayDonations(false);
+    }
+  };
+
+  const handleRazorpayFilterSubmit = (e) => {
+    e.preventDefault();
+    if (!fromDate || !toDate) {
+      setRazorpayError('Please select both from and to dates.');
+      return;
+    }
+    if (new Date(fromDate) > new Date(toDate)) {
+      setRazorpayError('From date cannot be after To date.');
+      return;
+    }
+    loadRazorpayDonations(fromDate, toDate);
   };
 
   return (
@@ -71,305 +161,32 @@ const UnapprovedDonations = () => {
         Unapproved Donations
       </h1>
 
-      {/* Donations to be approved */}
-      <div className="mb-10">
-        <h2 className="text-xl font-bold mb-4 text-green-700 dark:text-green-700">
-          Donations to be Approved
-        </h2>
-        {donationsToApprove.length === 0 ? (
-          <p className="text-gray-800 dark:text-gray-800">
-            No donations to approve.
-          </p>
-        ) : (
-          <>
-            {/* Desktop / tablet table */}
-            <div className="hidden md:block overflow-x-auto">
-              <table className="min-w-full border text-center border-gray-300 dark:border-gray-300">
-                <thead className="bg-blue-900 dark:bg-blue-900 text-white">
-                  <tr>
-                    <th className="py-2 px-4 border border-gray-300 dark:border-gray-300">
-                      #
-                    </th>
-                    <th className="py-2 px-4 border border-gray-300 dark:border-gray-300">
-                      Donor
-                    </th>
-                    <th className="py-2 px-4 border border-gray-300 dark:border-gray-300">
-                      Collected By
-                    </th>
-                    <th className="py-2 px-4 border border-gray-300 dark:border-gray-300">
-                      Amount
-                    </th>
-                    <th className="py-2 px-4 border border-gray-300 dark:border-gray-300">
-                      Purpose
-                    </th>
-                    <th className="py-2 px-4 border border-gray-300 dark:border-gray-300">
-                      Mode
-                    </th>
-                    <th className="py-2 px-4 border border-gray-300 dark:border-gray-300">
-                      Action
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white dark:bg-white text-gray-800 dark:text-gray-800">
-                  {donationsToApprove.map((donation, index) => (
-                    <tr key={donation.id}>
-                      <td className="py-2 px-4 border border-gray-300 dark:border-gray-300">
-                        {index + 1}
-                      </td>
-                      <td className="py-2 px-4 border border-gray-300 dark:border-gray-300">
-                        {donation.donorName}
-                      </td>
-                      <td className="py-2 px-4 border border-gray-300 dark:border-gray-300">
-                        {donation.collectedByName}
-                      </td>
-                      <td className="py-2 px-4 border border-gray-300 dark:border-gray-300">
-                        ₹{donation.amount}
-                      </td>
-                      <td className="py-2 px-4 border border-gray-300 dark:border-gray-300">
-                        {donation.purpose}
-                      </td>
-                      <td className="py-2 px-4 border border-gray-300 dark:border-gray-300">
-                        {donation.paymentMode}
-                      </td>
-                      <td className="py-2 px-4 border border-gray-300 dark:border-gray-300">
-                        <button
-                          onClick={() => handleStatusUpdate(donation.id)}
-                          disabled={updatingId === donation.id}
-                          className="bg-green-600 dark:bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 dark:hover:bg-green-700 disabled:opacity-50"
-                        >
-                          {updatingId === donation.id
-                            ? 'Approving...'
-                            : 'Approve'}
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+      <DonationsToApproveTable
+        donations={donationsToApprove}
+        loading={loadingUnapprovedTables}
+        updatingId={updatingId}
+        onApprove={handleStatusUpdate}
+      />
 
-            {/* Mobile-style scrollable table with sticky header and first column */}
-            <div className="md:hidden mt-4">
-              <style>{`
-                .unapproved-mobile-scroll::-webkit-scrollbar {
-                  height: 0;
-                  width: 0;
-                }
-                .unapproved-mobile-scroll {
-                  scrollbar-width: none;
-                  -ms-overflow-style: none;
-                }
-              `}</style>
-              <div
-                className="relative overflow-auto border border-gray-300 dark:border-gray-300 bg-white dark:bg-white shadow-sm unapproved-mobile-scroll"
-                style={{ maxHeight: '70vh' }}
-              >
-                <table className="min-w-max w-full table-fixed text-sm border-collapse text-gray-800 dark:text-gray-800">
-                  <thead>
-                    <tr>
-                      <th className="sticky left-0 z-40 bg-blue-900 dark:bg-blue-900 text-white px-2 py-2 text-left w-6">
-                        #
-                      </th>
-                      <th className="sticky left-6 z-40 bg-blue-900 dark:bg-blue-900 text-white px-2 py-2 text-left w-32">
-                        Donor
-                      </th>
-                      <th className="sticky top-0 z-30 bg-blue-900 dark:bg-blue-900 text-white px-2 py-2 text-left w-32">
-                        Collected By
-                      </th>
-                      <th className="sticky top-0 z-30 bg-blue-900 dark:bg-blue-900 text-white px-2 py-2 text-right w-18">
-                        Amount
-                      </th>
-                      <th className="sticky top-0 z-30 bg-blue-900 dark:bg-blue-900 text-white px-2 py-2 text-left w-32">
-                        Purpose
-                      </th>
-                      <th className="sticky top-0 z-30 bg-blue-900 dark:bg-blue-900 text-white px-2 py-2 text-left w-24">
-                        Mode
-                      </th>
-                      <th className="sticky top-0 z-30 bg-blue-900 dark:bg-blue-900 text-white px-2 py-2 text-center w-24">
-                        Action
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-200 dark:divide-gray-200">
-                    {donationsToApprove.map((donation, index) => (
-                      <tr
-                        key={donation.id}
-                        className="bg-white dark:bg-white last:border-b"
-                      >
-                        <td className="sticky left-0 z-30 bg-blue-50 dark:bg-blue-50 text-blue-800 dark:text-blue-800 px-2 py-3 text-xs font-semibold border-r border-gray-200 dark:border-gray-200">
-                          {index + 1}
-                        </td>
-                        <td className="sticky left-6 z-30 bg-blue-50 dark:bg-blue-50 text-blue-800 dark:text-blue-800 px-2 py-3 text-sm font-semibold truncate border-r border-gray-200 dark:border-gray-200">
-                          {donation.donorName}
-                        </td>
-                        <td className="px-2 py-3 text-xs text-gray-600 dark:text-gray-600 truncate border-l border-gray-200 dark:border-gray-200">
-                          {donation.collectedByName}
-                        </td>
-                        <td className="px-2 py-3 text-right font-medium border-l border-gray-200 dark:border-gray-200">
-                          ₹{donation.amount}
-                        </td>
-                        <td className="px-2 py-3 text-xs text-gray-700 dark:text-gray-700 truncate border-l border-gray-200 dark:border-gray-200">
-                          {donation.purpose}
-                        </td>
-                        <td className="px-2 py-3 text-xs text-gray-700 dark:text-gray-700 truncate border-l border-gray-200 dark:border-gray-200">
-                          {donation.paymentMode}
-                        </td>
-                        <td className="px-2 py-3 text-center border-l border-gray-200 dark:border-gray-200">
-                          <button
-                            onClick={() => handleStatusUpdate(donation.id)}
-                            disabled={updatingId === donation.id}
-                            className="bg-green-600 dark:bg-green-600 text-white px-3 py-1 rounded text-xs hover:bg-green-700 dark:hover:bg-green-700 disabled:opacity-50"
-                          >
-                            {updatingId === donation.id
-                              ? 'Approving...'
-                              : 'Approve'}
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </>
-        )}
-      </div>
+      <SubmittedUnapprovedDonationsTable
+        donations={unapprovedSubmissions}
+        loading={loadingUnapprovedTables}
+      />
 
-      {/* Unapproved donations submitted by current cultivator for others */}
-      <div>
-        <h2 className="text-xl font-bold mb-4 text-red-700 dark:text-red-700">
-          Unapproved Donations (Submitted by You for Other Cultivators)
-        </h2>
-        {unapprovedSubmissions.length === 0 ? (
-          <p className="text-gray-800 dark:text-gray-800">
-            No unapproved external submissions.
-          </p>
-        ) : (
-          <>
-            {/* Desktop / tablet table */}
-            <div className="hidden md:block overflow-x-auto">
-              <table className="min-w-full border text-center border-gray-300 dark:border-gray-300">
-                <thead className="bg-blue-900 dark:bg-blue-900 text-white">
-                  <tr>
-                    <th className="py-2 px-4 border border-gray-300 dark:border-gray-300">
-                      #
-                    </th>
-                    <th className="py-2 px-4 border border-gray-300 dark:border-gray-300">
-                      Donor
-                    </th>
-                    <th className="py-2 px-4 border border-gray-300 dark:border-gray-300">
-                      Cultivator Name
-                    </th>
-                    <th className="py-2 px-4 border border-gray-300 dark:border-gray-300">
-                      Amount
-                    </th>
-                    <th className="py-2 px-4 border border-gray-300 dark:border-gray-300">
-                      Purpose
-                    </th>
-                    <th className="py-2 px-4 border border-gray-300 dark:border-gray-300">
-                      Mode
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white dark:bg-white text-gray-800 dark:text-gray-800">
-                  {unapprovedSubmissions.map((donation, index) => (
-                    <tr key={donation.id}>
-                      <td className="py-2 px-4 border border-gray-300 dark:border-gray-300">
-                        {index + 1}
-                      </td>
-                      <td className="py-2 px-4 border border-gray-300 dark:border-gray-300">
-                        {donation.donorName}
-                      </td>
-                      <td className="py-2 px-4 border border-gray-300 dark:border-gray-300">
-                        {donation.donorCultivatorName}
-                      </td>
-                      <td className="py-2 px-4 border border-gray-300 dark:border-gray-300">
-                        ₹{donation.amount}
-                      </td>
-                      <td className="py-2 px-4 border border-gray-300 dark:border-gray-300">
-                        {donation.purpose}
-                      </td>
-                      <td className="py-2 px-4 border border-gray-300 dark:border-gray-300">
-                        {donation.paymentMode}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Mobile-style scrollable table with sticky header and first column */}
-            <div className="md:hidden mt-4">
-              <style>{`
-                .unapproved-mobile-scroll-2::-webkit-scrollbar {
-                  height: 0;
-                  width: 0;
-                }
-                .unapproved-mobile-scroll-2 {
-                  scrollbar-width: none;
-                  -ms-overflow-style: none;
-                }
-              `}</style>
-              <div
-                className="relative overflow-auto border border-gray-300 dark:border-gray-300 bg-white dark:bg-white shadow-sm unapproved-mobile-scroll-2"
-                style={{ maxHeight: '70vh' }}
-              >
-                <table className="min-w-max w-full table-fixed text-sm border-collapse text-gray-800 dark:text-gray-800">
-                  <thead>
-                    <tr>
-                      <th className="sticky left-0 z-40 bg-blue-900 dark:bg-blue-900 text-white px-2 py-2 text-left w-6">
-                        #
-                      </th>
-                      <th className="sticky left-6 z-40 bg-blue-900 dark:bg-blue-900 text-white px-2 py-2 text-left w-32">
-                        Donor
-                      </th>
-                      <th className="sticky top-0 z-30 bg-blue-900 dark:bg-blue-900 text-white px-2 py-2 text-left w-32">
-                        Cultivator Name
-                      </th>
-                      <th className="sticky top-0 z-30 bg-blue-900 dark:bg-blue-900 text-white px-2 py-2 text-right w-18">
-                        Amount
-                      </th>
-                      <th className="sticky top-0 z-30 bg-blue-900 dark:bg-blue-900 text-white px-2 py-2 text-left w-32">
-                        Purpose
-                      </th>
-                      <th className="sticky top-0 z-30 bg-blue-900 dark:bg-blue-900 text-white px-2 py-2 text-left w-24">
-                        Mode
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-200 dark:divide-gray-200">
-                    {unapprovedSubmissions.map((donation, index) => (
-                      <tr
-                        key={donation.id}
-                        className="bg-white dark:bg-white last:border-b"
-                      >
-                        <td className="sticky left-0 z-30 bg-blue-50 dark:bg-blue-50 text-blue-800 dark:text-blue-800 px-2 py-3 text-xs font-semibold border-r border-gray-200 dark:border-gray-200">
-                          {index + 1}
-                        </td>
-                        <td className="sticky left-6 z-30 bg-blue-50 dark:bg-blue-50 text-blue-800 dark:text-blue-800 px-2 py-3 text-sm font-semibold truncate border-r border-gray-200 dark:border-gray-200">
-                          {donation.donorName}
-                        </td>
-                        <td className="px-2 py-3 text-xs text-gray-600 dark:text-gray-600 truncate border-l border-gray-200 dark:border-gray-200">
-                          {donation.donorCultivatorName}
-                        </td>
-                        <td className="px-2 py-3 text-right font-medium border-l border-gray-200 dark:border-gray-200">
-                          ₹{donation.amount}
-                        </td>
-                        <td className="px-2 py-3 text-xs text-gray-700 dark:text-gray-700 truncate border-l border-gray-200 dark:border-gray-200">
-                          {donation.purpose}
-                        </td>
-                        <td className="px-2 py-3 text-xs text-gray-700 dark:text-gray-700 truncate border-l border-gray-200 dark:border-gray-200">
-                          {donation.paymentMode}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </>
-        )}
-      </div>
+      <RazorpayDonationsTable
+        donations={razorpayDonations}
+        donorCultivator={donorCultivator}
+        allDonors={allDonors}
+        cultivatorDonors={cultivatorDonors}
+        fromDate={fromDate}
+        toDate={toDate}
+        setFromDate={setFromDate}
+        setToDate={setToDate}
+        onSubmit={handleRazorpayFilterSubmit}
+        onRefreshDonations={() => loadRazorpayDonations(fromDate, toDate)}
+        loading={loadingRazorpayDonations}
+        error={razorpayError}
+      />
     </div>
   );
 };

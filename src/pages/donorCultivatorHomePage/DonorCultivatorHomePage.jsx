@@ -27,13 +27,13 @@ import PendingTransferRequests from '../DonorData/PendingTransferRequests';
 const DonorCultivatorHomePage = () => {
   const today = new Date();
   today.setDate(today.getDate() + 1);
-  const lastMonth = new Date();
-  lastMonth.setMonth(today.getMonth() - 1);
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate()  - 30);
 
   const [filter, setFilter] = useState({
     type: 'lastMonth',
     month: '',
-    startDate: lastMonth.toISOString().split('T')[0],
+    startDate: thirtyDaysAgo.toISOString().split('T')[0],
     endDate: today.toISOString().split('T')[0],
   });
   const { setHeaderExtras } = useHeader();

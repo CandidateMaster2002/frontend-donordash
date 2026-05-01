@@ -42,6 +42,9 @@ const DonateNowPopup = ({
   const [cultivatorDonors, setCultivatorDonors] = useState([]);
   const [shownDonors, setShownDonors] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [showOtherCultivatorConfirm, setShowOtherCultivatorConfirm] =
+    useState(false);
+  const [pendingSubmissionData, setPendingSubmissionData] = useState(null);
 
   const formRef = useRef(null);
   const headingRef = useRef(null);
@@ -129,7 +132,7 @@ const DonateNowPopup = ({
     }
   };
 
-  const onSubmit = async (data) => {
+  const processDonation = async (data) => {
     setLoading(true);
     try {
       const donationData = {
@@ -179,6 +182,33 @@ const DonateNowPopup = ({
     } finally {
       setLoading(false);
     }
+  };
+
+  const onSubmit = async (data) => {
+    const isSelectedDonorFromCurrentCultivator = cultivatorDonors.some(
+      (donor) => String(donor?.donorId) === String(data?.donorId)
+    );
+
+    if (allowOtherCultivatorDonors && !isSelectedDonorFromCurrentCultivator) {
+      setPendingSubmissionData(data);
+      setShowOtherCultivatorConfirm(true);
+      return;
+    }
+
+    await processDonation(data);
+  };
+
+  const handleConfirmOtherCultivator = async () => {
+    if (!pendingSubmissionData) return;
+
+    setShowOtherCultivatorConfirm(false);
+    await processDonation(pendingSubmissionData);
+    setPendingSubmissionData(null);
+  };
+
+  const handleCancelOtherCultivator = () => {
+    setShowOtherCultivatorConfirm(false);
+    setPendingSubmissionData(null);
   };
 
   const handlePaymentModeChange = (e) => {
@@ -591,6 +621,43 @@ const DonateNowPopup = ({
           </form>
         </div>
       </div>
+
+      {showOtherCultivatorConfirm && (
+        <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/55 px-4">
+          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl border border-gray-100">
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-amber-100">
+              <span className="text-xl" aria-hidden="true">
+                !
+              </span>
+            </div>
+            <h4 className="text-lg font-semibold text-gray-900 text-center">
+              Confirm Donation
+            </h4>
+            <p className="mt-3 text-sm leading-6 text-gray-600 text-center">
+              You have selected a donor of other cultivator. Are you sure?
+              <br />
+              Do you want to still proceed?
+            </p>
+
+            <div className="mt-6 flex items-center justify-center gap-3">
+              <button
+                type="button"
+                onClick={handleCancelOtherCultivator}
+                className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmOtherCultivator}
+                className="px-4 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 transition"
+              >
+                Yes, Proceed
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <style>{`
       .no-scrollbar::-webkit-scrollbar { display: none; }

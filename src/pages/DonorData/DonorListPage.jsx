@@ -100,7 +100,7 @@ const DonorListPage = () => {
       donorId,
       targetCultivatorId,
       title: 'Confirm Release Request',
-      message: `Do you want to request release for "${donor?.donorName || 'this donor'}" to "${targetCultivator?.name || 'selected cultivator'}"?`,
+      message: `Are you sure to release this donor "${donor?.donorName || 'this donor'}" to "${targetCultivator?.name || 'selected cultivator'}"? Once submitted, the requested cultivator must approve the request before the donor is assigned.`,
       confirmLabel: 'Yes, Request Release',
     });
   };
@@ -111,7 +111,8 @@ const DonorListPage = () => {
       type: 'acquire',
       donorId,
       title: 'Confirm Acquire Request',
-      message: `Do you want to request acquire for "${donor?.donorName || 'this donor'}"?`,
+      message: `Are you sure to acquire this donor "${donor?.donorName || 'this donor'}"? Once submitted, The current collector must approve the request before the donor is assigned to you.
+  `,
       confirmLabel: 'Yes, Request Acquire',
     });
   };

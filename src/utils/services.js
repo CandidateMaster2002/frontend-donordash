@@ -7,6 +7,7 @@ import {
   DONATIONS_FILTER,
   DONATIONS_FILTER_SUM,
   ALL_DONOR_CULTIVATORS,
+  DONOR_CULTIVATOR_BY_ID,
   GET_DONOR_BY_ID,
   EDIT_DONOR,
   ALL_SPECIAL_DAYS_BY_DONOR_ID,
@@ -22,6 +23,7 @@ import {
   DONOR_APPROVE_RELEASE,
   GET_PENDING_DONOR_TRANSFERS,
   ALL_DONATIONS,
+  RAZORPAY_DONATIONS,
 } from '../constants/apiEndpoints';
 
 export const getRedirectPath = (userType) => {
@@ -267,6 +269,26 @@ export const getAllDonorCultivators = async () => {
   }
 };
 
+export const getDonorCultivatorById = async (donorCultivatorId) => {
+  try {
+    const endpoint = DONOR_CULTIVATOR_BY_ID.replace(
+      '{donorCultivatorId}',
+      donorCultivatorId
+    );
+    const response = await axiosInstance.get(endpoint);
+    return response.data;
+  } catch (error) {
+    console.error(
+      'Error fetching donor cultivator by ID:',
+      error.response?.data?.data?.message || error.message
+    );
+    throw new Error(
+      error.response?.data?.data?.message ||
+        'Failed to fetch donor cultivator by ID'
+    );
+  }
+};
+
 export const requestAcquireDonor = async (donorId, cultivatorId) => {
   try {
     const response = await axiosInstance.post(
@@ -382,6 +404,26 @@ export const fetchAllDonations = async () => {
   } catch (error) {
     console.error('There was an error fetching the donations!', error);
     throw error;
+  }
+};
+
+export const fetchRazorpayDonations = async (fromDate, toDate) => {
+  try {
+    const response = await axiosInstance.get(RAZORPAY_DONATIONS, {
+      params: {
+        from: fromDate,
+        to: toDate,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error(
+      'Error fetching Razorpay donations:',
+      error.response?.data?.message || error.message
+    );
+    throw new Error(
+      error.response?.data?.message || 'Failed to fetch Razorpay donations'
+    );
   }
 };
 
