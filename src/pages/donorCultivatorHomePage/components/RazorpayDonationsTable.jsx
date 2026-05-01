@@ -555,7 +555,7 @@ const RazorpayDonationsTable = ({
                       <table className="min-w-[1300px] w-full text-sm border-collapse">
                         <thead className="bg-gradient-to-r from-blue-900 to-blue-700 text-white">
                           <tr>
-                            <th className="sticky left-0 z-20 w-[120px] px-3 py-2 text-left font-semibold bg-blue-900">
+                            <th className="w-[120px] px-3 py-2 text-left font-semibold bg-blue-900">
                               Payment Date
                             </th>
                             <th className="w-[90px] px-3 py-2 text-left font-semibold">
@@ -584,7 +584,7 @@ const RazorpayDonationsTable = ({
                               key={getRowKey(donation, index)}
                               className="hover:bg-purple-50/40"
                             >
-                              <td className="sticky left-0 z-10 w-[120px] whitespace-nowrap bg-blue-50 px-3 py-3 font-medium text-blue-900">
+                              <td className="w-[120px] whitespace-nowrap bg-blue-50 px-3 py-3 font-medium text-blue-900">
                                 {formatPaymentDate(donation.paymentDate)}
                               </td>
                               <td className="w-[90px] px-3 py-3 text-gray-700">
