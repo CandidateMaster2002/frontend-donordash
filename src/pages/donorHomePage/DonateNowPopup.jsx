@@ -553,7 +553,7 @@ const DonateNowPopup = ({
                   htmlFor="generateReceipt"
                   className="text-2xl font-bold text-red-900"
                 >
-                  Do you need receipt for this?
+                  {generateReceipt ? 'Not Shyam Cash' : 'Shyam Cash'}
                 </label>
               </div>
             )}
