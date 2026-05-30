@@ -173,8 +173,10 @@ const DonateNowPopup = ({
         await handleRazorpayPayment(donationData, rest);
       } else {
         const response = await axiosInstance.post(DONATE, donationData);
-        if (response?.data?.alreadyExists === true) {
-          setExistingDonation(response.data.donation);
+        const addDonationResult = response?.data?.data ?? response?.data;
+
+        if (addDonationResult?.alreadyExists === true) {
+          setExistingDonation(addDonationResult.donation);
           return;
         }
       }
