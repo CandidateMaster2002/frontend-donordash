@@ -135,9 +135,14 @@ const DonateNowPopup = ({
   const processDonation = async (data) => {
     setLoading(true);
     try {
+      const purposeMeta = donationPurposes.find(
+        (purpose) => purpose.value === data.purpose
+      );
+
       const donationData = {
         amount: data.amount,
         purpose: data.purpose,
+        costCenter: purposeMeta?.costCenter || '',
         paymentMode: data.paymentMode,
         transactionId: data.transactionId || null,
         paymentDate: data.paymentDate || new Date().toISOString().split('T')[0],

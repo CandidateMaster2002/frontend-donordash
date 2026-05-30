@@ -305,8 +305,8 @@ const DonorSignupForm = ({ onSubmit }) => {
                       type="text"
                       {...methods.register('city', validations.city.validation)}
                       placeholder="City / शहर"
-                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-300 rounded-md bg-gray-50 dark:bg-gray-50 text-gray-800 dark:text-gray-800 placeholder-gray-400 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      disabled
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-300 rounded-md bg-gray-50 dark:bg-gray-50 text-gray-800 dark:text-gray-800 placeholder-gray-400 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-default caret-transparent"
+                      readOnly
                     />
                   </div>
 
@@ -318,8 +318,8 @@ const DonorSignupForm = ({ onSubmit }) => {
                         validations.state.validation
                       )}
                       placeholder="State / राज्य"
-                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-300 rounded-md bg-gray-50 dark:bg-gray-50 text-gray-800 dark:text-gray-800 placeholder-gray-400 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      disabled
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-300 rounded-md bg-gray-50 dark:bg-gray-50 text-gray-800 dark:text-gray-800 placeholder-gray-400 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-default caret-transparent"
+                      readOnly
                     />
                   </div>
                 </div>
