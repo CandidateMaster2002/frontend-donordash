@@ -4,7 +4,7 @@ import { formatDate } from '../utils/services';
 import { getStatusStyles } from '../utils/services';
 import { MdEdit } from 'react-icons/md';
 import { getReceiptByDonationId } from '../utils/services';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 const DonationsTable = ({
   data,
@@ -79,6 +79,24 @@ const DonationsTable = ({
   let result = Array.isArray(sortedData) ? [...sortedData] : [];
 
   const getDonorId = (row) => row?.donorId ?? null;
+
+  const renderDonorName = (row) => {
+    const donorId = getDonorId(row);
+    const donorName = row.donorName;
+
+    if (!donorId) {
+      return donorName;
+    }
+
+    return (
+      <Link
+        to={`/donor-profile/${donorId}`}
+        className="text-purple-600 hover:text-purple-800 hover:underline"
+      >
+        {donorName}
+      </Link>
+    );
+  };
 
   //apply UI-only filters conditionally
   if (uiFilter.donorId != null && uiFilter.donorId !== '') {
@@ -167,7 +185,7 @@ const DonationsTable = ({
                     {formatDate(row.paymentDate)}
                   </td>
                   <td className="py-3 px-4 border-b border-gray-200 dark:border-gray-200">
-                    {row.donorName}
+                    {renderDonorName(row)}
                   </td>
 
                   {showCultivatorName && (
@@ -356,7 +374,7 @@ const DonationsTable = ({
                       className="px-2 py-3 text-sm font-semibold truncate border-l border-gray-200 dark:border-gray-200"
                       title={row.donorName}
                     >
-                      {row.donorName}
+                      {renderDonorName(row)}
                       {showCultivatorName && row.donorCultivatorName && (
                         <div
                           className="text-xs text-gray-500 dark:text-gray-500 font-normal truncate"

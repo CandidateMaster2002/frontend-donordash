@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
-import { FaEdit, FaSave, FaTimes } from 'react-icons/fa'; // Icons for buttons
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { FaEdit, FaSave, FaTimes } from 'react-icons/fa';
+import { useParams } from 'react-router-dom';
 import {
   getDonorById,
   fetchSpecialDaysByDonorId,
@@ -12,16 +12,14 @@ import useFetchCityAndState from '../../hooks/useFetchCityAndState';
 import { validations } from '../../utils/validations';
 import { zones } from '../../constants/constants';
 import SuccessPopup from '../../components/SuccessPopup';
-import HareKrishnaLoader from '../../components/HareKrishnaLoader';
+import DonorDonationHistory from '../../components/DonorDonationHistory';
 import { toast } from 'react-toastify';
-import { set } from 'date-fns';
 
 const DonorProfilePage = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [donor, setDonor] = useState(null);
   const [specialDays, setSpecialDays] = useState([]);
   const { id } = useParams();
-  const navigate = useNavigate();
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -120,9 +118,9 @@ const DonorProfilePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-100 flex items-center justify-center p-6 text-gray-800 dark:text-gray-800">
-      <div className="bg-white dark:bg-white rounded-lg shadow-lg w-full max-w-4xl p-8 border border-gray-200 dark:border-gray-200">
-        <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-800 mb-6">
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-100 flex items-start sm:items-center justify-center p-3 sm:p-4 md:p-6 text-gray-800 dark:text-gray-800">
+      <div className="bg-white dark:bg-white rounded-lg shadow-lg w-full max-w-4xl p-4 sm:p-6 lg:p-8 border border-gray-200 dark:border-gray-200">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-gray-800 mb-4 sm:mb-6">
           Donor Profile
         </h1>
 
@@ -523,21 +521,20 @@ const DonorProfilePage = () => {
             )}
           </div>
 
-          {/* Buttons */}
-          <div className="flex justify-end mt-8">
+          <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 sm:gap-0 mt-6 sm:mt-8">
             {isEditing ? (
               <>
                 <button
                   type="button"
                   onClick={() => setIsEditing(false)}
-                  className="flex items-center bg-gray-500 dark:bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 dark:hover:bg-gray-600 mr-2"
+                  className="flex items-center justify-center bg-gray-500 dark:bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 dark:hover:bg-gray-600 sm:mr-2"
                 >
                   <FaTimes className="mr-2" /> Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className={`flex items-center px-4 py-2 rounded-lg text-white ${
+                  className={`flex items-center justify-center px-4 py-2 rounded-lg text-white ${
                     loading
                       ? 'bg-blue-400 dark:bg-blue-400 cursor-not-allowed opacity-70'
                       : 'bg-blue-500 dark:bg-blue-500 hover:bg-blue-600 dark:hover:bg-blue-600'
@@ -551,13 +548,15 @@ const DonorProfilePage = () => {
               <button
                 type="button"
                 onClick={() => setIsEditing(true)}
-                className="flex items-center bg-blue-500 dark:bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 dark:hover:bg-blue-600"
+                className="flex items-center justify-center w-full sm:w-auto bg-blue-500 dark:bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 dark:hover:bg-blue-600"
               >
                 <FaEdit className="mr-2" /> Edit
               </button>
             )}
           </div>
         </form>
+
+        <DonorDonationHistory donorId={id} embedded showTitle />
       </div>
 
       {showSuccessPopup && (
