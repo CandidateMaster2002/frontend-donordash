@@ -12,7 +12,7 @@ import useFetchCityAndState from '../../hooks/useFetchCityAndState';
 import { validations } from '../../utils/validations';
 import { zones } from '../../constants/constants';
 import SuccessPopup from '../../components/SuccessPopup';
-import DonorDonationHistory from '../../components/DonorDonationHistory';
+import DonorDonationHistory from './components/DonorDonationHistory';
 import { toast } from 'react-toastify';
 
 const DonorProfilePage = () => {

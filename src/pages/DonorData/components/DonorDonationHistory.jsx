@@ -6,7 +6,7 @@ import {
   getReceiptByDonationId,
   formatDate,
   getStatusStyles,
-} from '../utils/services';
+} from '../../../utils/services';
 
 const ROWS_PER_PAGE = 10;
 
@@ -106,8 +106,8 @@ const DonorDonationHistory = ({
   );
 
   const sectionClass = embedded
-    ? `mt-8 sm:mt-10 border-t border-gray-200 dark:border-gray-200 pt-6 sm:pt-8 ${className}`
-    : className;
+    ? `mt-8 sm:mt-10 border-t border-gray-200 dark:border-gray-200 pt-6 sm:pt-8 w-full bg-white dark:bg-white text-gray-800 dark:text-gray-800 ${className}`
+    : `w-full bg-white dark:bg-white text-gray-800 dark:text-gray-800 ${className}`;
 
   return (
     <section className={sectionClass}>
@@ -193,52 +193,107 @@ const DonorDonationHistory = ({
             </table>
           </div>
 
-          {/* Mobile cards */}
-          <div className="md:hidden space-y-3">
-            {paginatedDonations.length === 0 ? (
-              <p className="text-center text-gray-500 py-10 text-base font-medium">
+          {/* Mobile View Table */}
+          {paginatedDonations.length === 0 ? (
+            <div className="md:hidden p-4">
+              <div className="text-center text-gray-500 py-10 text-base font-medium">
                 No donations found
-              </p>
-            ) : (
-              paginatedDonations.map((donation) => (
-                <div
-                  key={donation.id}
-                  className="rounded-lg border border-gray-200 dark:border-gray-200 bg-white dark:bg-white p-4 shadow-sm"
-                >
-                  <div className="flex items-start justify-between gap-3 mb-3">
-                    <div>
-                      <p className="text-lg font-semibold text-gray-800 dark:text-gray-800">
-                        ₹ {donation.amount}
-                      </p>
-                      <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">
-                        {formatDate(donation.paymentDate)}
-                      </p>
-                    </div>
-                    <span
-                      className={`shrink-0 px-2 py-1 rounded-full text-xs ${getStatusStyles(
-                        donation.status
-                      )}`}
-                    >
-                      {donation.status}
-                    </span>
-                  </div>
-                  <div className="space-y-1 text-sm text-gray-700 dark:text-gray-700">
-                    <p>
-                      <span className="font-medium">Mode:</span>{' '}
-                      {donation.paymentMode}
-                    </p>
-                    <p>
-                      <span className="font-medium">Purpose:</span>{' '}
-                      {donation.purpose}
-                    </p>
-                  </div>
-                  <div className="mt-3 flex justify-end">
-                    {renderReceiptIcon(donation)}
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
+              </div>
+            </div>
+          ) : (
+            <div className="md:hidden p-2">
+              <style>{`
+                /* Hide scrollbars but keep scrolling */
+
+                /* WebKit (Chrome, Safari, Edge Chromium) */
+                .mobile-table-scroll::-webkit-scrollbar {
+                  height: 0;
+                  width: 0;
+                }
+
+                /* Firefox */
+                .mobile-table-scroll {
+                  scrollbar-width: none;
+                }
+
+                /* Old Edge / IE */
+                .mobile-table-scroll {
+                  -ms-overflow-style: none;
+                }
+              `}</style>
+              <div
+                className="relative overflow-auto border bg-white dark:bg-white shadow-sm mobile-table-scroll"
+                style={{ maxHeight: '70vh', msOverflowStyle: 'none' }}
+              >
+                <table className="min-w-max w-full table-fixed text-sm border-collapse">
+                  <thead>
+                    <tr>
+                      <th className="sticky top-0 z-30 bg-blue-900 text-white px-2 py-2 text-left w-20">
+                        Date
+                      </th>
+                      <th className="sticky top-0 z-30 bg-blue-900 text-white px-2 py-2 text-right w-22">
+                        Amount
+                      </th>
+                      <th className="sticky top-0 z-30 bg-blue-900 text-white px-2 py-2 text-left w-24">
+                        Mode
+                      </th>
+                      <th className="sticky top-0 z-30 bg-blue-900 text-white px-2 py-2 text-left w-36">
+                        Purpose
+                      </th>
+                      <th className="sticky top-0 z-30 bg-blue-900 text-white px-2 py-2 text-center w-24">
+                        Status
+                      </th>
+                      <th className="sticky top-0 z-30 bg-blue-900 text-white px-2 py-2 text-center w-20">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200">
+                    {paginatedDonations.map((donation) => (
+                      <tr
+                        key={donation.id}
+                        className="bg-white dark:bg-white last:border-b"
+                      >
+                        <td className="px-2 py-3 text-xs text-gray-600 dark:text-gray-600 border-l border-gray-200 dark:border-gray-200 first:border-l-0">
+                          {donation.paymentDate
+                            ? new Intl.DateTimeFormat('en-GB', {
+                                day: 'numeric',
+                                month: 'short',
+                              }).format(new Date(donation.paymentDate))
+                            : ''}
+                        </td>
+                        <td className="px-2 py-3 text-right font-medium border-l border-gray-200 dark:border-gray-200">
+                          ₹ {donation.amount}
+                        </td>
+                        <td className="px-2 py-3 text-sm text-gray-700 dark:text-gray-700 truncate border-l border-gray-200 dark:border-gray-200">
+                          {donation.paymentMode}
+                        </td>
+                        <td
+                          className="px-2 py-3 text-sm text-gray-700 dark:text-gray-700 truncate border-l border-gray-200 dark:border-gray-200"
+                          title={donation.purpose}
+                        >
+                          {donation.purpose}
+                        </td>
+                        <td className="px-2 py-3 text-center border-l border-gray-200 dark:border-gray-200">
+                          <span
+                            className={`inline-block px-2 py-1 rounded-full text-xs ${getStatusStyles(donation.status)}`}
+                            title={donation.status}
+                          >
+                            {donation.status}
+                          </span>
+                        </td>
+                        <td className="px-2 py-3 text-center border-l border-gray-200 dark:border-gray-200">
+                          <div className="inline-flex items-center justify-center w-full">
+                            {renderReceiptIcon(donation)}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
 
           {donations.length > 0 && (
             <div className="flex flex-col sm:flex-row justify-between items-center gap-3 mt-4">

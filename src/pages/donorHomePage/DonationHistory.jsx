@@ -1,5 +1,4 @@
-import React from 'react';
-import DonorDonationHistory from '../../components/DonorDonationHistory';
+import DonorDonationHistory from '../DonorData/components/DonorDonationHistory';
 import { getDonorIdFromLocalStorage } from '../../utils/services';
 
 const DonationHistory = () => {
