@@ -13,6 +13,18 @@ import InlineLoader from '../../utils/InlineLoader';
 import SuccessPopup from '../../components/SuccessPopup';
 import { toast } from 'react-toastify';
 
+/**
+ * Returns star emoji string + label based on totalDonatedAmount.
+ */
+const getDonorStars = (totalDonatedAmount) => {
+  const amount = Number(totalDonatedAmount) || 0;
+  if (amount >= 100000) return { stars: '⭐⭐⭐⭐⭐', label: 'Very Big Donor' };
+  if (amount >= 30000) return { stars: '⭐⭐⭐', label: 'Medium Donor' };
+  if (amount >= 11000) return { stars: '⭐⭐', label: 'Supporter Donor' };
+  if (amount >= 5000) return { stars: '⭐', label: 'Entry-Level Donor' };
+  return null;
+};
+
 const DonorListPage = () => {
   const [myDonors, setMyDonors] = useState([]);
   const [otherDonors, setOtherDonors] = useState([]);
@@ -177,52 +189,6 @@ const DonorListPage = () => {
                   </svg>
                 </div>
               </div>
-              {/* <button
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                  showRequestsTab
-                    ? "bg-gray-200 text-gray-800 hover:bg-gray-300"
-                    : "bg-purple-600 text-white hover:bg-purple-700"
-                }`}
-                onClick={() => setShowRequestsTab(!showRequestsTab)}
-              >
-                {showRequestsTab ? (
-                  <span className="flex items-center">
-                    <svg
-                      className="w-5 h-5 mr-2"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
-                    Hide Requests
-                  </span>
-                ) : (
-                  <span className="flex items-center">
-                    <svg
-                      className="w-5 h-5 mr-2"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                      />
-                    </svg>
-                    View Pending Requests
-                  </span>
-                )}
-              </button> */}
             </div>
 
             <InlineLoader scope="donor-list">
@@ -291,14 +257,26 @@ const DonorListPage = () => {
                               className="border border-gray-200 dark:border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow bg-white dark:bg-white"
                             >
                               <div className="flex justify-between items-start mb-2">
-                                <h3
-                                  className="text-lg font-semibold text-purple-700 dark:text-purple-700 cursor-pointer hover:underline"
-                                  onClick={() =>
-                                    handleShowDonorProfile(donor.donorId)
-                                  }
-                                >
-                                  {donor.donorName}
-                                </h3>
+                                <div>
+                                  <h3
+                                    className="text-lg font-semibold text-purple-700 dark:text-purple-700 cursor-pointer hover:underline"
+                                    onClick={() =>
+                                      handleShowDonorProfile(donor.donorId)
+                                    }
+                                  >
+                                    {donor.donorName}
+                                    {getDonorStars(donor.totalDonatedAmount) && (
+                                      <span className="ml-2 text-sm" title={getDonorStars(donor.totalDonatedAmount).label}>
+                                        {getDonorStars(donor.totalDonatedAmount).stars}
+                                      </span>
+                                    )}
+                                  </h3>
+                                  {getDonorStars(donor.totalDonatedAmount) && (
+                                    <span className="text-xs text-gray-500 dark:text-gray-500">
+                                      {getDonorStars(donor.totalDonatedAmount).label}
+                                    </span>
+                                  )}
+                                </div>
                               </div>
 
                               <p className="text-gray-600 dark:text-gray-600 mb-3">
@@ -309,6 +287,13 @@ const DonorListPage = () => {
                               <p className="text-gray-600 dark:text-gray-600 mb-3">
                                 <span className="font-medium">PAN:</span>{' '}
                                 {donor?.panNumber || 'N/A'}
+                              </p>
+
+                              <p className="text-gray-600 dark:text-gray-600 mb-3">
+                                <span className="font-medium">Total Donated:</span>{' '}
+                                <span className="font-semibold text-green-700 dark:text-green-700">
+                                  ₹{Number(donor.totalDonatedAmount || 0).toLocaleString('en-IN')}
+                                </span>
                               </p>
 
                               <div className="mt-4">
@@ -389,7 +374,7 @@ const DonorListPage = () => {
                               {filteredOtherDonors.map((donor) => (
                                 <tr key={donor.donorId}>
                                   <td className="px-6 py-4 whitespace-nowrap">
-                                    <div className="flex items-center">
+                                    <div className="flex items-center gap-2">
                                       <div
                                         className="text-sm font-medium text-purple-600 dark:text-purple-600 hover:text-purple-800 dark:hover:text-purple-800 cursor-pointer"
                                         onClick={() =>
@@ -398,6 +383,11 @@ const DonorListPage = () => {
                                       >
                                         {donor.donorName}
                                       </div>
+                                      {getDonorStars(donor.totalDonatedAmount) && (
+                                        <span className="text-sm" title={getDonorStars(donor.totalDonatedAmount).label}>
+                                          {getDonorStars(donor.totalDonatedAmount).stars}
+                                        </span>
+                                      )}
                                     </div>
                                   </td>
                                   <td className="px-6 py-4 whitespace-nowrap">
@@ -441,14 +431,26 @@ const DonorListPage = () => {
                               className="border border-gray-200 dark:border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow bg-white dark:bg-white"
                             >
                               <div className="flex justify-between items-start mb-2">
-                                <h3
-                                  className="text-lg font-semibold text-purple-700 dark:text-purple-700 cursor-pointer hover:underline"
-                                  onClick={() =>
-                                    handleShowDonorProfile(donor.donorId)
-                                  }
-                                >
-                                  {donor.donorName}
-                                </h3>
+                                <div>
+                                  <h3
+                                    className="text-lg font-semibold text-purple-700 dark:text-purple-700 cursor-pointer hover:underline"
+                                    onClick={() =>
+                                      handleShowDonorProfile(donor.donorId)
+                                    }
+                                  >
+                                    {donor.donorName}
+                                    {getDonorStars(donor.totalDonatedAmount) && (
+                                      <span className="ml-2 text-sm" title={getDonorStars(donor.totalDonatedAmount).label}>
+                                        {getDonorStars(donor.totalDonatedAmount).stars}
+                                      </span>
+                                    )}
+                                  </h3>
+                                  {getDonorStars(donor.totalDonatedAmount) && (
+                                    <span className="text-xs text-gray-500 dark:text-gray-500">
+                                      {getDonorStars(donor.totalDonatedAmount).label}
+                                    </span>
+                                  )}
+                                </div>
                               </div>
 
                               <div className="space-y-2">

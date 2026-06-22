@@ -5,6 +5,7 @@ import { getStatusStyles } from '../utils/services';
 import { MdEdit } from 'react-icons/md';
 import { getReceiptByDonationId } from '../utils/services';
 import { useNavigate, Link } from 'react-router-dom';
+import DownloadDonations from './DownloadDonations';
 
 const DonationsTable = ({
   data,
@@ -13,6 +14,7 @@ const DonationsTable = ({
   showStatus = true,
   showEditDonation = true,
   showCultivatorName = false,
+  showDownload = false,
 }) => {
   // console.log("Data :", data);
   var headerHeight = '0px';
@@ -122,6 +124,13 @@ const DonationsTable = ({
     );
   }
 
+  if (uiFilter.minAmount != null && uiFilter.minAmount !== '') {
+    const threshold = Number(uiFilter.minAmount);
+    if (!isNaN(threshold)) {
+      result = result.filter((row) => Number(row.amount) >= threshold);
+    }
+  }
+
   //handle sort order (DESC is default)
   if (uiFilter.sortOrder === 'asc') {
     result.reverse();
@@ -135,6 +144,12 @@ const DonationsTable = ({
 
   return (
     <div className="w-full bg-white dark:bg-white text-gray-800 dark:text-gray-800">
+      {/* Download button — only when showDownload is true and there is data */}
+      {showDownload && sortedData.length > 0 && (
+        <div className="flex justify-end my-3 px-2">
+          <DownloadDonations data={sortedData} showCultivatorName={showCultivatorName} />
+        </div>
+      )}
       {/* Desktop / Tablet Table */}
       <div className="hidden md:block overflow-x-auto">
         <table className="min-w-full">

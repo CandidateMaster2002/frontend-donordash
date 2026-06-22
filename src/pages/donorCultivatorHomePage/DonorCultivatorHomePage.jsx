@@ -238,6 +238,7 @@ const DonorCultivatorHomePage = () => {
   const [selectedStatus, setSelectedStatus] = useState('');
   const [selectedPurpose, setSelectedPurpose] = useState('');
   const [selectedPaymentMode, setSelectedPaymentMode] = useState('');
+  const [minAmount, setMinAmount] = useState('');
   const [sortBy, setSortBy] = useState('date'); // "date" | "amount"
   const [sortOrder, setSortOrder] = useState('desc'); // "asc" | "desc"
 
@@ -247,6 +248,7 @@ const DonorCultivatorHomePage = () => {
       status: selectedStatus,
       purpose: selectedPurpose,
       paymentMode: selectedPaymentMode,
+      minAmount,
       sortBy,
       sortOrder,
     }),
@@ -255,6 +257,7 @@ const DonorCultivatorHomePage = () => {
       selectedStatus,
       selectedPurpose,
       selectedPaymentMode,
+      minAmount,
       sortBy,
       sortOrder,
     ]
@@ -265,6 +268,7 @@ const DonorCultivatorHomePage = () => {
     setSelectedStatus('');
     setSelectedPurpose('');
     setSelectedPaymentMode('');
+    setMinAmount('');
     setSortBy('date');
     setSortOrder('desc');
   };
@@ -323,6 +327,8 @@ const DonorCultivatorHomePage = () => {
               setSelectedPurpose={setSelectedPurpose}
               selectedPaymentMode={selectedPaymentMode}
               setSelectedPaymentMode={setSelectedPaymentMode}
+              minAmount={minAmount}
+              setMinAmount={setMinAmount}
               sortBy={sortBy}
               setSortBy={setSortBy}
               sortOrder={sortOrder}
@@ -345,6 +351,8 @@ const DonorCultivatorHomePage = () => {
               setSelectedPurpose={setSelectedPurpose}
               selectedPaymentMode={selectedPaymentMode}
               setSelectedPaymentMode={setSelectedPaymentMode}
+              minAmount={minAmount}
+              setMinAmount={setMinAmount}
               sortBy={sortBy}
               setSortBy={setSortBy}
               sortOrder={sortOrder}
@@ -445,6 +453,8 @@ const DonorCultivatorHomePage = () => {
                 setSelectedPurpose={setSelectedPurpose}
                 selectedPaymentMode={selectedPaymentMode}
                 setSelectedPaymentMode={setSelectedPaymentMode}
+                minAmount={minAmount}
+                setMinAmount={setMinAmount}
                 sortBy={sortBy}
                 setSortBy={setSortBy}
                 sortOrder={sortOrder}
@@ -468,6 +478,8 @@ const DonorCultivatorHomePage = () => {
                 setSelectedPurpose={setSelectedPurpose}
                 selectedPaymentMode={selectedPaymentMode}
                 setSelectedPaymentMode={setSelectedPaymentMode}
+                minAmount={minAmount}
+                setMinAmount={setMinAmount}
                 sortBy={sortBy}
                 setSortBy={setSortBy}
                 sortOrder={sortOrder}
@@ -487,6 +499,7 @@ const DonorCultivatorHomePage = () => {
               data={reportDonationsData}
               uiFilter={uiFilter}
               onEdit={handleEdit}
+              showDownload={true}
             />
           </>
         </>

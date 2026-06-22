@@ -12,6 +12,8 @@ export const MobileFilters = ({
   setSelectedPurpose,
   selectedPaymentMode,
   setSelectedPaymentMode,
+  minAmount,
+  setMinAmount,
   sortBy,
   setSortBy,
   sortOrder,
@@ -112,6 +114,17 @@ export const MobileFilters = ({
               </option>
             ))}
           </select>
+
+          <input
+            type="number"
+            min="0"
+            value={minAmount}
+            onChange={(e) => setMinAmount(e.target.value)}
+            placeholder="Amount greater than"
+            className="px-3 py-2 rounded-md border border-gray-300 dark:border-gray-300 bg-white dark:bg-white text-gray-800 dark:text-gray-800 w-full
+                       [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            id="mobile-amount-filter"
+          />
 
           <select
             value={sortBy}
