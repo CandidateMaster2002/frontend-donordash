@@ -32,7 +32,7 @@ const RazorpayDonationsTable = ({
   error,
 }) => {
   const [showAllDonors, setShowAllDonors] = useState(false);
-  const [filterByRazorpayTag, setFilterByRazorpayTag] = useState(false);
+  const [filterByRazorpayTag, setFilterByRazorpayTag] = useState(true);
   const [razorpaySearchQuery, setRazorpaySearchQuery] = useState('');
   const [searchTermByRow, setSearchTermByRow] = useState({});
   const [selectionByRow, setSelectionByRow] = useState({});
@@ -223,7 +223,7 @@ const RazorpayDonationsTable = ({
                 type="date"
                 value={fromDate}
                 onChange={(e) => setFromDate(e.target.value)}
-                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-200"
+                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-200 bg-white text-gray-800 dark:bg-white dark:text-gray-800"
               />
             </div>
             <div>
@@ -234,7 +234,7 @@ const RazorpayDonationsTable = ({
                 type="date"
                 value={toDate}
                 onChange={(e) => setToDate(e.target.value)}
-                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-200"
+                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-200 bg-white text-gray-800 dark:bg-white dark:text-gray-800"
               />
             </div>
             <div className="flex items-end">
@@ -449,13 +449,13 @@ const RazorpayDonationsTable = ({
                                   onFocus={() =>
                                     setActiveRowKey(getRowKey(donation, index))
                                   }
-                                  className="w-64 rounded-md border border-gray-300 px-2 py-1 text-sm outline-none focus:border-purple-500"
+                                  className="w-64 rounded-md border border-gray-300 px-2 py-1 text-sm outline-none focus:border-purple-500 bg-white text-gray-800 dark:bg-white dark:text-gray-800"
                                 />
                                 {activeRowKey ===
                                   getRowKey(donation, index) && (
                                   <select
                                     size={6}
-                                    className="absolute z-30 mt-1 w-64 rounded-md border border-gray-200 bg-white text-sm shadow-md donor-search-scroll"
+                                    className="absolute z-30 mt-1 w-64 rounded-md border border-gray-200 bg-white text-sm shadow-md donor-search-scroll text-gray-800 dark:bg-white dark:text-gray-800"
                                     onChange={(e) => {
                                       const selectedDonor = donorOptions.find(
                                         (d) =>
@@ -507,7 +507,7 @@ const RazorpayDonationsTable = ({
                                     e.target.value
                                   )
                                 }
-                                className="w-56 rounded-md border border-gray-300 px-2 py-1 text-sm outline-none focus:border-purple-500"
+                                className="w-56 rounded-md border border-gray-300 px-2 py-1 text-sm outline-none focus:border-purple-500 bg-white text-gray-800 dark:bg-white dark:text-gray-800"
                               >
                                 <option value="">Select Purpose</option>
                                 {donationPurposes.map((purpose) => (
@@ -622,13 +622,13 @@ const RazorpayDonationsTable = ({
                                         getRowKey(donation, index)
                                       )
                                     }
-                                    className="w-56 rounded-md border border-gray-300 px-2 py-1 text-sm outline-none focus:border-purple-500"
+                                    className="w-56 rounded-md border border-gray-300 px-2 py-1 text-sm outline-none focus:border-purple-500 bg-white text-gray-800 dark:bg-white dark:text-gray-800"
                                   />
                                   {activeRowKey ===
                                     getRowKey(donation, index) && (
                                     <select
                                       size={6}
-                                      className="absolute z-30 mt-1 w-56 rounded-md border border-gray-200 bg-white text-sm shadow-md donor-search-scroll"
+                                      className="absolute z-30 mt-1 w-56 rounded-md border border-gray-200 bg-white text-sm shadow-md donor-search-scroll text-gray-800 dark:bg-white dark:text-gray-800"
                                       onChange={(e) => {
                                         const selectedDonor = donorOptions.find(
                                           (d) =>
@@ -680,7 +680,7 @@ const RazorpayDonationsTable = ({
                                       e.target.value
                                     )
                                   }
-                                  className="w-44 rounded-md border border-gray-300 px-2 py-1 text-sm outline-none focus:border-purple-500"
+                                  className="w-44 rounded-md border border-gray-300 px-2 py-1 text-sm outline-none focus:border-purple-500 bg-white text-gray-800 dark:bg-white dark:text-gray-800"
                                 >
                                   <option value="">Select Purpose</option>
                                   {donationPurposes.map((purpose) => (

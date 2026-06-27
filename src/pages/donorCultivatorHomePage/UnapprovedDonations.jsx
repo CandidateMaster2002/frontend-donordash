@@ -4,25 +4,13 @@ import { toast } from 'react-toastify';
 import {
   getUserTypeFromLocalStorage,
   getDonorCultivatorIdFromLocalStorage,
-  getDonors,
-  getDonorsByCultivator,
-  getDonorCultivatorById,
 } from '../../utils/services';
 import {
   fetchDonations,
   changeDonationStatus,
-  fetchRazorpayDonations,
 } from '../../utils/services';
-import RazorpayDonationsTable from './components/RazorpayDonationsTable';
 import DonationsToApproveTable from './components/DonationsToApproveTable';
 import SubmittedUnapprovedDonationsTable from './components/SubmittedUnapprovedDonationsTable';
-
-const formatToInputDate = (date) => {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-};
 
 const UnapprovedDonations = () => {
   const navigate = useNavigate();
@@ -30,19 +18,6 @@ const UnapprovedDonations = () => {
   const [unapprovedSubmissions, setUnapprovedSubmissions] = useState([]);
   const [loadingUnapprovedTables, setLoadingUnapprovedTables] = useState(false);
   const [updatingId, setUpdatingId] = useState(null);
-  const [razorpayDonations, setRazorpayDonations] = useState([]);
-  const [loadingRazorpayDonations, setLoadingRazorpayDonations] =
-    useState(false);
-  const [razorpayError, setRazorpayError] = useState('');
-  const [allDonors, setAllDonors] = useState([]);
-  const [cultivatorDonors, setCultivatorDonors] = useState([]);
-  const [donorCultivator, setDonorCultivator] = useState(null);
-  const [toDate, setToDate] = useState(formatToInputDate(new Date()));
-  const [fromDate, setFromDate] = useState(() => {
-    const date = new Date();
-    date.setDate(date.getDate() - 30);
-    return formatToInputDate(date);
-  });
 
   const userType = getUserTypeFromLocalStorage();
   const cultivatorId = getDonorCultivatorIdFromLocalStorage();
@@ -53,35 +28,8 @@ const UnapprovedDonations = () => {
       return;
     }
     loadDonations();
-    loadRazorpayDonations(fromDate, toDate);
-    loadDonorOptions();
-    loadDonorCultivatorDetails();
   }, []);
 
-  const loadDonorOptions = async () => {
-    try {
-      const [allDonorsResponse, cultivatorDonorsResponse] = await Promise.all([
-        getDonors(),
-        getDonorsByCultivator(cultivatorId),
-      ]);
-      setAllDonors(Array.isArray(allDonorsResponse) ? allDonorsResponse : []);
-      setCultivatorDonors(
-        Array.isArray(cultivatorDonorsResponse) ? cultivatorDonorsResponse : []
-      );
-    } catch (error) {
-      console.error('Error fetching donor options:', error);
-    }
-  };
-
-  const loadDonorCultivatorDetails = async () => {
-    try {
-      const cultivator = await getDonorCultivatorById(cultivatorId);
-      setDonorCultivator(cultivator || null);
-    } catch (error) {
-      console.error('Error fetching donor cultivator:', error);
-      setDonorCultivator(null);
-    }
-  };
 
   const loadDonations = async () => {
     try {
@@ -128,33 +76,6 @@ const UnapprovedDonations = () => {
     }
   };
 
-  const loadRazorpayDonations = async (startDate, endDate) => {
-    try {
-      setLoadingRazorpayDonations(true);
-      setRazorpayError('');
-      const data = await fetchRazorpayDonations(startDate, endDate);
-      setRazorpayDonations(Array.isArray(data) ? data : []);
-    } catch (error) {
-      setRazorpayDonations([]);
-      setRazorpayError(error.message || 'Failed to fetch Razorpay donations.');
-    } finally {
-      setLoadingRazorpayDonations(false);
-    }
-  };
-
-  const handleRazorpayFilterSubmit = (e) => {
-    e.preventDefault();
-    if (!fromDate || !toDate) {
-      setRazorpayError('Please select both from and to dates.');
-      return;
-    }
-    if (new Date(fromDate) > new Date(toDate)) {
-      setRazorpayError('From date cannot be after To date.');
-      return;
-    }
-    loadRazorpayDonations(fromDate, toDate);
-  };
-
   return (
     <div className="p-6 max-w-6xl mx-auto text-gray-800 dark:text-gray-800">
       <h1 className="text-3xl font-semibold mb-6 text-purple-800 dark:text-purple-800 text-center">
@@ -171,21 +92,6 @@ const UnapprovedDonations = () => {
       <SubmittedUnapprovedDonationsTable
         donations={unapprovedSubmissions}
         loading={loadingUnapprovedTables}
-      />
-
-      <RazorpayDonationsTable
-        donations={razorpayDonations}
-        donorCultivator={donorCultivator}
-        allDonors={allDonors}
-        cultivatorDonors={cultivatorDonors}
-        fromDate={fromDate}
-        toDate={toDate}
-        setFromDate={setFromDate}
-        setToDate={setToDate}
-        onSubmit={handleRazorpayFilterSubmit}
-        onRefreshDonations={() => loadRazorpayDonations(fromDate, toDate)}
-        loading={loadingRazorpayDonations}
-        error={razorpayError}
       />
     </div>
   );

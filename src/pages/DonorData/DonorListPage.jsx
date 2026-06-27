@@ -33,6 +33,7 @@ const DonorListPage = () => {
   const [showRequestsTab, setShowRequestsTab] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [showWithoutPAN, setShowWithoutPAN] = useState(false);
+  const [sortByAmount, setSortByAmount] = useState(false);
   const [releasingDonorId, setReleasingDonorId] = useState(null);
   const [acquiringDonorId, setAcquiringDonorId] = useState(null);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
@@ -145,11 +146,22 @@ const DonorListPage = () => {
     d?.donorName?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  console.log('Filtered My Donors:', filteredMyDonors);
-
   const filteredOtherDonors = otherDonors.filter((d) =>
     d?.donorName?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  if (sortByAmount) {
+    filteredMyDonors.sort(
+      (a, b) =>
+        (Number(b.totalDonatedAmount) || 0) -
+        (Number(a.totalDonatedAmount) || 0)
+    );
+    filteredOtherDonors.sort(
+      (a, b) =>
+        (Number(b.totalDonatedAmount) || 0) -
+        (Number(a.totalDonatedAmount) || 0)
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-50 p-4 md:p-8 text-gray-800 dark:text-gray-800">
@@ -189,6 +201,29 @@ const DonorListPage = () => {
                   </svg>
                 </div>
               </div>
+
+              <label className="flex items-center justify-between md:justify-end w-full md:w-auto gap-3 cursor-pointer select-none">
+                <span className="bg-purple-100 dark:bg-purple-100 text-purple-800 dark:text-purple-800 text-sm font-medium px-3 py-1 rounded-full whitespace-nowrap">
+                  Sort by Amount (High to Low)
+                </span>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={sortByAmount}
+                  onClick={() => setSortByAmount((s) => !s)}
+                  className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors focus:outline-none focus:ring-2 ${
+                    sortByAmount
+                      ? 'bg-purple-600 dark:bg-purple-600 focus:ring-purple-300 dark:focus:ring-purple-300'
+                      : 'bg-gray-300 dark:bg-gray-300 focus:ring-gray-200 dark:focus:ring-gray-200'
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white dark:bg-white shadow-sm transition-transform ${
+                      sortByAmount ? 'translate-x-5' : 'translate-x-1'
+                    }`}
+                  />
+                </button>
+              </label>
             </div>
 
             <InlineLoader scope="donor-list">
@@ -265,15 +300,31 @@ const DonorListPage = () => {
                                     }
                                   >
                                     {donor.donorName}
-                                    {getDonorStars(donor.totalDonatedAmount) && (
-                                      <span className="ml-2 text-sm" title={getDonorStars(donor.totalDonatedAmount).label}>
-                                        {getDonorStars(donor.totalDonatedAmount).stars}
+                                    {getDonorStars(
+                                      donor.totalDonatedAmount
+                                    ) && (
+                                      <span
+                                        className="ml-2 text-sm"
+                                        title={
+                                          getDonorStars(
+                                            donor.totalDonatedAmount
+                                          ).label
+                                        }
+                                      >
+                                        {
+                                          getDonorStars(
+                                            donor.totalDonatedAmount
+                                          ).stars
+                                        }
                                       </span>
                                     )}
                                   </h3>
                                   {getDonorStars(donor.totalDonatedAmount) && (
                                     <span className="text-xs text-gray-500 dark:text-gray-500">
-                                      {getDonorStars(donor.totalDonatedAmount).label}
+                                      {
+                                        getDonorStars(donor.totalDonatedAmount)
+                                          .label
+                                      }
                                     </span>
                                   )}
                                 </div>
@@ -290,9 +341,14 @@ const DonorListPage = () => {
                               </p>
 
                               <p className="text-gray-600 dark:text-gray-600 mb-3">
-                                <span className="font-medium">Total Donated:</span>{' '}
+                                <span className="font-medium">
+                                  Total Donated:
+                                </span>{' '}
                                 <span className="font-semibold text-green-700 dark:text-green-700">
-                                  ₹{Number(donor.totalDonatedAmount || 0).toLocaleString('en-IN')}
+                                  ₹
+                                  {Number(
+                                    donor.totalDonatedAmount || 0
+                                  ).toLocaleString('en-IN')}
                                 </span>
                               </p>
 
@@ -383,9 +439,22 @@ const DonorListPage = () => {
                                       >
                                         {donor.donorName}
                                       </div>
-                                      {getDonorStars(donor.totalDonatedAmount) && (
-                                        <span className="text-sm" title={getDonorStars(donor.totalDonatedAmount).label}>
-                                          {getDonorStars(donor.totalDonatedAmount).stars}
+                                      {getDonorStars(
+                                        donor.totalDonatedAmount
+                                      ) && (
+                                        <span
+                                          className="text-sm"
+                                          title={
+                                            getDonorStars(
+                                              donor.totalDonatedAmount
+                                            ).label
+                                          }
+                                        >
+                                          {
+                                            getDonorStars(
+                                              donor.totalDonatedAmount
+                                            ).stars
+                                          }
                                         </span>
                                       )}
                                     </div>
@@ -439,15 +508,31 @@ const DonorListPage = () => {
                                     }
                                   >
                                     {donor.donorName}
-                                    {getDonorStars(donor.totalDonatedAmount) && (
-                                      <span className="ml-2 text-sm" title={getDonorStars(donor.totalDonatedAmount).label}>
-                                        {getDonorStars(donor.totalDonatedAmount).stars}
+                                    {getDonorStars(
+                                      donor.totalDonatedAmount
+                                    ) && (
+                                      <span
+                                        className="ml-2 text-sm"
+                                        title={
+                                          getDonorStars(
+                                            donor.totalDonatedAmount
+                                          ).label
+                                        }
+                                      >
+                                        {
+                                          getDonorStars(
+                                            donor.totalDonatedAmount
+                                          ).stars
+                                        }
                                       </span>
                                     )}
                                   </h3>
                                   {getDonorStars(donor.totalDonatedAmount) && (
                                     <span className="text-xs text-gray-500 dark:text-gray-500">
-                                      {getDonorStars(donor.totalDonatedAmount).label}
+                                      {
+                                        getDonorStars(donor.totalDonatedAmount)
+                                          .label
+                                      }
                                     </span>
                                   )}
                                 </div>

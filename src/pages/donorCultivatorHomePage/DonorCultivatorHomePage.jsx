@@ -16,13 +16,19 @@ import { getDonorCultivatorIdFromLocalStorage } from '../../utils/services';
 import { useNavigate } from 'react-router-dom';
 import { useHeader } from '../../utils/HeaderContext';
 import { donationPurposes, paymentModes } from '../../constants/constants';
-import { getDonorsByCultivator } from '../../utils/services';
+import {
+  getDonorsByCultivator,
+  getDonors,
+  getDonorCultivatorById,
+  fetchRazorpayDonations,
+} from '../../utils/services';
 import DonorSignupForm from '../donorSignupForm/DonorSignupForm';
 import UnapprovedDonations from './UnapprovedDonations';
 import DonorListPage from '../DonorData/DonorListPage';
 import MobileFilters from './components/MobileFilters';
 import DesktopFilters from './components/DesktopFilters';
 import PendingTransferRequests from '../DonorData/PendingTransferRequests';
+import RazorpayDonationsTable from './components/RazorpayDonationsTable';
 
 const DonorCultivatorHomePage = () => {
   const today = new Date();
@@ -124,6 +130,17 @@ const DonorCultivatorHomePage = () => {
             }`}
           >
             Donor Transfer Requests
+          </button>
+          <button
+            onClick={() => setActiveTab('razorpay-donations')}
+            className={`px-3 py-2 rounded-full font-semibold transition-all duration-300
+            focus:outline-none focus:ring-0 ${
+              activeTab === 'razorpay-donations'
+                ? 'bg-white text-purple-700 shadow-md'
+                : 'hover:bg-gray-100 md:hover:bg-white/20'
+            }`}
+          >
+            Razorpay Donations
           </button>
         </div>
       </div>
@@ -284,6 +301,83 @@ const DonorCultivatorHomePage = () => {
     } catch (error) {
       console.error('Error fetching donors:', error.message);
     }
+  };
+
+  // --- Razorpay Donations tab state ---
+  const formatToInputDate = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const [razorpayDonations, setRazorpayDonations] = useState([]);
+  const [loadingRazorpayDonations, setLoadingRazorpayDonations] = useState(false);
+  const [razorpayError, setRazorpayError] = useState('');
+  const [razorpayAllDonors, setRazorpayAllDonors] = useState([]);
+  const [razorpayCultivatorDonors, setRazorpayCultivatorDonors] = useState([]);
+  const [razorpayDonorCultivator, setRazorpayDonorCultivator] = useState(null);
+  const [razorpayFromDate, setRazorpayFromDate] = useState(() => {
+    const date = new Date();
+    date.setDate(date.getDate() - 30);
+    return formatToInputDate(date);
+  });
+  const [razorpayToDate, setRazorpayToDate] = useState(formatToInputDate(new Date()));
+  const [razorpayTabInitialized, setRazorpayTabInitialized] = useState(false);
+
+  const loadRazorpayDonations = async (startDate, endDate) => {
+    try {
+      setLoadingRazorpayDonations(true);
+      setRazorpayError('');
+      const data = await fetchRazorpayDonations(startDate, endDate);
+      setRazorpayDonations(Array.isArray(data) ? data : []);
+    } catch (error) {
+      setRazorpayDonations([]);
+      setRazorpayError(error.message || 'Failed to fetch Razorpay donations.');
+    } finally {
+      setLoadingRazorpayDonations(false);
+    }
+  };
+
+  const initRazorpayTab = async () => {
+    if (razorpayTabInitialized) return;
+    setRazorpayTabInitialized(true);
+    const cultivatorId = getDonorCultivatorIdFromLocalStorage();
+    try {
+      const [allDonorsRes, cultivatorDonorsRes, cultivatorDetails] =
+        await Promise.all([
+          getDonors(),
+          getDonorsByCultivator(cultivatorId),
+          getDonorCultivatorById(cultivatorId),
+        ]);
+      setRazorpayAllDonors(Array.isArray(allDonorsRes) ? allDonorsRes : []);
+      setRazorpayCultivatorDonors(
+        Array.isArray(cultivatorDonorsRes) ? cultivatorDonorsRes : []
+      );
+      setRazorpayDonorCultivator(cultivatorDetails || null);
+    } catch (error) {
+      console.error('Error initializing Razorpay tab:', error);
+    }
+    loadRazorpayDonations(razorpayFromDate, razorpayToDate);
+  };
+
+  useEffect(() => {
+    if (activeTab === 'razorpay-donations') {
+      initRazorpayTab();
+    }
+  }, [activeTab]);
+
+  const handleRazorpayFilterSubmit = (e) => {
+    e.preventDefault();
+    if (!razorpayFromDate || !razorpayToDate) {
+      setRazorpayError('Please select both from and to dates.');
+      return;
+    }
+    if (new Date(razorpayFromDate) > new Date(razorpayToDate)) {
+      setRazorpayError('From date cannot be after To date.');
+      return;
+    }
+    loadRazorpayDonations(razorpayFromDate, razorpayToDate);
   };
 
   return (
@@ -512,6 +606,27 @@ const DonorCultivatorHomePage = () => {
       {activeTab === 'all-donors' && <DonorListPage />}
 
       {activeTab === 'pending-transfer-requests' && <PendingTransferRequests />}
+
+      {activeTab === 'razorpay-donations' && (
+        <div className="p-6 max-w-6xl mx-auto text-gray-800">
+          <RazorpayDonationsTable
+            donations={razorpayDonations}
+            donorCultivator={razorpayDonorCultivator}
+            allDonors={razorpayAllDonors}
+            cultivatorDonors={razorpayCultivatorDonors}
+            fromDate={razorpayFromDate}
+            toDate={razorpayToDate}
+            setFromDate={setRazorpayFromDate}
+            setToDate={setRazorpayToDate}
+            onSubmit={handleRazorpayFilterSubmit}
+            onRefreshDonations={() =>
+              loadRazorpayDonations(razorpayFromDate, razorpayToDate)
+            }
+            loading={loadingRazorpayDonations}
+            error={razorpayError}
+          />
+        </div>
+      )}
 
       {editingDonation && (
         <EditDonationPopup

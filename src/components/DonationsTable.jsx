@@ -51,6 +51,7 @@ const DonationsTable = ({
           return;
         }
         pdfData.purpose = 'General';
+        console.log('pdf data: ', pdfData);
         navigate('/receipt', { state: { pdfData } });
       }
     } catch (error) {
@@ -147,7 +148,10 @@ const DonationsTable = ({
       {/* Download button — only when showDownload is true and there is data */}
       {showDownload && sortedData.length > 0 && (
         <div className="flex justify-end my-3 px-2">
-          <DownloadDonations data={sortedData} showCultivatorName={showCultivatorName} />
+          <DownloadDonations
+            data={sortedData}
+            showCultivatorName={showCultivatorName}
+          />
         </div>
       )}
       {/* Desktop / Tablet Table */}
