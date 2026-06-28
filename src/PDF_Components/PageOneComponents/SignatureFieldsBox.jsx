@@ -3,10 +3,11 @@ import { View, Text, StyleSheet, Image } from '@react-pdf/renderer';
 import bhimSign from '../../assets/signature_images/bhim_sign.png';
 import dgpSign from '../../assets/signature_images/dgp_sign.png';
 import nppSign from '../../assets/signature_images/npp_sign.png';
-import sunitaSign from '../../assets/signature_images/sunita_sign.PNG';
+import sunitaSign from '../../assets/signature_images/sunita_sign.png';
 import nibeditaSign from '../../assets/signature_images/nibedita_sign.png';
 import rajeevSign from '../../assets/signature_images/rajeev_sign.png';
 import sumanPrSign from '../../assets/signature_images/suman_sign.png';
+import spapSign from '../../assets/signature_images/spap_sign.png';
 
 const getSignatureByDonorCultivatorId = (id) => {
   switch (String(id)) {
@@ -17,7 +18,7 @@ const getSignatureByDonorCultivatorId = (id) => {
     case '3':
       return rajeevSign;
     case '4':
-      return dgpSign;
+      return spapSign;
     case '5':
       return dgpSign;
     case '6':
