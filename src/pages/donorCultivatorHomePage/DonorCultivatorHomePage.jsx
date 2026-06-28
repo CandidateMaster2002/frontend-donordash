@@ -329,7 +329,11 @@ const DonorCultivatorHomePage = () => {
     try {
       setLoadingRazorpayDonations(true);
       setRazorpayError('');
-      const data = await fetchRazorpayDonations(startDate, endDate);
+      // Add 1 day to endDate so donations on the selected end date are included
+      const adjustedEnd = new Date(endDate);
+      adjustedEnd.setDate(adjustedEnd.getDate() + 1);
+      const adjustedEndStr = formatToInputDate(adjustedEnd);
+      const data = await fetchRazorpayDonations(startDate, adjustedEndStr);
       setRazorpayDonations(Array.isArray(data) ? data : []);
     } catch (error) {
       setRazorpayDonations([]);

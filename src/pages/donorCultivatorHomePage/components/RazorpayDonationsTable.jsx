@@ -36,6 +36,7 @@ const RazorpayDonationsTable = ({
   const [razorpaySearchQuery, setRazorpaySearchQuery] = useState('');
   const [searchTermByRow, setSearchTermByRow] = useState({});
   const [selectionByRow, setSelectionByRow] = useState({});
+  const [remarkByRow, setRemarkByRow] = useState({});
   const [activeRowKey, setActiveRowKey] = useState(null);
   const [submittingRowKey, setSubmittingRowKey] = useState(null);
   const [confirmSubmission, setConfirmSubmission] = useState(null);
@@ -118,13 +119,15 @@ const RazorpayDonationsTable = ({
     );
     const status = selectedDonorBelongsToCultivator ? 'Pending' : 'Unapproved';
 
+    const userRemark = remarkByRow[rowKey] || '';
+
     const payload = {
       amount: Number(donation?.amount || 0),
       purpose: selected.purpose,
       paymentMode: 'Razorpay Link',
       transactionId: donation?.transactionId || null,
       status,
-      remark: donation?.notes || '',
+      remark: userRemark || donation?.notes || '',
       donorId: selectedDonorId,
       createdAt: new Date().toISOString(),
       paymentDate: donation?.paymentDate || new Date().toISOString(),
@@ -187,6 +190,7 @@ const RazorpayDonationsTable = ({
       amount: Number(donation?.amount || 0),
       transactionId: donation?.transactionId || '-',
       paymentDate: donation?.paymentDate || '-',
+      remark: remarkByRow[rowKey] || '',
       status,
       isDifferentCultivatorDonor: !selectedDonorBelongsToCultivator,
     });
@@ -381,7 +385,7 @@ const RazorpayDonationsTable = ({
               ) : (
                 <>
                   <div className="hidden md:block overflow-x-auto razorpay-horizontal-scroll">
-                    <table className="min-w-[1300px] overflow-hidden rounded-xl border border-gray-200 text-left">
+                    <table className="min-w-[1500px] overflow-hidden rounded-xl border border-gray-200 text-left">
                       <thead className="bg-gradient-to-r from-blue-900 to-blue-700 text-white">
                         <tr>
                           <th className="sticky left-0 z-20 bg-blue-900 px-4 py-3 text-sm font-semibold">
@@ -401,6 +405,9 @@ const RazorpayDonationsTable = ({
                           </th>
                           <th className="px-4 py-3 text-sm font-semibold">
                             Purpose
+                          </th>
+                          <th className="px-4 py-3 text-sm font-semibold">
+                            Remarks
                           </th>
                           <th className="px-4 py-3 text-sm font-semibold">
                             Submit
@@ -521,6 +528,25 @@ const RazorpayDonationsTable = ({
                               </select>
                             </td>
                             <td className="px-4 py-3 text-sm text-gray-700">
+                              <input
+                                type="text"
+                                placeholder="Optional remarks"
+                                value={
+                                  remarkByRow[
+                                    getRowKey(donation, index)
+                                  ] || ''
+                                }
+                                onChange={(e) => {
+                                  const rowKey = getRowKey(donation, index);
+                                  setRemarkByRow((prev) => ({
+                                    ...prev,
+                                    [rowKey]: e.target.value,
+                                  }));
+                                }}
+                                className="w-44 rounded-md border border-gray-300 px-2 py-1 text-sm outline-none focus:border-purple-500 bg-white text-gray-800 dark:bg-white dark:text-gray-800"
+                              />
+                            </td>
+                            <td className="px-4 py-3 text-sm text-gray-700">
                               <button
                                 onClick={() =>
                                   handleSubmitRow(
@@ -552,7 +578,7 @@ const RazorpayDonationsTable = ({
                   {/* Mobile View   */}
                   <div className="md:hidden">
                     <div className="relative overflow-x-auto rounded-xl border border-gray-200 shadow-sm razorpay-horizontal-scroll">
-                      <table className="min-w-[1300px] w-full text-sm border-collapse">
+                      <table className="min-w-[1500px] w-full text-sm border-collapse">
                         <thead className="bg-gradient-to-r from-blue-900 to-blue-700 text-white">
                           <tr>
                             <th className="w-[120px] px-3 py-2 text-left font-semibold bg-blue-900">
@@ -572,6 +598,9 @@ const RazorpayDonationsTable = ({
                             </th>
                             <th className="px-3 py-2 text-left font-semibold">
                               Purpose
+                            </th>
+                            <th className="px-3 py-2 text-left font-semibold">
+                              Remarks
                             </th>
                             <th className="w-[96px] px-3 py-2 text-center font-semibold">
                               Submit
@@ -693,6 +722,25 @@ const RazorpayDonationsTable = ({
                                   ))}
                                 </select>
                               </td>
+                              <td className="px-3 py-3 text-gray-700">
+                                <input
+                                  type="text"
+                                  placeholder="Optional remarks"
+                                  value={
+                                    remarkByRow[
+                                      getRowKey(donation, index)
+                                    ] || ''
+                                  }
+                                  onChange={(e) => {
+                                    const rowKey = getRowKey(donation, index);
+                                    setRemarkByRow((prev) => ({
+                                      ...prev,
+                                      [rowKey]: e.target.value,
+                                    }));
+                                  }}
+                                  className="w-36 rounded-md border border-gray-300 px-2 py-1 text-sm outline-none focus:border-purple-500 bg-white text-gray-800 dark:bg-white dark:text-gray-800"
+                                />
+                              </td>
                               <td className="w-[96px] px-3 py-3 text-center">
                                 <button
                                   onClick={() =>
@@ -783,6 +831,12 @@ const RazorpayDonationsTable = ({
                 <span className="font-semibold">Status to submit:</span>{' '}
                 {confirmSubmission.status}
               </p>
+              {confirmSubmission.remark && (
+                <p>
+                  <span className="font-semibold">Remarks:</span>{' '}
+                  {confirmSubmission.remark}
+                </p>
+              )}
               {confirmSubmission.isDifferentCultivatorDonor && (
                 <p className="rounded-md bg-amber-50 px-3 py-2 text-amber-800">
                   Selected donor belongs to a different cultivator. This
