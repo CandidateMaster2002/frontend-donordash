@@ -2,7 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import MyPDFDocument from './MyPDFDocument';
 import { useLocation } from 'react-router-dom';
-import { getReceiptByDonationId } from '../utils/services';
+import {
+  getReceiptByDonationId,
+  downloadReceiptPdfBlob,
+  viewReceiptPdfBlob,
+} from '../utils/services';
 import { whiteListedDonationPurposes } from '../constants/constants';
 
 const FormAndDownload = () => {
@@ -45,6 +49,48 @@ const FormAndDownload = () => {
   const [showDownloadLink, setShowDownloadLink] = useState(
     Boolean(initialPdfData?.receiptNumber)
   );
+  const [downloading, setDownloading] = useState(false);
+  const [viewing, setViewing] = useState(false);
+
+  const handleDownloadBackendPdf = async () => {
+    const donationId = pdfData?.donationId || formData?.donationId;
+    if (!donationId || donationId === 'NA') {
+      alert('Donation ID not found to generate receipt PDF.');
+      return;
+    }
+    setDownloading(true);
+    try {
+      await downloadReceiptPdfBlob(
+        donationId,
+        pdfData.receiptId || formData.receiptId,
+        pdfData.donorName || formData.name
+      );
+    } catch (err) {
+      console.error('Failed to download backend PDF receipt:', err);
+      alert(
+        'Failed to download receipt from server. You can try the browser generator below.'
+      );
+    } finally {
+      setDownloading(false);
+    }
+  };
+
+  const handleViewBackendPdf = async () => {
+    const donationId = pdfData?.donationId || formData?.donationId;
+    if (!donationId || donationId === 'NA') {
+      alert('Donation ID not found to view receipt PDF.');
+      return;
+    }
+    setViewing(true);
+    try {
+      await viewReceiptPdfBlob(donationId);
+    } catch (err) {
+      console.error('Failed to view backend PDF receipt:', err);
+      alert('Failed to open receipt from server.');
+    } finally {
+      setViewing(false);
+    }
+  };
   const [documentData, setDocumentData] = useState({
     receiptNumber: initialPdfData.receiptNumber,
     receiptDate: initialPdfData.paymentDate,
@@ -240,28 +286,51 @@ const FormAndDownload = () => {
 
       {/* Download Section */}
       {showDownloadLink && (
-        <div className="mt-8 text-center">
-          <p className="text-gray-600 mb-4">
-            Generate and download your receipt
+        <div className="mt-8 text-center space-y-4">
+          <p className="text-gray-600 mb-2">
+            Generate and download your official receipt
           </p>
-          <PDFDownloadLink
-            document={<MyPDFDocument formData={documentData} />}
-            fileName={`${pdfData.donorName || 'Receipt'}_${
-              pdfData.receiptNumber
-            }_${pdfData.amount}.pdf`}
-            className="inline-block"
-          >
-            {({ loading }) => (
-              <button
-                className={`px-6 py-3 rounded-md font-medium text-white ${
-                  loading ? 'bg-gray-400' : 'bg-red-500 hover:bg-red-600'
-                } transition-colors shadow-md`}
-                disabled={loading}
-              >
-                {loading ? 'Generating PDF...' : 'Download Receipt'}
-              </button>
-            )}
-          </PDFDownloadLink>
+
+          <div className="flex flex-wrap items-center justify-center gap-4">
+            {/* Primary Action: Download Server-Generated PDF */}
+            <button
+              onClick={handleDownloadBackendPdf}
+              disabled={downloading}
+              className={`px-6 py-3 rounded-md font-medium text-white ${
+                downloading ? 'bg-gray-400' : 'bg-red-500 hover:bg-red-600'
+              } transition-colors shadow-md flex items-center justify-center gap-2`}
+            >
+              {downloading ? 'Generating PDF...' : 'Download Receipt'}
+            </button>
+
+            {/* View in New Tab via Backend Blob */}
+            <button
+              onClick={handleViewBackendPdf}
+              disabled={viewing}
+              className={`px-5 py-3 rounded-md font-medium border border-red-500 text-red-500 hover:bg-red-50 ${
+                viewing ? 'opacity-50' : ''
+              } transition-colors shadow-sm`}
+            >
+              {viewing ? 'Opening...' : 'View PDF in Tab'}
+            </button>
+          </div>
+
+          {/* Preserved Frontend Client-Side PDF Generation */}
+          <div className="pt-2">
+            <PDFDownloadLink
+              document={<MyPDFDocument formData={documentData} />}
+              fileName={`${pdfData.donorName || 'Receipt'}_${
+                pdfData.receiptNumber
+              }_${pdfData.amount}.pdf`}
+              className="inline-block text-xs text-gray-400 hover:text-gray-600 underline"
+            >
+              {({ loading }) =>
+                loading
+                  ? 'Preparing browser PDF...'
+                  : 'Or generate using browser renderer'
+              }
+            </PDFDownloadLink>
+          </div>
         </div>
       )}
     </div>

@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { FaDownload } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import {
   getDonationsByDonorId,
   getReceiptByDonationId,
+  downloadReceiptPdfBlob,
   formatDate,
   getStatusStyles,
 } from '../../../utils/services';
@@ -21,6 +22,17 @@ const DonorDonationHistory = ({
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  const sortLatestFirst = (list) => {
+    return [...(Array.isArray(list) ? list : [])].sort((a, b) => {
+      const timeA = a.paymentDate ? new Date(a.paymentDate).getTime() : 0;
+      const timeB = b.paymentDate ? new Date(b.paymentDate).getTime() : 0;
+      if (timeB !== timeA) {
+        return timeB - timeA; // Latest payment date first
+      }
+      return (b.id || 0) - (a.id || 0); // Fallback to highest ID first
+    });
+  };
+
   useEffect(() => {
     if (!donorId) {
       setDonations([]);
@@ -32,7 +44,8 @@ const DonorDonationHistory = ({
       setLoading(true);
       try {
         const donationsData = await getDonationsByDonorId(donorId);
-        setDonations(Array.isArray(donationsData) ? donationsData : []);
+        const sorted = sortLatestFirst(donationsData);
+        setDonations(sorted);
         setCurrentPage(1);
       } catch (error) {
         console.error('Error fetching donations:', error);
@@ -45,9 +58,17 @@ const DonorDonationHistory = ({
     fetchDonations();
   }, [donorId]);
 
-  const totalPages = Math.max(1, Math.ceil(donations.length / ROWS_PER_PAGE));
+  const sortedDonations = useMemo(
+    () => sortLatestFirst(donations),
+    [donations]
+  );
 
-  const paginatedDonations = donations.slice(
+  const totalPages = Math.max(
+    1,
+    Math.ceil(sortedDonations.length / ROWS_PER_PAGE)
+  );
+
+  const paginatedDonations = sortedDonations.slice(
     (currentPage - 1) * ROWS_PER_PAGE,
     currentPage * ROWS_PER_PAGE
   );
@@ -58,8 +79,14 @@ const DonorDonationHistory = ({
     }
   };
 
-  const handleReceiptClick = async (donationId) => {
+  const handleReceiptClick = async (donationId, receiptNumber, donorName) => {
     try {
+      await downloadReceiptPdfBlob(donationId, receiptNumber, donorName);
+    } catch (error) {
+      console.warn(
+        'Backend direct download failed, opening receipt view:',
+        error
+      );
       const url = `/receipt?donationId=${encodeURIComponent(donationId)}`;
       const newTab = window.open(url, '_blank');
 
@@ -72,18 +99,20 @@ const DonorDonationHistory = ({
         return;
       }
 
-      const pdfData = await getReceiptByDonationId(donationId);
-      if (
-        !pdfData ||
-        !pdfData.receiptNumber ||
-        !pdfData.receiptNumber.startsWith('ISK')
-      ) {
-        alert('Receipt number is missing. Cannot generate receipt.');
-        return;
+      try {
+        const pdfData = await getReceiptByDonationId(donationId);
+        if (
+          !pdfData ||
+          !pdfData.receiptNumber ||
+          !pdfData.receiptNumber.startsWith('ISK')
+        ) {
+          alert('Receipt number is missing. Cannot generate receipt.');
+          return;
+        }
+        navigate('/receipt', { state: { pdfData } });
+      } catch (err) {
+        console.error('Error fetching receipt data:', err);
       }
-      navigate('/receipt', { state: { pdfData } });
-    } catch (error) {
-      console.error('Error fetching receipt data:', error);
     }
   };
 
@@ -96,11 +125,18 @@ const DonorDonationHistory = ({
       }`}
       onClick={
         donation.status === 'Verified'
-          ? () => handleReceiptClick(donation.id)
+          ? () =>
+              handleReceiptClick(
+                donation.id,
+                donation.receiptNumber || donation.receiptId,
+                donation.donorName
+              )
           : undefined
       }
       aria-label={
-        donation.status === 'Verified' ? 'Download receipt' : 'Receipt unavailable'
+        donation.status === 'Verified'
+          ? 'Download receipt'
+          : 'Receipt unavailable'
       }
     />
   );
@@ -163,7 +199,9 @@ const DonorDonationHistory = ({
                       className="hover:bg-gray-50 transition-colors bg-white dark:bg-white"
                     >
                       <td className="py-3 px-4 border-b border-gray-200 dark:border-gray-200">
-                        {formatDate(donation.paymentDate)}
+                        {donation.paymentDate
+                          ? formatDate(donation.paymentDate)
+                          : ''}
                       </td>
                       <td className="py-3 px-4 border-b border-gray-200 dark:border-gray-200 font-semibold">
                         ₹ {donation.amount}
@@ -228,10 +266,10 @@ const DonorDonationHistory = ({
                 <table className="min-w-max w-full table-fixed text-sm border-collapse">
                   <thead>
                     <tr>
-                      <th className="sticky top-0 z-30 bg-blue-900 text-white px-2 py-2 text-left w-20">
+                      <th className="sticky top-0 z-30 bg-blue-900 text-white px-2 py-2 text-left w-28 whitespace-nowrap">
                         Date
                       </th>
-                      <th className="sticky top-0 z-30 bg-blue-900 text-white px-2 py-2 text-right w-22">
+                      <th className="sticky top-0 z-30 bg-blue-900 text-white px-2 py-2 text-right w-24">
                         Amount
                       </th>
                       <th className="sticky top-0 z-30 bg-blue-900 text-white px-2 py-2 text-left w-24">
@@ -254,12 +292,9 @@ const DonorDonationHistory = ({
                         key={donation.id}
                         className="bg-white dark:bg-white last:border-b"
                       >
-                        <td className="px-2 py-3 text-xs text-gray-600 dark:text-gray-600 border-l border-gray-200 dark:border-gray-200 first:border-l-0">
+                        <td className="px-2 py-3 text-xs text-gray-600 dark:text-gray-600 border-l border-gray-200 dark:border-gray-200 first:border-l-0 whitespace-nowrap">
                           {donation.paymentDate
-                            ? new Intl.DateTimeFormat('en-GB', {
-                                day: 'numeric',
-                                month: 'short',
-                              }).format(new Date(donation.paymentDate))
+                            ? formatDate(donation.paymentDate)
                             : ''}
                         </td>
                         <td className="px-2 py-3 text-right font-medium border-l border-gray-200 dark:border-gray-200">

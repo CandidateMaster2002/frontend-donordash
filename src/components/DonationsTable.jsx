@@ -3,7 +3,10 @@ import { FaDownload, FaEdit } from 'react-icons/fa';
 import { formatDate } from '../utils/services';
 import { getStatusStyles } from '../utils/services';
 import { MdEdit } from 'react-icons/md';
-import { getReceiptByDonationId } from '../utils/services';
+import {
+  getReceiptByDonationId,
+  downloadReceiptPdfBlob,
+} from '../utils/services';
 import { useNavigate, Link } from 'react-router-dom';
 import DownloadDonations from './DownloadDonations';
 
@@ -16,21 +19,19 @@ const DonationsTable = ({
   showCultivatorName = false,
   showDownload = false,
 }) => {
-  // console.log("Data :", data);
   var headerHeight = '0px';
   const navigate = useNavigate();
-  const handleReceiptClick = async (donationId) => {
+  const handleReceiptClick = async (donationId, receiptNumber, donorName) => {
     try {
-      // Open receipt in a new tab. We pass `donationId` via query param,
-      // because router `location.state` won't be available in a new tab.
+      await downloadReceiptPdfBlob(donationId, receiptNumber, donorName);
+    } catch (error) {
+      console.warn(
+        'Backend direct download failed, opening receipt view:',
+        error
+      );
+      // Open receipt in a new tab fallback.
       const url = `/receipt?donationId=${encodeURIComponent(donationId)}`;
-
-      // Some browsers may return `null` when using certain feature strings
-      // even though the tab opens. So we avoid passing extra features and
-      // clear opener manually for safety.
       const newTab = window.open(url, '_blank');
-
-      // Fallback: if popup is blocked, open in same tab using react-router state.
       if (newTab) {
         try {
           newTab.opener = null;
@@ -40,7 +41,7 @@ const DonationsTable = ({
         return;
       }
 
-      {
+      try {
         const pdfData = await getReceiptByDonationId(donationId);
         if (
           !pdfData ||
@@ -51,11 +52,10 @@ const DonationsTable = ({
           return;
         }
         pdfData.purpose = 'General';
-        console.log('pdf data: ', pdfData);
         navigate('/receipt', { state: { pdfData } });
+      } catch (err) {
+        console.error('Error fetching receipt data:', err);
       }
-    } catch (error) {
-      console.error('Error fetching receipt data:', error);
     }
   };
 
@@ -244,7 +244,12 @@ const DonationsTable = ({
                       }`}
                       onClick={
                         row.status === 'Verified'
-                          ? () => handleReceiptClick(row.id)
+                          ? () =>
+                              handleReceiptClick(
+                                row.id,
+                                row.receiptId,
+                                row.donorName
+                              )
                           : undefined
                       }
                     />
@@ -440,7 +445,11 @@ const DonationsTable = ({
                           className={`text-lg ${row.status === 'Verified' ? 'cursor-pointer text-purple-600' : 'text-gray-300'}`}
                           onClick={() =>
                             row.status === 'Verified' &&
-                            handleReceiptClick(row.id)
+                            handleReceiptClick(
+                              row.id,
+                              row.receiptId,
+                              row.donorName
+                            )
                           }
                         />
                         {showEditDonation && (

@@ -34,7 +34,7 @@ const DonorCultivatorHomePage = () => {
   const today = new Date();
   today.setDate(today.getDate() + 1);
   const thirtyDaysAgo = new Date();
-  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate()  - 30);
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
   const [filter, setFilter] = useState({
     type: 'lastMonth',
@@ -206,7 +206,6 @@ const DonorCultivatorHomePage = () => {
       // Only update the Reports data when the DateFilter changes.
       // Do NOT show fullscreen loader here; just fetch quietly.
       await fetchDonationsData(newFilter, setReportDonationsData, false);
-
       if (newFilter.startDate && newFilter.endDate) {
         await fetchDonationSummaryData(
           newFilter,
@@ -230,7 +229,7 @@ const DonorCultivatorHomePage = () => {
         fromDate: filter.startDate,
         toDate: filter.endDate,
       };
-
+      console.log('fliterDto: ', filterDto);
       const axiosConfig = showFullscreen
         ? { showLoader: 'fullscreen' }
         : { showLoader: false };
@@ -312,7 +311,8 @@ const DonorCultivatorHomePage = () => {
   };
 
   const [razorpayDonations, setRazorpayDonations] = useState([]);
-  const [loadingRazorpayDonations, setLoadingRazorpayDonations] = useState(false);
+  const [loadingRazorpayDonations, setLoadingRazorpayDonations] =
+    useState(false);
   const [razorpayError, setRazorpayError] = useState('');
   const [razorpayAllDonors, setRazorpayAllDonors] = useState([]);
   const [razorpayCultivatorDonors, setRazorpayCultivatorDonors] = useState([]);
@@ -322,7 +322,9 @@ const DonorCultivatorHomePage = () => {
     date.setDate(date.getDate() - 30);
     return formatToInputDate(date);
   });
-  const [razorpayToDate, setRazorpayToDate] = useState(formatToInputDate(new Date()));
+  const [razorpayToDate, setRazorpayToDate] = useState(
+    formatToInputDate(new Date())
+  );
   const [razorpayTabInitialized, setRazorpayTabInitialized] = useState(false);
 
   const loadRazorpayDonations = async (startDate, endDate) => {

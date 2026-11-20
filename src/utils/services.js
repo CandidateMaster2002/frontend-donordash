@@ -492,6 +492,61 @@ export const getReceiptByDonationId = async (donationId) => {
   }
 };
 
+export const downloadReceiptPdfBlob = async (
+  donationId,
+  receiptNumber,
+  donorName
+) => {
+  try {
+    const response = await axiosInstance.get(
+      `${GET_RECEIPT}/${donationId}/pdf`,
+      {
+        responseType: 'blob',
+      }
+    );
+    const blob = new Blob([response.data], { type: 'application/pdf' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    const safeDonorName = (donorName || 'Receipt').replace(
+      /[^a-zA-Z0-9_-]/g,
+      '_'
+    );
+    const safeReceiptNo = (receiptNumber || donationId || 'receipt').replace(
+      /[^a-zA-Z0-9_-]/g,
+      '_'
+    );
+    link.setAttribute('download', `${safeDonorName}_${safeReceiptNo}.pdf`);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => window.URL.revokeObjectURL(url), 1000);
+    return true;
+  } catch (error) {
+    console.error('Error downloading receipt PDF blob:', error);
+    throw error;
+  }
+};
+
+export const viewReceiptPdfBlob = async (donationId) => {
+  try {
+    const response = await axiosInstance.get(
+      `${GET_RECEIPT}/${donationId}/pdf`,
+      {
+        responseType: 'blob',
+      }
+    );
+    const blob = new Blob([response.data], { type: 'application/pdf' });
+    const url = window.URL.createObjectURL(blob);
+    window.open(url, '_blank');
+    setTimeout(() => window.URL.revokeObjectURL(url), 60000);
+    return true;
+  } catch (error) {
+    console.error('Error viewing receipt PDF blob:', error);
+    throw error;
+  }
+};
+
 //13 Jan 2002
 export const formatDate = (isoString) => {
   const date = new Date(isoString);

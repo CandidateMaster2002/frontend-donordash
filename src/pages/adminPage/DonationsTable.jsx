@@ -1,7 +1,10 @@
 import { useState } from 'react';
 import { FaDownload, FaEdit } from 'react-icons/fa';
-import { formatDate } from '../../utils/services';
-import { getReceiptByDonationId } from '../../utils/services';
+import {
+  formatDate,
+  getReceiptByDonationId,
+  downloadReceiptPdfBlob,
+} from '../../utils/services';
 import { useNavigate } from 'react-router-dom';
 import StatusChangeConfirmationBox from '../../components/StatusChangeConfirmationBox';
 import React from 'react';
@@ -39,136 +42,39 @@ const DonationsTable = ({ data, onEdit }) => {
     setShowSuccessPopup(true);
   };
 
-  const handleReceiptClick = async (donationId) => {
+  const handleReceiptClick = async (donationId, receiptNumber, donorName) => {
     try {
-      const pdfData = await getReceiptByDonationId(donationId);
-      if (
-        !pdfData ||
-        !pdfData.receiptNumber ||
-        !pdfData.receiptNumber.startsWith('ISK')
-      ) {
-        alert('Receipt number is missing. Cannot generate receipt.');
-        return;
-      }
-      const isWhitelisted = whiteListedDonationPurposes.some(
-        (purpose) =>
-          purpose.value?.trim().toLowerCase() ===
-          pdfData.purpose?.trim().toLowerCase()
-      );
-
-      if (!isWhitelisted) {
-        pdfData.purpose = 'General';
-      }
-      // console.log('pdf Data:', pdfData);
-      navigate('/receipt', { state: { pdfData } });
+      await downloadReceiptPdfBlob(donationId, receiptNumber, donorName);
     } catch (error) {
-      console.error('Error fetching receipt data:', error);
+      console.warn(
+        'Backend download failed, falling back to receipt page:',
+        error
+      );
+      try {
+        const pdfData = await getReceiptByDonationId(donationId);
+        if (
+          !pdfData ||
+          !pdfData.receiptNumber ||
+          !pdfData.receiptNumber.startsWith('ISK')
+        ) {
+          alert('Receipt number is missing. Cannot generate receipt.');
+          return;
+        }
+        const isWhitelisted = whiteListedDonationPurposes.some(
+          (purpose) =>
+            purpose.value?.trim().toLowerCase() ===
+            pdfData.purpose?.trim().toLowerCase()
+        );
+
+        if (!isWhitelisted) {
+          pdfData.purpose = 'General';
+        }
+        navigate('/receipt', { state: { pdfData } });
+      } catch (err) {
+        console.error('Error fetching receipt data:', err);
+      }
     }
   };
-
-  // return (
-  //   <div className="overflow-x-auto overflow-y-auto max-w-full">
-  //     <table className="min-w-full bg-white">
-  //       <thead>
-  //         <tr>
-  //           <th className="py-2 px-4 border-b">Payment Date</th>
-  //           <th className="py-2 px-4 border-b">Donor</th>
-  //           <th className="py-2 px-4 border-b">Amount</th>
-  //           <th className="py-2 px-4 border-b">Mode</th>
-  //           <th className="py-2 px-4 border-b">Purpose</th>
-  //           <th className="py-2 px-4 border-b">Status</th>
-  //           <th className="py-2 px-4 border-b">Cultivator</th>
-  //           <th className="py-2 px-4 border-b">Receipt</th>
-  //           <th className="py-2 px-4 border-b">Edit</th>
-  //         </tr>
-  //       </thead>
-  //       <tbody>
-  //         {data.map((row, index) => (
-  //           <tr key={index} className="text-center">
-  //             <td className="py-2 px-4 border-b">
-  //               {formatDate(row.paymentDate)}
-  //             </td>
-  //             <td className="py-2 px-4 border-b">{row.donorName}</td>
-  //             <td className="py-2 px-4 border-b">{row.amount}</td>
-  //             <td className="py-2 px-4 border-b">{row.paymentMode}</td>
-  //             <td className="py-2 px-4 border-b">{row.purpose}</td>
-  //             <td className="py-2 px-4 border-b">
-  //               {row.status === "Pending" ? (
-  //                 <select
-  //                   value={row.status}
-  //                   onChange={(e) => handleStatusChange(row, e)}
-  //                   className="border p-1"
-  //                 >
-  //                   <option value="Pending">Pending</option>
-  //                   <option value="Verified">Verified</option>
-  //                   <option value="Cancelled">Cancelled</option>
-  //                 </select>
-  //               ) : row.status === "Verified" ? (
-  //                 <select
-  //                   value={row.status}
-  //                   onChange={(e) => handleStatusChange(row, e)}
-  //                   className="border p-1"
-  //                 >
-  //                   <option value="Verified">Verified</option>
-  //                   <option value="Cancelled">Cancelled</option>
-  //                 </select>
-  //               ) : (
-  //                 row.status
-  //               )}
-  //             </td>
-  //             <td className="py-2 px-4 border-b">{row.donorCultivatorName}</td>
-  //             <td className="py-2 px-4 border-b">
-  //               <FaDownload
-  //                 className={`inline-block mr-2 ${
-  //                   row.status === "Verified"
-  //                     ? "cursor-pointer"
-  //                     : "text-gray-400"
-  //                 }`}
-  //                 onClick={
-  //                   row.status === "Verified"
-  //                     ? () => handleReceiptClick(row.id)
-  //                     : undefined
-  //                 }
-  //               />
-  //             </td>
-  //             <td className="py-2 px-4 border-b">
-  //               <FaEdit
-  //                 className={`inline-block mr-2 ${
-  //                   row.status === "Verified" || row.status === "Pending"
-  //                     ? "cursor-pointer"
-  //                     : "text-gray-400"
-  //                 }`}
-  //                 onClick={
-  //                   row.status === "Verified" || row.status === "Pending"
-  //                     ? () => onEdit(row)
-  //                     : undefined
-  //                 }
-  //               />
-  //             </td>
-  //           </tr>
-  //         ))}
-  //       </tbody>
-  //     </table>
-
-  //     {/* Status Change Confirmation Box */}
-  //     {showConfirmation && selectedDonation && (
-  //       <StatusChangeConfirmationBox
-  //         donation={selectedDonation}
-  //         newStatus={newStatus}
-  //         onCancel={handleCancel}
-  //         onConfirm={handleConfirm}
-  //       />
-  //     )}
-
-  //     {/* Success Popup */}
-  //     {showSuccessPopup && (
-  //       <SuccessPopup
-  //         message={successMessage}
-  //         onClose={() => setShowSuccessPopup(false)}
-  //       />
-  //     )}
-  //   </div>
-  // );
 
   return (
     <div className="overflow-x-auto overflow-y-auto max-w-full bg-white dark:bg-white">
@@ -260,7 +166,12 @@ const DonationsTable = ({ data, onEdit }) => {
                   }`}
                   onClick={
                     row.status === 'Verified'
-                      ? () => handleReceiptClick(row.id)
+                      ? () =>
+                          handleReceiptClick(
+                            row.id,
+                            row.receiptId,
+                            row.donorName
+                          )
                       : undefined
                   }
                 />
