@@ -43,6 +43,18 @@ export const getRedirectPath = (userType) => {
 
 export const signoutUser = () => {
   localStorage.removeItem('user');
+  localStorage.removeItem('token');
+};
+
+export const getTokenFromLocalStorage = () => {
+  const token = localStorage.getItem('token');
+  if (token) return token;
+  try {
+    const user = JSON.parse(localStorage.getItem('user'));
+    return user?.token || null;
+  } catch (e) {
+    return null;
+  }
 };
 
 export const getLoggedInIdFromLocalStorage = () => {
@@ -246,8 +258,11 @@ export const getDonors = async (params) => {
 export const handleUserLogin = async (credentials, navigate) => {
   try {
     const response = await axiosInstance.post(USER_LOGIN, credentials);
-    const { userType } = response.data;
+    const { userType, token } = response.data;
     localStorage.setItem('user', JSON.stringify(response.data));
+    if (token) {
+      localStorage.setItem('token', token);
+    }
     navigate(getRedirectPath(userType));
   } catch (error) {
     alert('Login failed: ' + (error.response?.data?.message || error.message));

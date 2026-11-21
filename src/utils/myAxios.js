@@ -6,6 +6,27 @@ const axiosInstance = axios.create({
   // baseURL: 'http://localhost:8080/',
 });
 
+// Attach JWT token to every outgoing request
+axiosInstance.interceptors.request.use(
+  (config) => {
+    let token = localStorage.getItem('token');
+    if (!token) {
+      try {
+        const user = JSON.parse(localStorage.getItem('user'));
+        token = user?.token;
+      } catch (e) {
+        // ignore JSON parse error
+      }
+    }
+    if (token) {
+      config.headers = config.headers || {};
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
 export const setupInterceptors = (showLoader, hideLoader) => {
   const reqId = axiosInstance.interceptors.request.use((config) => {
     const sl = config.showLoader;

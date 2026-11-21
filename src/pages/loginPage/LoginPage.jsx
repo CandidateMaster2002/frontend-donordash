@@ -21,8 +21,11 @@ const LoginPage = () => {
   const handleUserLogin = async (credentials) => {
     try {
       const response = await axiosInstance.post(USER_LOGIN, credentials);
-      const { userType } = response.data;
+      const { userType, token } = response.data;
       localStorage.setItem("user", JSON.stringify(response.data));
+      if (token) {
+        localStorage.setItem("token", token);
+      }
       navigate(getRedirectPath(userType));
     } catch (error) {
       alert(
